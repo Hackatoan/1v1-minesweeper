@@ -1,9 +1,7 @@
 services:
   - type: web
     name: 1v1-minesweeper
-    env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    env: docker
     envVars:
       - key: NEXT_PUBLIC_SUPABASE_URL
         sync: false
