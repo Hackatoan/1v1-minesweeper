@@ -35,19 +35,32 @@ export default function GameLobby() {
 
         // If I am not player 1, and there is no player 2, join as player 2
         if (gameData.player1_id !== uid && !gameData.player2_id) {
-           const { error: updateError } = await supabase
+           const { data: updatedGame, error: updateError } = await supabase
             .from('games')
             .update({ player2_id: uid, status: 'setup' })
             .eq('id', gameId)
+            .is('player2_id', null)
+            .select()
+            .single()
 
-           if (updateError) throw updateError
+           if (updateError) {
+             console.error('Update error or game is full:', updateError)
+             alert('Failed to join or game is already full.')
+             router.push('/')
+             return
+           }
 
-           setGame({ ...gameData, player2_id: uid, status: 'setup' })
+           setGame(updatedGame)
+        } else if (gameData.player1_id !== uid && gameData.player2_id !== uid) {
+           // I am a 3rd person
+           alert('Game is already full.')
+           router.push('/')
+           return
         }
 
         // Subscribe to changes
         subscription = supabase
-          .channel(`game-${gameId}`)
+          .channel(`game-${gameId}-${Math.random()}`)
           .on(
             'postgres_changes',
             { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` },
@@ -73,6 +86,18 @@ export default function GameLobby() {
       }
     }
   }, [gameId, router])
+
+  // Polling fallback
+  useEffect(() => {
+    if (!game || game.status !== 'waiting') return
+    const interval = setInterval(async () => {
+      const { data } = await supabase.from('games').select('status, player2_id').eq('id', gameId).single()
+      if (data && data.status !== 'waiting') {
+        setGame((prev: any) => ({ ...prev, ...data }))
+      }
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [game?.status, gameId])
 
   // Redirect when status changes
   useEffect(() => {

@@ -96,11 +96,16 @@ export default function ResultPhase() {
                 router.push(`/game/${game.rematch_game_id}`)
                 return
               }
+              const session = await getSession()
+              const uid = session?.user.id
+              if (!uid) return
+
               const { data: newGame, error } = await supabase
                 .from('games')
                 .insert({
-                  player1_id: userId,
-                  player2_id: game.player1_id === userId ? game.player2_id : game.player1_id,
+                  id: Math.random().toString(36).substring(2, 8).toUpperCase(),
+                  player1_id: uid,
+                  player2_id: game.player1_id === uid ? game.player2_id : game.player1_id,
                   status: 'setup'
                 })
                 .select()
