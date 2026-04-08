@@ -1,0 +1,138 @@
+
+> my-app@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+- Environments: .env.local
+✓ Ready in 570ms
+
+○ Compiling / ...
+ GET / 200 in 4.5s (next.js: 4.0s, application-code: 527ms)
+ GET / 200 in 64ms (next.js: 6ms, application-code: 58ms)
+ GET / 200 in 49ms (next.js: 3ms, application-code: 46ms)
+ GET / 200 in 58ms (next.js: 4ms, application-code: 54ms)
+[browser] Error signing in anonymously: AuthApiError: Anonymous sign-ins are disabled
+    at async getSession (app/lib/supabase.ts:13:41)
+    at async createGame (app/page.tsx:14:23)
+  11 |
+  12 |   if (!session) {
+> 13 |     const { data: signInData, error } = await supabase.auth.signInAnonymously()
+     |                                         ^
+  14 |     if (error) {
+  15 |         console.error('Error signing in anonymously:', error)
+  16 |         throw error (app/lib/supabase.ts:15:17)
+[browser] Error creating game: AuthApiError: Anonymous sign-ins are disabled
+    at async getSession (app/lib/supabase.ts:13:41)
+    at async createGame (app/page.tsx:14:23)
+  11 |
+  12 |   if (!session) {
+> 13 |     const { data: signInData, error } = await supabase.auth.signInAnonymously()
+     |                                         ^
+  14 |     if (error) {
+  15 |         console.error('Error signing in anonymously:', error)
+  16 |         throw error (app/page.tsx:34:15)
+ GET / 200 in 53ms (next.js: 4ms, application-code: 49ms)
+ GET / 200 in 57ms (next.js: 6ms, application-code: 52ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET / 200 in 53ms (next.js: 3ms, application-code: 49ms)
+ GET /game/17fe30a2-a302-41be-8d93-37e8688278d1 200 in 1321ms (next.js: 1240ms, application-code: 81ms)
+ GET /game/17fe30a2-a302-41be-8d93-37e8688278d1 200 in 226ms (next.js: 29ms, application-code: 197ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET / 200 in 75ms (next.js: 5ms, application-code: 70ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/5fbcd250-2519-4f60-b8b6-9750f85d02db 200 in 131ms (next.js: 36ms, application-code: 95ms)
+ GET /game/5fbcd250-2519-4f60-b8b6-9750f85d02db 200 in 127ms (next.js: 5ms, application-code: 122ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/5fbcd250-2519-4f60-b8b6-9750f85d02db 200 in 154ms (next.js: 34ms, application-code: 120ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/5fbcd250-2519-4f60-b8b6-9750f85d02db/setup 200 in 1715ms (next.js: 1659ms, application-code: 56ms)
+ GET /game/5fbcd250-2519-4f60-b8b6-9750f85d02db/setup 200 in 144ms (next.js: 32ms, application-code: 111ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET / 200 in 57ms (next.js: 4ms, application-code: 52ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/44887447-32f2-4c24-81cc-65538f09a273 200 in 60ms (next.js: 22ms, application-code: 38ms)
+ GET /game/44887447-32f2-4c24-81cc-65538f09a273 200 in 79ms (next.js: 3ms, application-code: 75ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/44887447-32f2-4c24-81cc-65538f09a273 200 in 86ms (next.js: 20ms, application-code: 66ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/44887447-32f2-4c24-81cc-65538f09a273/setup 200 in 57ms (next.js: 22ms, application-code: 36ms)
+ GET /game/44887447-32f2-4c24-81cc-65538f09a273/setup 200 in 127ms (next.js: 4ms, application-code: 123ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET / 200 in 65ms (next.js: 5ms, application-code: 61ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/eaad0efa-d19d-4946-987d-77d9d69839e3 200 in 61ms (next.js: 21ms, application-code: 40ms)
+ GET /game/eaad0efa-d19d-4946-987d-77d9d69839e3 200 in 59ms (next.js: 3ms, application-code: 56ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/eaad0efa-d19d-4946-987d-77d9d69839e3 200 in 84ms (next.js: 20ms, application-code: 64ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/eaad0efa-d19d-4946-987d-77d9d69839e3/setup 200 in 78ms (next.js: 22ms, application-code: 56ms)
+ GET /game/eaad0efa-d19d-4946-987d-77d9d69839e3/setup 200 in 129ms (next.js: 7ms, application-code: 121ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET / 200 in 42ms (next.js: 3ms, application-code: 39ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/221199dc-0ce2-4b19-aa9b-ee06b5ad0da9 200 in 81ms (next.js: 20ms, application-code: 61ms)
+ GET /game/221199dc-0ce2-4b19-aa9b-ee06b5ad0da9 200 in 74ms (next.js: 3ms, application-code: 71ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/221199dc-0ce2-4b19-aa9b-ee06b5ad0da9 200 in 134ms (next.js: 19ms, application-code: 115ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/221199dc-0ce2-4b19-aa9b-ee06b5ad0da9/setup 200 in 57ms (next.js: 20ms, application-code: 37ms)
+ GET /game/221199dc-0ce2-4b19-aa9b-ee06b5ad0da9/setup 200 in 77ms (next.js: 3ms, application-code: 74ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET / 200 in 53ms (next.js: 5ms, application-code: 49ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/ab0b186b-0b87-49e0-9206-7daf7134d509 200 in 88ms (next.js: 24ms, application-code: 64ms)
+ GET /game/ab0b186b-0b87-49e0-9206-7daf7134d509 200 in 63ms (next.js: 5ms, application-code: 59ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/ab0b186b-0b87-49e0-9206-7daf7134d509 200 in 76ms (next.js: 19ms, application-code: 56ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/ab0b186b-0b87-49e0-9206-7daf7134d509/setup 200 in 92ms (next.js: 25ms, application-code: 67ms)
+ GET /game/ab0b186b-0b87-49e0-9206-7daf7134d509/setup 200 in 133ms (next.js: 5ms, application-code: 127ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET / 200 in 49ms (next.js: 4ms, application-code: 46ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/39299790-509a-42ab-beb5-eb1c4dec81ae 200 in 55ms (next.js: 22ms, application-code: 34ms)
+ GET /game/39299790-509a-42ab-beb5-eb1c4dec81ae 200 in 56ms (next.js: 4ms, application-code: 52ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/39299790-509a-42ab-beb5-eb1c4dec81ae 200 in 121ms (next.js: 24ms, application-code: 97ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/39299790-509a-42ab-beb5-eb1c4dec81ae/setup 200 in 73ms (next.js: 25ms, application-code: 48ms)
+ GET /game/39299790-509a-42ab-beb5-eb1c4dec81ae/setup 200 in 90ms (next.js: 5ms, application-code: 85ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET / 200 in 49ms (next.js: 4ms, application-code: 45ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/92b47c2f-1cac-417c-8821-9d759c95eebe 200 in 71ms (next.js: 22ms, application-code: 49ms)
+ GET /game/92b47c2f-1cac-417c-8821-9d759c95eebe 200 in 57ms (next.js: 3ms, application-code: 54ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+✓ Compiled in 4.5s
+ GET / 200 in 973ms (next.js: 575ms, application-code: 398ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/5a980553-d160-4c00-9ca3-8aa64273f4c0 200 in 249ms (next.js: 150ms, application-code: 99ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET / 200 in 76ms (next.js: 5ms, application-code: 71ms)
+[browser] Error in lobby: Error: cannot add `postgres_changes` callbacks for realtime:game-5a980553-d160-4c00-9ca3-8aa64273f4c0 after `subscribe()`.
+    at init (app/game/[id]/page.tsx:48:12)
+  46 |         subscription = supabase
+  47 |           .channel(`game-${gameId}`)
+> 48 |           .on(
+     |            ^
+  49 |             'postgres_changes',
+  50 |             { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` },
+  51 |             (payload) => { (app/game/[id]/page.tsx:58:17)
+ GET / 200 in 169ms (next.js: 25ms, application-code: 145ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET /game/a8421d1d-f919-497c-b64b-432d10a6ecd6 200 in 119ms (next.js: 55ms, application-code: 64ms)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+[browser] Anonymous auth failed or disabled, falling back to local generated user ID (app/lib/supabase.ts:18:17)
+ GET / 200 in 97ms (next.js: 12ms, application-code: 85ms)
+[browser] Error in lobby: Error: cannot add `postgres_changes` callbacks for realtime:game-a8421d1d-f919-497c-b64b-432d10a6ecd6 after `subscribe()`.
+    at init (app/game/[id]/page.tsx:49:12)
+  47 |         subscription = supabase
+  48 |           .channel(`game-${gameId}`)
+> 49 |           .on(
+     |            ^
+  50 |             'postgres_changes',
+  51 |             { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` },
+  52 |             (payload) => { (app/game/[id]/page.tsx:59:17)
