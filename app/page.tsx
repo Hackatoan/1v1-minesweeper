@@ -21,6 +21,7 @@ export default function Home() {
       const { data, error } = await supabase
         .from('games')
         .insert({
+          id: Math.random().toString(36).substring(2, 8).toUpperCase(),
           player1_id: userId,
           status: 'waiting'
         })

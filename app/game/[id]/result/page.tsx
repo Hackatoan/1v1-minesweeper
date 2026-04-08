@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../../lib/supabase'
-import Link from 'next/link'
+
 
 export default function ResultPhase() {
   const router = useRouter()
@@ -15,6 +15,7 @@ export default function ResultPhase() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    let subscription: any
     async function init() {
       const session = await getSession()
       const uid = session?.user.id
@@ -24,9 +25,33 @@ export default function ResultPhase() {
       const { data: gameData } = await supabase.from('games').select('*').eq('id', gameId).single()
       setGame(gameData)
       setLoading(false)
+
+      if (gameData?.rematch_game_id) {
+        router.push(`/game/${gameData.rematch_game_id}`)
+        return
+      }
+
+      subscription = supabase
+        .channel(`game-result-${gameId}`)
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` },
+          (payload) => {
+            if (payload.new.rematch_game_id) {
+              router.push(`/game/${payload.new.rematch_game_id}`)
+            }
+          }
+        )
+        .subscribe()
     }
 
     init()
+
+    return () => {
+      if (subscription) {
+        supabase.removeChannel(subscription)
+      }
+    }
   }, [gameId, router])
 
   if (loading) return (
@@ -65,12 +90,39 @@ export default function ResultPhase() {
             </p>
         </div>
 
-        <Link
-            href="/"
+        <button
+            onClick={async () => {
+              if (game.rematch_game_id) {
+                router.push(`/game/${game.rematch_game_id}`)
+                return
+              }
+              const session = await getSession()
+              const uid = session?.user.id
+              if (!uid) return
+
+              const { data: newGame, error } = await supabase
+                .from('games')
+                .insert({
+                  id: Math.random().toString(36).substring(2, 8).toUpperCase(),
+                  player1_id: uid,
+                  player2_id: game.player1_id === uid ? game.player2_id : game.player1_id,
+                  status: 'setup'
+                })
+                .select()
+                .single()
+
+              if (error) {
+                console.error('Failed to create rematch', error)
+                return
+              }
+
+              await supabase.from('games').update({ rematch_game_id: newGame.id }).eq('id', gameId)
+              router.push(`/game/${newGame.id}`)
+            }}
             className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1 relative z-10"
         >
-          Play Again
-        </Link>
+          Rematch
+        </button>
       </div>
     </div>
   )
