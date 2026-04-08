@@ -3,7 +3,7 @@ services:
     name: 1v1-minesweeper
     env: docker
     envVars:
-      - key: NEXT_PUBLIC_SUPABASE_URL
+      - key: SUPABASE_URL
         sync: false
-      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+      - key: SUPABASE_ANON_KEY
         sync: false
