@@ -41,6 +41,8 @@ export default function GameLobby() {
             .eq('id', gameId)
 
            if (updateError) throw updateError
+
+           setGame({ ...gameData, player2_id: uid, status: 'setup' })
         }
 
         // Subscribe to changes
