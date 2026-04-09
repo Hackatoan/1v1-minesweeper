@@ -1,24 +1,37 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-brown-50: #fdf8f6;
+  --color-brown-100: #f2e8e5;
+  --color-brown-200: #eaddd7;
+  --color-brown-300: #e0cec7;
+  --color-brown-400: #d2bab0;
+  --color-brown-500: #a18072;
+  --color-brown-600: #977669;
+  --color-brown-700: #846358;
+  --color-brown-800: #43302b;
+  --color-brown-900: #2a1e1b;
+}
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #fdf8f6;
+  --foreground: #43302b;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23977669' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .mine-grid {
   display: grid;
   gap: 2px;
-  background-color: #94a3b8;
-  padding: 4px;
+  background-color: var(--color-brown-500);
+  padding: 6px;
   border-radius: 0.5rem;
   box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.1);
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2343302b' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .mine-cell {

@@ -118,31 +118,31 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-1 w-full flex-col items-center justify-center p-6 sm:p-24 bg-gradient-to-br from-slate-50 to-slate-200">
-      <div className="z-10 max-w-2xl w-full items-center justify-center flex flex-col gap-8 bg-white p-12 rounded-3xl shadow-xl border border-slate-100">
+    <main className="flex flex-1 w-full flex-col items-center justify-center p-6 sm:p-24 bg-gradient-to-br from-brown-50 to-brown-200">
+      <div className="z-10 max-w-2xl w-full items-center justify-center flex flex-col gap-8 bg-white p-12 rounded-3xl shadow-xl border border-brown-100">
         <div className="text-center space-y-4">
-            <h1 className="text-5xl font-extrabold text-slate-800 tracking-tight">1v1 Minesweeper</h1>
-            <p className="text-xl text-slate-600 max-w-md mx-auto leading-relaxed">
+            <h1 className="text-5xl font-extrabold text-brown-800 tracking-tight">1v1 Minesweeper</h1>
+            <p className="text-xl text-brown-600 max-w-md mx-auto leading-relaxed">
             Challenge a friend to a game of competitive Minesweeper.
             Set up your board, then race to clear theirs without hitting a mine!
             </p>
         </div>
         <div className="flex flex-col gap-2 items-center w-full max-w-xs mb-4">
-          <label className="text-slate-600 font-medium">Board Size: {boardSize}x{boardSize}</label>
+          <label className="text-brown-600 font-medium">Board Size: {boardSize}x{boardSize}</label>
           <input
             type="range"
             min="5"
             max="20"
             value={boardSize}
             onChange={(e) => setBoardSize(parseInt(e.target.value))}
-            className="w-full accent-indigo-600"
+            className="w-full accent-amber-600"
           />
         </div>
         <div className="flex flex-col sm:flex-row gap-4 w-full">
             <button
               onClick={createGame}
               disabled={isLoading || isQueueing}
-              className="flex-1 px-8 py-4 bg-indigo-600 text-white text-lg rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-indigo-500/30 transition-all transform hover:-translate-y-1"
+              className="flex-1 px-8 py-4 bg-amber-600 text-white text-lg rounded-xl font-bold hover:bg-amber-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-amber-500/30 transition-all transform hover:-translate-y-1"
             >
               {isLoading ? 'Creating...' : 'Create Private Game'}
             </button>
@@ -150,11 +150,11 @@ export default function Home() {
                 <button
                 onClick={joinRandomGame}
                 disabled={isLoading || isQueueing}
-                className="w-full px-8 py-4 bg-emerald-600 text-white text-lg rounded-xl font-bold hover:bg-emerald-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-emerald-500/30 transition-all transform hover:-translate-y-1"
+                className="w-full px-8 py-4 bg-orange-600 text-white text-lg rounded-xl font-bold hover:bg-orange-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-1"
                 >
                 {isQueueing ? 'Joining...' : 'Find Random Match'}
                 </button>
-                <div className="absolute -bottom-8 w-full text-center text-xs font-medium text-slate-500">
+                <div className="absolute -bottom-8 w-full text-center text-xs font-medium text-brown-500">
                     Players waiting in queue: {queueSize}
                 </div>
             </div>

@@ -52,9 +52,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         {children}
-        <footer className="fixed bottom-0 w-full bg-white/80 backdrop-blur-sm border-t border-slate-200 py-3 px-6 flex justify-between items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] text-sm">
-          <div className="text-slate-600 font-medium">
-            Built by <a href="https://hackatoa.com" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-700 hover:underline font-bold transition-colors">hackatoa</a>
+        <footer className="fixed bottom-0 w-full bg-white/80 backdrop-blur-sm border-t border-brown-200 py-3 px-6 flex justify-between items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] text-sm">
+          <div className="text-brown-600 font-medium">
+            Built by <a href="https://hackatoa.com" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:text-amber-700 hover:underline font-bold transition-colors">hackatoa</a>
           </div>
           <a href="https://buymeacoffee.com/hackatoa" target="_blank" rel="noopener noreferrer" className="bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-1.5 rounded-full font-bold shadow-sm border border-amber-200 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
             <span>☕</span> Buy me a coffee
