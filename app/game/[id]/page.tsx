@@ -111,7 +111,7 @@ export default function GameLobby() {
   }, [game?.status, gameId, router])
 
   if (loading) return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+      <div className="flex flex-1 w-full items-center justify-center bg-slate-50">
           <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full"></div>
       </div>
   )
@@ -128,7 +128,7 @@ export default function GameLobby() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-200">
+    <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-200">
       <div className="bg-white p-10 rounded-3xl shadow-xl max-w-md w-full flex flex-col gap-8 text-center border border-slate-100">
         <h2 className="text-3xl font-extrabold text-slate-800">Game Lobby</h2>
 

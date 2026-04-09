@@ -4,19 +4,22 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../../lib/supabase'
 
-const BOARD_SIZE = 10
-const MAX_MINES = 15
+// boardSize removed
+// maxMines removed
 
 export default function SetupPhase() {
   const router = useRouter()
   const params = useParams()
   const gameId = params.id as string
 
+  const [game, setGame] = useState<any>(null)
+  const boardSize = game?.board_size || 10
+  const maxMines = Math.floor((boardSize * boardSize) * 0.15)
+
   const [userId, setUserId] = useState<string | null>(null)
   const [mines, setMines] = useState<{r: number, c: number}[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isWaiting, setIsWaiting] = useState(false)
-  const [game, setGame] = useState<any>(null)
 
   useEffect(() => {
     let subscription: any
@@ -72,13 +75,13 @@ export default function SetupPhase() {
     const exists = mines.some(m => m.r === r && m.c === c)
     if (exists) {
       setMines(mines.filter(m => !(m.r === r && m.c === c)))
-    } else if (mines.length < MAX_MINES) {
+    } else if (mines.length < maxMines) {
       setMines([...mines, { r, c }])
     }
   }
 
   const submitBoard = async () => {
-    if (mines.length !== MAX_MINES || !userId) return
+    if (mines.length !== maxMines || !userId) return
     setIsSubmitting(true)
     try {
       const { error } = await supabase.from('boards').insert({
@@ -99,7 +102,7 @@ export default function SetupPhase() {
 
   if (isWaiting) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-200">
+      <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-200">
         <div className="bg-white p-10 rounded-3xl shadow-xl max-w-md w-full text-center border border-slate-100 flex flex-col items-center gap-6">
             <div className="bg-emerald-100 text-emerald-600 p-4 rounded-full">
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
@@ -115,7 +118,7 @@ export default function SetupPhase() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-200">
+    <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-200">
       <div className="max-w-2xl w-full flex flex-col gap-8 bg-white p-8 sm:p-12 rounded-3xl shadow-xl border border-slate-100">
         <div className="text-center space-y-3">
           <h2 className="text-4xl font-extrabold text-slate-800">Setup Your Board</h2>
@@ -125,8 +128,8 @@ export default function SetupPhase() {
           <div className="pt-4 flex justify-center items-center gap-4">
               <div className="bg-slate-100 px-6 py-3 rounded-2xl font-mono font-bold text-xl flex items-center gap-3 shadow-inner">
                   <span>Mines:</span>
-                  <span className={`px-3 py-1 rounded-xl ${mines.length === MAX_MINES ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700'}`}>
-                      {mines.length} / {MAX_MINES}
+                  <span className={`px-3 py-1 rounded-xl ${mines.length === maxMines ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700'}`}>
+                      {mines.length} / {maxMines}
                   </span>
               </div>
           </div>
@@ -135,10 +138,10 @@ export default function SetupPhase() {
         <div className="flex justify-center">
           <div
             className="mine-grid"
-            style={{ gridTemplateColumns: `repeat(${BOARD_SIZE}, minmax(0, 1fr))` }}
+            style={{ gridTemplateColumns: `repeat(${boardSize}, minmax(0, 1fr))` }}
           >
-            {Array.from({ length: BOARD_SIZE }).map((_, r) => (
-              Array.from({ length: BOARD_SIZE }).map((_, c) => {
+            {Array.from({ length: boardSize }).map((_, r) => (
+              Array.from({ length: boardSize }).map((_, c) => {
                 const isMine = mines.some(m => m.r === r && m.c === c)
                 return (
                   <button
@@ -159,7 +162,7 @@ export default function SetupPhase() {
         <div className="flex justify-center pt-4">
            <button
              onClick={submitBoard}
-             disabled={mines.length !== MAX_MINES || isSubmitting}
+             disabled={mines.length !== maxMines || isSubmitting}
              className="px-10 py-4 bg-emerald-500 text-white text-lg rounded-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-600 transition-all shadow-lg hover:shadow-emerald-500/30 transform hover:-translate-y-1"
            >
              {isSubmitting ? 'Submitting...' : 'Ready For Battle!'}
