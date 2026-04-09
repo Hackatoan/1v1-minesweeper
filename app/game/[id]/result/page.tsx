@@ -55,15 +55,15 @@ export default function ResultPhase() {
   }, [gameId, router])
 
   if (loading) return (
-      <div className="flex flex-1 w-full items-center justify-center bg-slate-50">
-          <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full"></div>
+      <div className="flex flex-1 w-full items-center justify-center bg-brown-50">
+          <div className="animate-spin h-8 w-8 border-4 border-amber-600 border-t-transparent rounded-full"></div>
       </div>
   )
 
   if (!game || game.status !== 'finished') {
       return (
-          <div className="flex flex-1 w-full items-center justify-center bg-slate-50">
-             <div className="bg-white p-8 rounded-2xl shadow-md text-center border border-slate-100">Game is not finished yet.</div>
+          <div className="flex flex-1 w-full items-center justify-center bg-brown-50">
+             <div className="bg-white p-8 rounded-2xl shadow-md text-center border border-brown-100">Game is not finished yet.</div>
           </div>
       )
   }
@@ -71,19 +71,19 @@ export default function ResultPhase() {
   const didIWin = game.winner_id === userId
 
   return (
-    <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-200">
-      <div className="bg-white p-12 sm:p-16 rounded-3xl shadow-2xl max-w-lg w-full flex flex-col gap-10 text-center border border-slate-100 relative overflow-hidden">
+    <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-brown-50 to-brown-200">
+      <div className="bg-white p-12 sm:p-16 rounded-3xl shadow-2xl max-w-lg w-full flex flex-col gap-10 text-center border border-brown-100 relative overflow-hidden">
 
-        <div className={`absolute top-0 left-0 w-full h-3 ${didIWin ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
+        <div className={`absolute top-0 left-0 w-full h-3 ${didIWin ? 'bg-orange-500' : 'bg-rose-500'}`}></div>
 
         <div className="space-y-4 relative z-10">
-            <div className={`text-6xl mb-6 mx-auto w-24 h-24 flex items-center justify-center rounded-full ${didIWin ? 'bg-emerald-100' : 'bg-rose-100'}`}>
+            <div className={`text-6xl mb-6 mx-auto w-24 h-24 flex items-center justify-center rounded-full ${didIWin ? 'bg-orange-100' : 'bg-rose-100'}`}>
                 {didIWin ? '🏆' : '💥'}
             </div>
-            <h2 className={`text-5xl font-black tracking-tight ${didIWin ? 'text-emerald-600' : 'text-rose-600'}`}>
+            <h2 className={`text-5xl font-black tracking-tight ${didIWin ? 'text-orange-600' : 'text-rose-600'}`}>
             {didIWin ? 'Victory!' : 'Defeat!'}
             </h2>
-            <p className="text-xl text-slate-600 leading-relaxed font-medium px-4">
+            <p className="text-xl text-brown-600 leading-relaxed font-medium px-4">
             {didIWin
                 ? 'You expertly navigated the minefield while your opponent perished.'
                 : 'You hit a mine or were outpaced by your opponent.'}
@@ -119,7 +119,7 @@ export default function ResultPhase() {
               await supabase.from('games').update({ rematch_game_id: newGame.id }).eq('id', gameId)
               router.push(`/game/${newGame.id}`)
             }}
-            className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1 relative z-10"
+            className="px-8 py-4 bg-amber-600 text-white rounded-2xl font-bold text-lg hover:bg-amber-700 transition-all shadow-lg hover:shadow-amber-500/30 transform hover:-translate-y-1 relative z-10"
         >
           Rematch
         </button>
