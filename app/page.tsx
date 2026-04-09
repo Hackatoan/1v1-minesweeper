@@ -13,11 +13,14 @@ export default function Home() {
 
   // Fetch queue size
   const fetchQueueSize = async () => {
+      // 15 seconds ago
+      const cutoff = new Date(Date.now() - 15000).toISOString()
       const { count } = await supabase
           .from('games')
           .select('*', { count: 'exact', head: true })
           .eq('status', 'waiting')
           .eq('is_public', true)
+          .gte('last_ping', cutoff)
       setQueueSize(count || 0)
   }
 
@@ -36,12 +39,14 @@ export default function Home() {
           if (!userId) throw new Error('No user session')
 
           // Try to find an existing waiting game
+          const cutoff = new Date(Date.now() - 15000).toISOString()
           const { data: games } = await supabase
               .from('games')
               .select('*')
               .eq('status', 'waiting')
               .eq('is_public', true)
               .neq('player1_id', userId)
+              .gte('last_ping', cutoff)
               .order('created_at', { ascending: true })
               .limit(1)
 
