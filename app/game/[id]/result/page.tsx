@@ -55,14 +55,14 @@ export default function ResultPhase() {
   }, [gameId, router])
 
   if (loading) return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+      <div className="flex flex-1 w-full items-center justify-center bg-slate-50">
           <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full"></div>
       </div>
   )
 
   if (!game || game.status !== 'finished') {
       return (
-          <div className="flex min-h-screen items-center justify-center bg-slate-50">
+          <div className="flex flex-1 w-full items-center justify-center bg-slate-50">
              <div className="bg-white p-8 rounded-2xl shadow-md text-center border border-slate-100">Game is not finished yet.</div>
           </div>
       )
@@ -71,7 +71,7 @@ export default function ResultPhase() {
   const didIWin = game.winner_id === userId
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-200">
+    <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-200">
       <div className="bg-white p-12 sm:p-16 rounded-3xl shadow-2xl max-w-lg w-full flex flex-col gap-10 text-center border border-slate-100 relative overflow-hidden">
 
         <div className={`absolute top-0 left-0 w-full h-3 ${didIWin ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>

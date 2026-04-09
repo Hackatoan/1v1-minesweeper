@@ -1,12 +1,88 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase, getSession } from './lib/supabase'
 
 export default function Home() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [isQueueing, setIsQueueing] = useState(false)
+  const [boardSize, setBoardSize] = useState(10)
+  const [queueSize, setQueueSize] = useState(0)
+
+  // Fetch queue size
+  const fetchQueueSize = async () => {
+      const { count } = await supabase
+          .from('games')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'waiting')
+          .eq('is_public', true)
+      setQueueSize(count || 0)
+  }
+
+  // Polling queue size
+  useEffect(() => {
+      fetchQueueSize()
+      const interval = setInterval(fetchQueueSize, 5000)
+      return () => clearInterval(interval)
+  }, [])
+
+  async function joinRandomGame() {
+      setIsQueueing(true)
+      try {
+          const session = await getSession()
+          const userId = session?.user.id
+          if (!userId) throw new Error('No user session')
+
+          // Try to find an existing waiting game
+          const { data: games } = await supabase
+              .from('games')
+              .select('*')
+              .eq('status', 'waiting')
+              .eq('is_public', true)
+              .neq('player1_id', userId)
+              .order('created_at', { ascending: true })
+              .limit(1)
+
+          if (games && games.length > 0) {
+              // Join the game
+              const gameId = games[0].id
+              const { error } = await supabase
+                  .from('games')
+                  .update({ player2_id: userId, status: 'setup' })
+                  .eq('id', gameId)
+                  .is('player2_id', null)
+
+              if (!error) {
+                  router.push(`/game/${gameId}`)
+                  return
+              }
+          }
+
+          // No game found or failed to join, create a new public game
+          const { data, error } = await supabase
+              .from('games')
+              .insert({
+                  id: Math.random().toString(36).substring(2, 8).toUpperCase(),
+                  player1_id: userId,
+                  status: 'waiting',
+                  board_size: boardSize,
+                  is_public: true
+              })
+              .select()
+              .single()
+
+          if (error) throw error
+          router.push(`/game/${data.id}`)
+
+      } catch (error) {
+          console.error('Error joining random game:', error)
+          alert('Failed to join random game')
+      } finally {
+          setIsQueueing(false)
+      }
+  }
 
   async function createGame() {
     setIsLoading(true)
@@ -23,7 +99,9 @@ export default function Home() {
         .insert({
           id: Math.random().toString(36).substring(2, 8).toUpperCase(),
           player1_id: userId,
-          status: 'waiting'
+          status: 'waiting',
+          board_size: boardSize,
+          is_public: false
         })
         .select()
         .single()
@@ -40,7 +118,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-24 bg-gradient-to-br from-slate-50 to-slate-200">
+    <main className="flex flex-1 w-full flex-col items-center justify-center p-6 sm:p-24 bg-gradient-to-br from-slate-50 to-slate-200">
       <div className="z-10 max-w-2xl w-full items-center justify-center flex flex-col gap-8 bg-white p-12 rounded-3xl shadow-xl border border-slate-100">
         <div className="text-center space-y-4">
             <h1 className="text-5xl font-extrabold text-slate-800 tracking-tight">1v1 Minesweeper</h1>
@@ -49,18 +127,38 @@ export default function Home() {
             Set up your board, then race to clear theirs without hitting a mine!
             </p>
         </div>
-        <button
-          onClick={createGame}
-          disabled={isLoading}
-          className="px-8 py-4 bg-indigo-600 text-white text-lg rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-indigo-500/30 transition-all transform hover:-translate-y-1"
-        >
-          {isLoading ? (
-             <span className="flex items-center gap-2">
-                 <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                 Creating...
-             </span>
-          ) : 'Create New Game'}
-        </button>
+        <div className="flex flex-col gap-2 items-center w-full max-w-xs mb-4">
+          <label className="text-slate-600 font-medium">Board Size: {boardSize}x{boardSize}</label>
+          <input
+            type="range"
+            min="5"
+            max="20"
+            value={boardSize}
+            onChange={(e) => setBoardSize(parseInt(e.target.value))}
+            className="w-full accent-indigo-600"
+          />
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 w-full">
+            <button
+              onClick={createGame}
+              disabled={isLoading || isQueueing}
+              className="flex-1 px-8 py-4 bg-indigo-600 text-white text-lg rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-indigo-500/30 transition-all transform hover:-translate-y-1"
+            >
+              {isLoading ? 'Creating...' : 'Create Private Game'}
+            </button>
+            <div className="relative flex-1 flex flex-col">
+                <button
+                onClick={joinRandomGame}
+                disabled={isLoading || isQueueing}
+                className="w-full px-8 py-4 bg-emerald-600 text-white text-lg rounded-xl font-bold hover:bg-emerald-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-emerald-500/30 transition-all transform hover:-translate-y-1"
+                >
+                {isQueueing ? 'Joining...' : 'Find Random Match'}
+                </button>
+                <div className="absolute -bottom-8 w-full text-center text-xs font-medium text-slate-500">
+                    Players waiting in queue: {queueSize}
+                </div>
+            </div>
+        </div>
       </div>
     </main>
   )
