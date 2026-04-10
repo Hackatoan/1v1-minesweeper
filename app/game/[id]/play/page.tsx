@@ -211,7 +211,7 @@ export default function PlayPhase() {
     if (!userId || !game) return
     if (confirm('Are you sure you want to forfeit? Your opponent will win.')) {
       const winnerId = game.player1_id === userId ? game.player2_id : game.player1_id
-      await supabase.from('games').update({ status: 'finished', winner_id: winnerId }).eq('id', gameId); await supabase.rpc('increment_games_played');
+      await supabase.from('games').update({ status: 'finished', winner_id: winnerId }).eq('id', gameId); await supabase.rpc('increment_games_played'); router.push('/');
     }
   }
 
