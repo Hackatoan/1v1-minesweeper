@@ -173,20 +173,20 @@ export default function PlayPhase() {
       }
 
       if (hitMine) {
-          await supabase.from('games').update({ status: 'finished', winner_id: opponentBoard.owner_id }).eq('id', gameId)
+          await supabase.from('games').update({ status: 'finished', winner_id: opponentBoard.owner_id }).eq('id', gameId); await supabase.rpc('increment_games_played');
       } else {
           // Because state update is async, we use the local calculated total length
           const currentTotalMoves = myMoves.filter(m => !m.hit_mine).length + movesToInsert.filter(m => !m.hit_mine).length
           const totalNonMines = (boardSize * boardSize) - maxMines
           if (currentTotalMoves >= totalNonMines) {
-              await supabase.from('games').update({ status: 'finished', winner_id: userId }).eq('id', gameId)
+              await supabase.from('games').update({ status: 'finished', winner_id: userId }).eq('id', gameId); await supabase.rpc('increment_games_played');
           }
       }
   }
 
   if (loading) return (
-      <div className="flex flex-1 w-full items-center justify-center bg-brown-50">
-          <div className="animate-spin h-8 w-8 border-4 border-amber-600 border-t-transparent rounded-full"></div>
+      <div className="flex flex-1 w-full items-center justify-center bg-brown-900/50">
+          <div className="animate-spin h-8 w-8 border-4 border-pink-500 border-t-transparent rounded-full"></div>
       </div>
   )
 
@@ -199,12 +199,12 @@ export default function PlayPhase() {
     if (!userId || !game) return
     if (confirm('Are you sure you want to forfeit? Your opponent will win.')) {
       const winnerId = game.player1_id === userId ? game.player2_id : game.player1_id
-      await supabase.from('games').update({ status: 'finished', winner_id: winnerId }).eq('id', gameId)
+      await supabase.from('games').update({ status: 'finished', winner_id: winnerId }).eq('id', gameId); await supabase.rpc('increment_games_played');
     }
   }
 
   return (
-    <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-brown-50 to-brown-200">
+    <div className="flex flex-1 w-full flex-col items-center justify-center p-6  from-transparent to-transparent">
       <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-start pt-4 pb-20">
 
         {!isOpponentOnline && (
@@ -226,20 +226,20 @@ export default function PlayPhase() {
         )}
 
         {/* Opponent's Board (The one I click) */}
-        <div className="flex flex-col items-center gap-6 bg-white p-8 rounded-3xl shadow-xl border border-brown-100 order-first lg:order-last">
+        <div className="flex flex-col items-center gap-6 bg-brown-800 border-brown-700 p-8 rounded-3xl shadow-xl border border-brown-700 order-first lg:order-last">
             <div className="text-center w-full flex flex-col items-center">
-                <h2 className="text-3xl font-extrabold text-brown-800">Attack Board</h2>
-                <p className="text-brown-500 mt-2">Find safe zones. Avoid the mines!</p>
-                <div className="mt-4 flex gap-2 bg-brown-50 p-1 rounded-xl shadow-inner border border-brown-200">
+                <h2 className="text-3xl font-extrabold text-pink-100">Attack Board</h2>
+                <p className="text-pink-300/60 mt-2">Find safe zones. Avoid the mines!</p>
+                <div className="mt-4 flex gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50">
                     <button
                         onClick={() => setFlagMode(false)}
-                        className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${!flagMode ? 'bg-amber-500 text-white shadow-md' : 'text-brown-500 hover:text-brown-700 hover:bg-brown-100'}`}
+                        className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${!flagMode ? 'bg-brown-600 border border-brown-500/50 hover:bg-brown-500 text-white shadow-md' : 'text-pink-300/60 hover:text-brown-700 hover:bg-brown-700 border border-brown-600/50 shadow-inner'}`}
                     >
                         ⛏️ Dig
                     </button>
                     <button
                         onClick={() => setFlagMode(true)}
-                        className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${flagMode ? 'bg-rose-500 text-white shadow-md' : 'text-brown-500 hover:text-brown-700 hover:bg-brown-100'}`}
+                        className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${flagMode ? 'bg-rose-500 text-white shadow-md' : 'text-pink-300/60 hover:text-brown-700 hover:bg-brown-700 border border-brown-600/50 shadow-inner'}`}
                     >
                         🚩 Flag
                     </button>
@@ -271,9 +271,9 @@ export default function PlayPhase() {
                         onContextMenu={(e) => toggleFlag(e, r, c)}
                         disabled={isRevealed}
                         className={`mine-cell w-10 h-10 sm:w-12 sm:h-12 text-xl font-black flex items-center justify-center
-                        ${!isRevealed ? 'bg-amber-50 hover:bg-amber-200 cursor-pointer shadow-sm hover:shadow active:scale-95'
+                        ${!isRevealed ? 'bg-brown-600 border border-brown-500/50 hover:bg-pink-300 cursor-pointer shadow-sm hover:shadow active:scale-95'
                           : hitMine ? 'bg-rose-500 shadow-inner'
-                          : 'bg-brown-100 shadow-inner'}
+                          : 'bg-brown-700 border border-brown-600/50 shadow-inner'}
                         `}
                     >
                         {hitMine && '💥'}
@@ -287,9 +287,9 @@ export default function PlayPhase() {
                 ))}
             </div>
 
-            <div className="bg-brown-50 px-6 py-3 rounded-2xl border border-brown-200 flex flex-col items-center shadow-inner w-full">
-                <div className="text-sm text-brown-500 font-bold uppercase tracking-wider mb-1">Progress</div>
-                <div className="text-2xl font-mono font-bold text-amber-600">
+            <div className="bg-brown-900/50 px-6 py-3 rounded-2xl border border-brown-700/50 flex flex-col items-center shadow-inner w-full">
+                <div className="text-sm text-pink-300/60 font-bold uppercase tracking-wider mb-1">Progress</div>
+                <div className="text-2xl font-mono font-bold text-pink-400">
                     {myMoves.filter(m => !m.hit_mine).length} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
                 </div>
             </div>
@@ -305,10 +305,10 @@ export default function PlayPhase() {
         </div>
 
         {/* My Board (Mini map to watch opponent) */}
-        <div className="hidden lg:flex flex-col items-center gap-6 bg-white/60 p-8 rounded-3xl border border-brown-200 order-last lg:order-first">
+        <div className="hidden lg:flex flex-col items-center gap-6 bg-brown-800 border-brown-700/60 p-8 rounded-3xl border border-brown-700/50 order-last lg:order-first">
             <div className="text-center">
                 <h2 className="text-2xl font-bold text-brown-700">Your Defenses</h2>
-                <p className="text-sm text-brown-500 mt-1">Watch your opponent's progress</p>
+                <p className="text-sm text-pink-300/60 mt-1">Watch your opponent's progress</p>
             </div>
 
             <div
@@ -327,7 +327,7 @@ export default function PlayPhase() {
                         key={`my-${r}-${c}`}
                         className={`mine-cell w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-sm flex items-center justify-center
                         ${oppHitMine ? 'bg-rose-500 text-white'
-                          : oppRevealed ? 'bg-brown-100'
+                          : oppRevealed ? 'bg-brown-700 border border-brown-600/50 shadow-inner'
                           : isMine ? 'bg-brown-400'
                           : 'bg-brown-300'}
                         `}
@@ -341,8 +341,8 @@ export default function PlayPhase() {
                 ))}
             </div>
 
-            <div className="bg-brown-50/80 px-6 py-3 rounded-2xl border border-brown-200 flex flex-col items-center w-full">
-                <div className="text-xs text-brown-500 font-bold uppercase tracking-wider mb-1">Opponent Progress</div>
+            <div className="bg-brown-900/50/80 px-6 py-3 rounded-2xl border border-brown-700/50 flex flex-col items-center w-full">
+                <div className="text-xs text-pink-300/60 font-bold uppercase tracking-wider mb-1">Opponent Progress</div>
                 <div className="text-lg font-mono font-bold text-brown-700">
                     {opponentMoves.filter(m => !m.hit_mine).length} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
                 </div>

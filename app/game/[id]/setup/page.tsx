@@ -114,15 +114,15 @@ export default function SetupPhase() {
 
   if (isWaiting) {
     return (
-      <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-brown-50 to-brown-200">
-        <div className="bg-white p-10 rounded-3xl shadow-xl max-w-md w-full text-center border border-brown-100 flex flex-col items-center gap-6">
+      <div className="flex flex-1 w-full flex-col items-center justify-center p-6  from-transparent to-transparent">
+        <div className="bg-brown-800 border-brown-700 p-10 rounded-3xl shadow-xl max-w-md w-full text-center border border-brown-700 flex flex-col items-center gap-6">
             <div className="bg-orange-100 text-orange-600 p-4 rounded-full">
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
             </div>
-            <h2 className="text-3xl font-bold text-brown-800">Board Submitted!</h2>
+            <h2 className="text-3xl font-bold text-pink-100">Board Submitted!</h2>
             <div className="flex items-center gap-3">
                 <div className="animate-spin h-5 w-5 border-2 border-amber-600 border-t-transparent rounded-full"></div>
-                <p className="text-brown-600 font-medium">Waiting for opponent...</p>
+                <p className="text-pink-200/80 font-medium">Waiting for opponent...</p>
             </div>
             {!isOpponentOnline && game?.player2_id && (
               <div className="mt-2 bg-rose-50 text-rose-700 px-4 py-2 text-sm rounded-xl border border-rose-200 w-full text-center">
@@ -131,7 +131,7 @@ export default function SetupPhase() {
             )}
             <button
               onClick={forfeitGame}
-              className="mt-4 text-brown-500 hover:text-rose-600 font-medium transition-colors hover:underline text-sm"
+              className="mt-4 text-pink-300/60 hover:text-rose-600 font-medium transition-colors hover:underline text-sm"
             >
               Leave Game
             </button>
@@ -141,17 +141,17 @@ export default function SetupPhase() {
   }
 
   return (
-    <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-brown-50 to-brown-200">
-      <div className="max-w-2xl w-full flex flex-col gap-8 bg-white p-8 sm:p-12 rounded-3xl shadow-xl border border-brown-100">
+    <div className="flex flex-1 w-full flex-col items-center justify-center p-6  from-transparent to-transparent">
+      <div className="max-w-2xl w-full flex flex-col gap-8 bg-brown-800 border-brown-700 p-8 sm:p-12 rounded-3xl shadow-xl border border-brown-700">
         <div className="text-center space-y-3">
-          <h2 className="text-4xl font-extrabold text-brown-800">Setup Your Board</h2>
-          <p className="text-lg text-brown-600">
+          <h2 className="text-4xl font-extrabold text-pink-100">Setup Your Board</h2>
+          <p className="text-lg text-pink-200/80">
             Place your mines. Your opponent will have to navigate this minefield!
           </p>
           <div className="pt-4 flex justify-center items-center gap-4">
-              <div className="bg-brown-100 px-6 py-3 rounded-2xl font-mono font-bold text-xl flex items-center gap-3 shadow-inner">
+              <div className="bg-brown-700 border border-brown-600/50 shadow-inner px-6 py-3 rounded-2xl font-mono font-bold text-xl flex items-center gap-3 shadow-inner">
                   <span>Mines:</span>
-                  <span className={`px-3 py-1 rounded-xl ${mines.length === maxMines ? 'bg-orange-100 text-orange-700' : 'bg-amber-100 text-amber-700'}`}>
+                  <span className={`px-3 py-1 rounded-xl ${mines.length === maxMines ? 'bg-orange-100 text-orange-700' : 'bg-pink-200 text-amber-700'}`}>
                       {mines.length} / {maxMines}
                   </span>
               </div>
@@ -171,7 +171,7 @@ export default function SetupPhase() {
                     key={`${r}-${c}`}
                     onClick={() => toggleMine(r, c)}
                     className={`mine-cell w-10 sm:w-12 text-lg sm:text-xl
-                      ${isMine ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/50' : 'bg-brown-50 hover:bg-brown-200'}
+                      ${isMine ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/50' : 'bg-brown-900/50 hover:bg-brown-200'}
                     `}
                   >
                     {isMine && '💣'}
@@ -186,13 +186,13 @@ export default function SetupPhase() {
            <button
              onClick={submitBoard}
              disabled={mines.length !== maxMines || isSubmitting}
-             className="px-10 py-4 bg-orange-500 text-white text-lg rounded-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-orange-600 transition-all shadow-lg hover:shadow-orange-500/30 transform hover:-translate-y-1"
+             className="px-10 py-4 bg-orange-500 text-white text-lg rounded-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pink-500 text-brown-900 border border-pink-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all shadow-lg hover:shadow-pink-500/30 transform hover:-translate-y-1"
            >
              {isSubmitting ? 'Submitting...' : 'Ready For Battle!'}
            </button>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-brown-200 flex flex-col items-center gap-4">
+        <div className="mt-8 pt-6 border-t border-brown-700/50 flex flex-col items-center gap-4">
             {!isOpponentOnline && game?.player2_id && (
               <div className="bg-rose-50 text-rose-700 px-4 py-3 rounded-xl border border-rose-200 w-full text-center flex items-center justify-center gap-2">
                 <span className="text-xl">⚠️</span>
@@ -201,7 +201,7 @@ export default function SetupPhase() {
             )}
             <button
               onClick={forfeitGame}
-              className="text-brown-500 hover:text-rose-600 font-medium transition-colors hover:underline text-sm"
+              className="text-pink-300/60 hover:text-rose-600 font-medium transition-colors hover:underline text-sm"
             >
               Leave Game
             </button>

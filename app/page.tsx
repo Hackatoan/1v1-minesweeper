@@ -20,6 +20,7 @@ export default function Home() {
           .select('*', { count: 'exact', head: true })
           .eq('status', 'waiting')
           .eq('is_public', true)
+              .eq('board_size', 10)
           .gte('last_ping', cutoff)
       setQueueSize(count || 0)
   }
@@ -45,6 +46,7 @@ export default function Home() {
               .select('*')
               .eq('status', 'waiting')
               .eq('is_public', true)
+              .eq('board_size', 10)
               .neq('player1_id', userId)
               .gte('last_ping', cutoff)
               .order('created_at', { ascending: true })
@@ -72,7 +74,7 @@ export default function Home() {
                   id: Math.random().toString(36).substring(2, 8).toUpperCase(),
                   player1_id: userId,
                   status: 'waiting',
-                  board_size: boardSize,
+                  board_size: 10,
                   is_public: true
               })
               .select()
@@ -123,31 +125,31 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-1 w-full flex-col items-center justify-center p-6 sm:p-24 bg-gradient-to-br from-brown-50 to-brown-200">
-      <div className="z-10 max-w-2xl w-full items-center justify-center flex flex-col gap-8 bg-white p-12 rounded-3xl shadow-xl border border-brown-100">
+    <main className="flex flex-1 w-full flex-col items-center justify-center p-6 sm:p-24  from-transparent to-transparent">
+      <div className="z-10 max-w-2xl w-full items-center justify-center flex flex-col gap-8 bg-brown-800 border-brown-700 p-12 rounded-3xl shadow-xl border border-brown-700">
         <div className="text-center space-y-4">
-            <h1 className="text-5xl font-extrabold text-brown-800 tracking-tight">1v1 Minesweeper</h1>
-            <p className="text-xl text-brown-600 max-w-md mx-auto leading-relaxed">
+            <h1 className="text-5xl font-extrabold text-pink-100 tracking-tight">1v1 Minesweeper</h1>
+            <p className="text-xl text-pink-200/80 max-w-md mx-auto leading-relaxed">
             Challenge a friend to a game of competitive Minesweeper.
             Set up your board, then race to clear theirs without hitting a mine!
             </p>
         </div>
         <div className="flex flex-col gap-2 items-center w-full max-w-xs mb-4">
-          <label className="text-brown-600 font-medium">Board Size: {boardSize}x{boardSize}</label>
+          <label className="text-pink-200/80 font-medium">Board Size: {boardSize}x{boardSize}</label>
           <input
             type="range"
             min="5"
             max="20"
             value={boardSize}
             onChange={(e) => setBoardSize(parseInt(e.target.value))}
-            className="w-full accent-amber-600"
+            className="w-full accent-pink-400"
           />
         </div>
         <div className="flex flex-col sm:flex-row gap-4 w-full">
             <button
               onClick={createGame}
               disabled={isLoading || isQueueing}
-              className="flex-1 px-8 py-4 bg-amber-600 text-white text-lg rounded-xl font-bold hover:bg-amber-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-amber-500/30 transition-all transform hover:-translate-y-1"
+              className="flex-1 px-8 py-4 bg-pink-400 text-brown-900 border border-pink-500 text-lg rounded-xl font-black uppercase tracking-wider hover:bg-pink-500 disabled:opacity-70 disabled:cursor-not-allowed shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-[0_0px_0_theme(colors.pink.600)] active:translate-y-[4px] transition-all"
             >
               {isLoading ? 'Creating...' : 'Create Private Game'}
             </button>
@@ -155,11 +157,11 @@ export default function Home() {
                 <button
                 onClick={joinRandomGame}
                 disabled={isLoading || isQueueing}
-                className="w-full px-8 py-4 bg-orange-600 text-white text-lg rounded-xl font-bold hover:bg-orange-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-1"
+                className="w-full px-8 py-4 bg-pink-500 text-brown-900 border border-pink-600 text-lg rounded-xl font-black uppercase tracking-wider hover:bg-pink-600 disabled:opacity-70 disabled:cursor-not-allowed shadow-[0_4px_0_theme(colors.pink.700)] active:shadow-[0_0px_0_theme(colors.pink.700)] active:translate-y-[4px] transition-all"
                 >
                 {isQueueing ? 'Joining...' : 'Find Random Match'}
                 </button>
-                <div className="absolute -bottom-8 w-full text-center text-xs font-medium text-brown-500">
+                <div className="absolute -bottom-8 w-full text-center text-xs font-medium text-pink-300/60">
                     Players waiting in queue: {queueSize}
                 </div>
             </div>

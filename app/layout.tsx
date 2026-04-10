@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { GamesPlayed } from "./components/GamesPlayed";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,12 +52,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <GamesPlayed />
         {children}
-        <footer className="fixed bottom-0 w-full bg-white/80 backdrop-blur-sm border-t border-brown-200 py-3 px-6 flex justify-between items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] text-sm">
-          <div className="text-brown-600 font-medium">
-            Built by <a href="https://hackatoa.com" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:text-amber-700 hover:underline font-bold transition-colors">hackatoa</a>
+        <footer className="fixed bottom-0 w-full bg-brown-800 border-brown-700/80 backdrop-blur-sm border-t border-brown-700/50 py-3 px-6 flex justify-between items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] text-sm">
+          <div className="text-pink-200/80 font-medium">
+            Built by <a href="https://hackatoa.com" target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300 hover:underline font-bold transition-colors">hackatoa</a>
           </div>
-          <a href="https://buymeacoffee.com/hackatoa" target="_blank" rel="noopener noreferrer" className="bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-1.5 rounded-full font-bold shadow-sm border border-amber-200 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+          <a href="https://buymeacoffee.com/hackatoa" target="_blank" rel="noopener noreferrer" className="bg-pink-200 hover:bg-pink-300 text-pink-900 px-4 py-1.5 rounded-full font-bold shadow-sm border border-pink-300 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
             <span>☕</span> Buy me a coffee
           </a>
         </footer>
