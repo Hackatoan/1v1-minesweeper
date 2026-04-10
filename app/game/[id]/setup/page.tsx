@@ -54,6 +54,9 @@ export default function SetupPhase() {
       subscription = supabase
         .channel(`game-setup-${gameId}`)
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
+           if (payload.new.status === 'finished') {
+               router.push(`/game/${gameId}/result`)
+           }
            if (payload.new.status === 'playing') {
                router.push(`/game/${gameId}/play`)
            }
@@ -108,7 +111,7 @@ export default function SetupPhase() {
     if (!userId || !game) return
     if (confirm('Are you sure you want to leave? Your opponent will win.')) {
       const winnerId = game.player1_id === userId ? game.player2_id : game.player1_id
-      await supabase.from('games').update({ status: 'finished', winner_id: winnerId }).eq('id', gameId)
+      await supabase.from('games').update({ status: 'finished', winner_id: winnerId }).eq('id', gameId); router.push('/');
     }
   }
 
