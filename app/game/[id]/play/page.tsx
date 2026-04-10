@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../../lib/supabase'
 import useLongPress from '../../../lib/useLongPress'
+import { useGamePresence } from '../../../lib/useGamePresence'
 
 // boardSize removed
 // maxMines removed
@@ -24,6 +25,9 @@ export default function PlayPhase() {
   const [opponentMoves, setOpponentMoves] = useState<any[]>([])
   const [flags, setFlags] = useState<{r: number, c: number}[]>([])
   const [loading, setLoading] = useState(true)
+
+  const onlineUsers = useGamePresence(gameId, userId)
+  const isOpponentOnline = game ? (game.player1_id === userId ? onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id)) : false
 
   useEffect(() => {
     let subscription: any
@@ -190,9 +194,35 @@ export default function PlayPhase() {
       return colors[num] || 'text-zinc-800'
   }
 
+  const forfeitGame = async () => {
+    if (!userId || !game) return
+    if (confirm('Are you sure you want to forfeit? Your opponent will win.')) {
+      const winnerId = game.player1_id === userId ? game.player2_id : game.player1_id
+      await supabase.from('games').update({ status: 'finished', winner_id: winnerId }).eq('id', gameId)
+    }
+  }
+
   return (
     <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-brown-50 to-brown-200">
       <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-start pt-4 pb-20">
+
+        {!isOpponentOnline && (
+          <div className="col-span-full bg-rose-50 border border-rose-200 text-rose-700 px-6 py-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">⚠️</span>
+              <div>
+                <p className="font-bold">Opponent Disconnected</p>
+                <p className="text-sm opacity-90">Your opponent has left the game or lost connection. You can wait for them to return or leave the game.</p>
+              </div>
+            </div>
+            <button
+              onClick={forfeitGame}
+              className="bg-rose-100 hover:bg-rose-200 text-rose-800 px-4 py-2 rounded-xl font-bold transition-colors whitespace-nowrap"
+            >
+              Leave Game
+            </button>
+          </div>
+        )}
 
         {/* Opponent's Board (The one I click) */}
         <div className="flex flex-col items-center gap-6 bg-white p-8 rounded-3xl shadow-xl border border-brown-100 order-first lg:order-last">
@@ -243,6 +273,15 @@ export default function PlayPhase() {
                 <div className="text-2xl font-mono font-bold text-amber-600">
                     {myMoves.filter(m => !m.hit_mine).length} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
                 </div>
+            </div>
+
+            <div className="mt-2 w-full flex justify-center">
+              <button
+                onClick={forfeitGame}
+                className="text-brown-400 hover:text-rose-600 font-medium transition-colors hover:underline text-sm"
+              >
+                Forfeit Match
+              </button>
             </div>
         </div>
 

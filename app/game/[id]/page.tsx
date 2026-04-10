@@ -99,6 +99,19 @@ export default function GameLobby() {
     return () => clearInterval(interval)
   }, [game?.status, gameId])
 
+  // Heartbeat for host in waiting room
+  useEffect(() => {
+    if (!game || game.status !== 'waiting' || game.player1_id !== userId) return
+
+    const ping = async () => {
+      await supabase.from('games').update({ last_ping: new Date().toISOString() }).eq('id', gameId)
+    }
+
+    ping() // Initial ping
+    const interval = setInterval(ping, 5000)
+    return () => clearInterval(interval)
+  }, [game?.status, game?.player1_id, userId, gameId])
+
   // Redirect when status changes
   useEffect(() => {
     if (game?.status === 'setup') {
