@@ -124,12 +124,12 @@ export default function GameLobby() {
   }, [game?.status, gameId, router])
 
   if (loading) return (
-      <div className="flex flex-1 w-full items-center justify-center bg-brown-50">
-          <div className="animate-spin h-8 w-8 border-4 border-amber-600 border-t-transparent rounded-full"></div>
+      <div className="flex flex-1 w-full items-center justify-center bg-brown-900/50">
+          <div className="animate-spin h-8 w-8 border-4 border-pink-500 border-t-transparent rounded-full"></div>
       </div>
   )
 
-  if (!game) return <div className="p-8 text-center text-brown-600">Game not found</div>
+  if (!game) return <div className="p-8 text-center text-pink-200/80">Game not found</div>
 
   const isPlayer1 = game.player1_id === userId
   const inviteLink = typeof window !== 'undefined' ? window.location.href : ''
@@ -141,28 +141,28 @@ export default function GameLobby() {
   }
 
   return (
-    <div className="flex flex-1 w-full flex-col items-center justify-center p-6 bg-gradient-to-br from-brown-50 to-brown-200">
-      <div className="bg-white p-10 rounded-3xl shadow-xl max-w-md w-full flex flex-col gap-8 text-center border border-brown-100">
-        <h2 className="text-3xl font-extrabold text-brown-800">Game Lobby</h2>
+    <div className="flex flex-1 w-full flex-col items-center justify-center p-6 from-transparent to-transparent">
+      <div className="bg-brown-800 border-brown-700 p-10 rounded-3xl shadow-xl max-w-md w-full flex flex-col gap-8 text-center border">
+        <h2 className="text-3xl font-extrabold text-pink-100">Game Lobby</h2>
 
         {isPlayer1 && !game.player2_id ? (
           <div className="flex flex-col gap-6">
             <div className="flex justify-center">
                 <span className="relative flex h-4 w-4">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-4 w-4 bg-pink-500"></span>
                 </span>
             </div>
-            <p className="text-brown-600 font-medium">Waiting for an opponent to join...</p>
-            <div className="bg-brown-50 p-4 rounded-xl break-all text-sm font-mono text-brown-700 border border-brown-200 shadow-inner">
+            <p className="text-pink-200/80 font-medium">Waiting for an opponent to join...</p>
+            <div className="bg-brown-900/50 p-4 rounded-xl break-all text-sm font-mono text-pink-300/80 border border-brown-700/50 shadow-inner">
               {inviteLink}
             </div>
             <button
               onClick={copyLink}
               className={`px-6 py-3 rounded-xl font-bold transition-all shadow-md transform hover:-translate-y-0.5 ${
                   copied
-                  ? 'bg-orange-500 text-white shadow-orange-500/30'
-                  : 'bg-amber-100 text-amber-700 hover:bg-amber-200 shadow-amber-500/10'
+                  ? 'bg-pink-500 text-white shadow-[0_4px_0_theme(colors.pink.700)] active:shadow-[0_0px_0_theme(colors.pink.700)] active:translate-y-[4px]'
+                  : 'bg-pink-400 text-pink-900 hover:bg-pink-500 shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-[0_0px_0_theme(colors.pink.600)] active:translate-y-[4px]'
               }`}
             >
               {copied ? 'Copied!' : 'Copy Invite Link'}
@@ -170,8 +170,8 @@ export default function GameLobby() {
           </div>
         ) : (
           <div className="flex flex-col gap-4 items-center">
-            <div className="animate-spin h-8 w-8 border-4 border-amber-600 border-t-transparent rounded-full"></div>
-            <p className="text-brown-600 font-medium text-lg">Starting game...</p>
+            <div className="animate-spin h-8 w-8 border-4 border-pink-500 border-t-transparent rounded-full"></div>
+            <p className="text-pink-200/80 font-medium text-lg">Starting game...</p>
           </div>
         )}
       </div>

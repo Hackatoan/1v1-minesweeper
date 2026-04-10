@@ -116,12 +116,12 @@ export default function SetupPhase() {
     return (
       <div className="flex flex-1 w-full flex-col items-center justify-center p-6  from-transparent to-transparent">
         <div className="bg-brown-800 border-brown-700 p-10 rounded-3xl shadow-xl max-w-md w-full text-center border border-brown-700 flex flex-col items-center gap-6">
-            <div className="bg-orange-100 text-orange-600 p-4 rounded-full">
+            <div className="bg-brown-900/50 text-pink-400 p-4 rounded-full">
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
             </div>
             <h2 className="text-3xl font-bold text-pink-100">Board Submitted!</h2>
             <div className="flex items-center gap-3">
-                <div className="animate-spin h-5 w-5 border-2 border-amber-600 border-t-transparent rounded-full"></div>
+                <div className="animate-spin h-5 w-5 border-2 border-pink-500 border-t-transparent rounded-full"></div>
                 <p className="text-pink-200/80 font-medium">Waiting for opponent...</p>
             </div>
             {!isOpponentOnline && game?.player2_id && (
@@ -151,7 +151,7 @@ export default function SetupPhase() {
           <div className="pt-4 flex justify-center items-center gap-4">
               <div className="bg-brown-700 border border-brown-600/50 shadow-inner px-6 py-3 rounded-2xl font-mono font-bold text-xl flex items-center gap-3 shadow-inner">
                   <span>Mines:</span>
-                  <span className={`px-3 py-1 rounded-xl ${mines.length === maxMines ? 'bg-orange-100 text-orange-700' : 'bg-pink-200 text-amber-700'}`}>
+                  <span className={`px-3 py-1 rounded-xl ${mines.length === maxMines ? 'bg-brown-900/50 text-pink-400' : 'bg-pink-200 text-pink-900'}`}>
                       {mines.length} / {maxMines}
                   </span>
               </div>
@@ -186,7 +186,7 @@ export default function SetupPhase() {
            <button
              onClick={submitBoard}
              disabled={mines.length !== maxMines || isSubmitting}
-             className="px-10 py-4 bg-orange-500 text-white text-lg rounded-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pink-500 text-brown-900 border border-pink-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all shadow-lg hover:shadow-pink-500/30 transform hover:-translate-y-1"
+             className="px-10 py-4 bg-pink-400 text-brown-900 text-lg rounded-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pink-500 border border-pink-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-[0_0px_0_theme(colors.pink.600)] active:translate-y-[4px] uppercase tracking-wider"
            >
              {isSubmitting ? 'Submitting...' : 'Ready For Battle!'}
            </button>
