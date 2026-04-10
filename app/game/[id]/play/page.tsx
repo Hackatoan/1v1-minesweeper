@@ -120,7 +120,7 @@ export default function PlayPhase() {
 
       const hitMine = isMine(r, c)
 
-      let movesToInsert: any[] = []
+      const movesToInsert: any[] = []
 
       if (hitMine) {
           movesToInsert.push({ game_id: gameId, player_id: userId, cell: { r, c }, hit_mine: true })
@@ -208,7 +208,7 @@ export default function PlayPhase() {
       <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-start pt-4 pb-20">
 
         {!isOpponentOnline && (
-          <div className="col-span-full bg-rose-50 border border-rose-200 text-rose-700 px-6 py-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="col-span-full bg-rose-950/30 border border-rose-900/50 text-rose-400 px-6 py-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
             <div className="flex items-center gap-3">
               <span className="text-2xl">⚠️</span>
               <div>
@@ -218,7 +218,7 @@ export default function PlayPhase() {
             </div>
             <button
               onClick={forfeitGame}
-              className="bg-rose-100 hover:bg-rose-200 text-rose-800 px-4 py-2 rounded-xl font-bold transition-colors whitespace-nowrap"
+              className="bg-rose-900/50 hover:bg-rose-800 text-rose-200 px-4 py-2 rounded-xl font-bold transition-colors whitespace-nowrap"
             >
               Leave Game
             </button>
@@ -308,7 +308,7 @@ export default function PlayPhase() {
         <div className="hidden lg:flex flex-col items-center gap-6 bg-brown-800 border-brown-700/60 p-8 rounded-3xl border border-brown-700/50 order-last lg:order-first">
             <div className="text-center">
                 <h2 className="text-2xl font-bold text-brown-700">Your Defenses</h2>
-                <p className="text-sm text-pink-300/60 mt-1">Watch your opponent's progress</p>
+                <p className="text-sm text-pink-300/60 mt-1">Watch your opponent&apos;s progress</p>
             </div>
 
             <div
@@ -334,7 +334,7 @@ export default function PlayPhase() {
                     >
                         {isMine && !oppRevealed && '💣'}
                         {oppHitMine && '💥'}
-                        {oppRevealed && !oppHitMine && <span className="text-orange-500 font-bold">✓</span>}
+                        {oppRevealed && !oppHitMine && <span className="text-pink-400 font-bold">✓</span>}
                     </div>
                     )
                 })
