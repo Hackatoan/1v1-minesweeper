@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../../lib/supabase'
 
@@ -26,6 +26,7 @@ export default function PlayPhase() {
   const [flags, setFlags] = useState<{r: number, c: number}[]>([])
   const [flagMode, setFlagMode] = useState(false)
   const [loading, setLoading] = useState(true)
+  const revealedRef = useRef<Set<string>>(new Set())
 
   const onlineUsers = useGamePresence(gameId, userId)
   const isOpponentOnline = game ? (game.player1_id === userId ? onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id)) : false
@@ -64,9 +65,9 @@ export default function PlayPhase() {
         })
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'moves', filter: `game_id=eq.${gameId}` }, (payload) => {
             if (payload.new.player_id === uid) {
-                setMyMoves(prev => [...prev, payload.new])
+                setMyMoves(prev => { if (prev.some(m => m.id === payload.new.id || (m.cell.r === payload.new.cell.r && m.cell.c === payload.new.cell.c))) return prev; return [...prev, payload.new]; })
             } else {
-                setOpponentMoves(prev => [...prev, payload.new])
+                setOpponentMoves(prev => { if (prev.some(m => m.id === payload.new.id || (m.cell.r === payload.new.cell.r && m.cell.c === payload.new.cell.c))) return prev; return [...prev, payload.new]; })
             }
         })
         .subscribe()
@@ -120,10 +121,10 @@ export default function PlayPhase() {
 
       const hitMine = isMine(r, c)
 
-      const movesToInsert: any[] = []
+      const movesToInsertMap = new Map<string, any>()
 
       if (hitMine) {
-          movesToInsert.push({ game_id: gameId, player_id: userId, cell: { r, c }, hit_mine: true })
+          movesToInsertMap.set(`${r},${c}`, { game_id: gameId, player_id: userId, cell: { r, c }, hit_mine: true })
       } else {
           // Flood fill
           const queue = [{r, c}]
@@ -134,7 +135,7 @@ export default function PlayPhase() {
               const current = queue.shift()!
               const adjMines = calculateAdjacentMines(current.r, current.c, opponentBoard)
 
-              movesToInsert.push({
+              movesToInsertMap.set(`${current.r},${current.c}`, {
                   game_id: gameId,
                   player_id: userId,
                   cell: { r: current.r, c: current.c },
@@ -150,7 +151,7 @@ export default function PlayPhase() {
 
                           if (nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize) {
                               const key = `${nr},${nc}`
-                              if (!visited.has(key) && !myMoves.some(m => m.cell.r === nr && m.cell.c === nc)) {
+                              if (!visited.has(key) && !myMoves.some(m => m.cell.r === nr && m.cell.c === nc) && !movesToInsertMap.has(key)) {
                                   visited.add(key)
                                   if (!isMine(nr, nc)) {
                                       queue.push({r: nr, c: nc})
@@ -163,7 +164,12 @@ export default function PlayPhase() {
           }
       }
 
-      setMyMoves(prev => [...prev, ...movesToInsert])
+      const movesToInsert = Array.from(movesToInsertMap.values())
+
+      setMyMoves(prev => {
+        const newMoves = movesToInsert.filter(m => !prev.some(pm => pm.cell.r === m.cell.r && pm.cell.c === m.cell.c))
+        return [...prev, ...newMoves]
+      })
       setFlags(prev => prev.filter(f => !movesToInsert.some(m => m.cell.r === f.r && m.cell.c === f.c)))
 
       const { error } = await supabase.from('moves').insert(movesToInsert)
@@ -176,7 +182,13 @@ export default function PlayPhase() {
           await supabase.from('games').update({ status: 'finished', winner_id: opponentBoard.owner_id }).eq('id', gameId); await supabase.rpc('increment_games_played');
       } else {
           // Because state update is async, we use the local calculated total length
-          const currentTotalMoves = myMoves.filter(m => !m.hit_mine).length + movesToInsert.filter(m => !m.hit_mine).length
+          const currentTotalMoves = [...myMoves, ...movesToInsert].reduce((acc, m) => {
+            const key = `${m.cell.r},${m.cell.c}`
+            if (!m.hit_mine && !acc.has(key)) {
+              acc.add(key)
+            }
+            return acc
+          }, new Set<string>()).size
           const totalNonMines = (boardSize * boardSize) - maxMines
           if (currentTotalMoves >= totalNonMines) {
               await supabase.from('games').update({ status: 'finished', winner_id: userId }).eq('id', gameId); await supabase.rpc('increment_games_played');
@@ -290,7 +302,7 @@ export default function PlayPhase() {
             <div className="bg-brown-900/50 px-6 py-3 rounded-2xl border border-brown-700/50 flex flex-col items-center shadow-inner w-full">
                 <div className="text-sm text-pink-300/60 font-bold uppercase tracking-wider mb-1">Progress</div>
                 <div className="text-2xl font-mono font-bold text-pink-400">
-                    {myMoves.filter(m => !m.hit_mine).length} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
+                    {new Set(myMoves.filter(m => !m.hit_mine).map(m => `${m.cell.r},${m.cell.c}`)).size} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
                 </div>
             </div>
 
@@ -344,7 +356,7 @@ export default function PlayPhase() {
             <div className="bg-brown-900/50/80 px-6 py-3 rounded-2xl border border-brown-700/50 flex flex-col items-center w-full">
                 <div className="text-xs text-pink-300/60 font-bold uppercase tracking-wider mb-1">Opponent Progress</div>
                 <div className="text-lg font-mono font-bold text-brown-700">
-                    {opponentMoves.filter(m => !m.hit_mine).length} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
+                    {new Set(opponentMoves.filter(m => !m.hit_mine).map(m => `${m.cell.r},${m.cell.c}`)).size} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
                 </div>
             </div>
         </div>
