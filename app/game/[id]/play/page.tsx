@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../../lib/supabase'
-import useLongPress from '../../../lib/useLongPress'
+
 import { useGamePresence } from '../../../lib/useGamePresence'
 
 // boardSize removed
@@ -24,6 +24,7 @@ export default function PlayPhase() {
   const [myMoves, setMyMoves] = useState<any[]>([])
   const [opponentMoves, setOpponentMoves] = useState<any[]>([])
   const [flags, setFlags] = useState<{r: number, c: number}[]>([])
+  const [flagMode, setFlagMode] = useState(false)
   const [loading, setLoading] = useState(true)
 
   const onlineUsers = useGamePresence(gameId, userId)
@@ -95,8 +96,8 @@ export default function PlayPhase() {
       return count
   }
 
-  const toggleFlag = (e: React.MouseEvent | React.TouchEvent, r: number, c: number) => {
-      e.preventDefault()
+  const toggleFlag = (e: React.MouseEvent | React.TouchEvent | undefined, r: number, c: number) => {
+      if (e) e.preventDefault()
       if (myMoves.some(m => m.cell.r === r && m.cell.c === c)) return
       setFlags(prev => {
           const isFlagged = prev.some(f => f.r === r && f.c === c)
@@ -226,9 +227,23 @@ export default function PlayPhase() {
 
         {/* Opponent's Board (The one I click) */}
         <div className="flex flex-col items-center gap-6 bg-white p-8 rounded-3xl shadow-xl border border-brown-100 order-first lg:order-last">
-            <div className="text-center">
+            <div className="text-center w-full flex flex-col items-center">
                 <h2 className="text-3xl font-extrabold text-brown-800">Attack Board</h2>
                 <p className="text-brown-500 mt-2">Find safe zones. Avoid the mines!</p>
+                <div className="mt-4 flex gap-2 bg-brown-50 p-1 rounded-xl shadow-inner border border-brown-200">
+                    <button
+                        onClick={() => setFlagMode(false)}
+                        className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${!flagMode ? 'bg-amber-500 text-white shadow-md' : 'text-brown-500 hover:text-brown-700 hover:bg-brown-100'}`}
+                    >
+                        ⛏️ Dig
+                    </button>
+                    <button
+                        onClick={() => setFlagMode(true)}
+                        className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${flagMode ? 'bg-rose-500 text-white shadow-md' : 'text-brown-500 hover:text-brown-700 hover:bg-brown-100'}`}
+                    >
+                        🚩 Flag
+                    </button>
+                </div>
             </div>
 
             <div
@@ -246,10 +261,14 @@ export default function PlayPhase() {
                     return (
                     <button
                         key={`opp-${r}-${c}`}
-                        {...useLongPress(
-                            (e) => toggleFlag(e, r, c),
-                            () => handleCellClick(r, c)
-                        )}
+                        onClick={(e) => {
+                            if (flagMode) {
+                                toggleFlag(e, r, c)
+                            } else {
+                                handleCellClick(r, c)
+                            }
+                        }}
+                        onContextMenu={(e) => toggleFlag(e, r, c)}
                         disabled={isRevealed}
                         className={`mine-cell w-10 h-10 sm:w-12 sm:h-12 text-xl font-black flex items-center justify-center
                         ${!isRevealed ? 'bg-amber-50 hover:bg-amber-200 cursor-pointer shadow-sm hover:shadow active:scale-95'
