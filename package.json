@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node test-runner.mjs"
+    "test": "node --experimental-strip-types test-runner.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.102.1",
