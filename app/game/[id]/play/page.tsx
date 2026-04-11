@@ -3,9 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../../lib/supabase'
-
-const BOARD_SIZE = 10
-const MAX_MINES = 15
+import { BOARD_SIZE, MAX_MINES } from '../../../lib/constants'
+import { calculateAdjacentMines } from '../../../lib/game-logic'
 
 export default function PlayPhase() {
   const router = useRouter()
@@ -70,21 +69,6 @@ export default function PlayPhase() {
       if (subscription) supabase.removeChannel(subscription)
     }
   }, [gameId, router])
-
-  const calculateAdjacentMines = (r: number, c: number, board: any) => {
-      let count = 0
-      for (let i = -1; i <= 1; i++) {
-          for (let j = -1; j <= 1; j++) {
-              if (i === 0 && j === 0) continue
-              const nr = r + i
-              const nc = c + j
-              if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
-                  if (board.mine_positions.some((m: any) => m.r === nr && m.c === nc)) count++
-              }
-          }
-      }
-      return count
-  }
 
   const handleCellClick = async (r: number, c: number) => {
       if (!userId || !opponentBoard) return

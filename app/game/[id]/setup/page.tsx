@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../../lib/supabase'
-
-const BOARD_SIZE = 10
-const MAX_MINES = 15
+import { BOARD_SIZE, MAX_MINES } from '../../../lib/constants'
 
 export default function SetupPhase() {
   const router = useRouter()
