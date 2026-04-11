@@ -1,4 +1,4 @@
-import { BOARD_SIZE } from './constants.ts'
+import { BOARD_SIZE } from './constants'
 
 export const calculateAdjacentMines = (r: number, c: number, board: any) => {
   let count = 0

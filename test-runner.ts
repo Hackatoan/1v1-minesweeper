@@ -1,5 +1,27 @@
-import { BOARD_SIZE } from './app/lib/constants.ts';
-import { calculateAdjacentMines } from './app/lib/game-logic.ts';
+import fs from 'fs';
+
+// Read the actual source files to avoid ESM resolution issues in this specific environment
+// while still testing the real code.
+const constantsSource = fs.readFileSync('app/lib/constants.ts', 'utf8');
+const gameLogicSource = fs.readFileSync('app/lib/game-logic.ts', 'utf8');
+
+// Extract values using regex
+const boardSizeMatch = constantsSource.match(/export const BOARD_SIZE = (\d+)/);
+const BOARD_SIZE = boardSizeMatch ? parseInt(boardSizeMatch[1], 10) : 10;
+
+// Prepare the function logic for execution
+let functionCode = gameLogicSource
+  .replace(/import { BOARD_SIZE } from '\.\/constants'/, '')
+  .replace(/export const calculateAdjacentMines =/, 'const calculateAdjacentMines =')
+  .replace(/: number/g, '')
+  .replace(/: any/g, '')
+  .replace(/<any>/g, '');
+
+// Create the function
+const calculateAdjacentMines = new Function('r', 'c', 'board', 'BOARD_SIZE', `
+  ${functionCode}
+  return calculateAdjacentMines(r, c, board);
+`);
 
 function assert(condition: boolean, message?: string) {
   if (!condition) {
@@ -91,7 +113,7 @@ console.log('Testing with BOARD_SIZE:', BOARD_SIZE);
 
 for (const test of tests) {
   try {
-    const result = calculateAdjacentMines(test.r, test.c, test.board);
+    const result = calculateAdjacentMines(test.r, test.c, test.board, BOARD_SIZE);
     if (result !== test.expected) {
         throw new Error(`Expected ${test.expected}, got ${result}`);
     }
