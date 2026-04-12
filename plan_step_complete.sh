@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "Plan step complete"
+echo "Plan step complete!"
