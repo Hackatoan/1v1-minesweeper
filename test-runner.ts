@@ -1,4 +1,5 @@
 import { copyToClipboard } from './app/lib/clipboard.ts';
+import { calculateAdjacentMines } from './app/lib/game-logic.ts';
 
 async function runTests() {
   console.log('Running tests...');
@@ -123,6 +124,70 @@ async function runTests() {
 
     console.error = originalConsoleError;
     globalThis.setTimeout = originalSetTimeout;
+  }
+
+
+  // Test 4: calculateAdjacentMines - Center cell with no mines
+  {
+    const board = { mine_positions: [] };
+    const boardSize = 5;
+    const count = calculateAdjacentMines(2, 2, board, boardSize);
+    assert(count === 0, 'Center cell with no mines should return 0');
+  }
+
+  // Test 5: calculateAdjacentMines - Center cell with 1 mine
+  {
+    const board = { mine_positions: [{ r: 1, c: 1 }] };
+    const boardSize = 5;
+    const count = calculateAdjacentMines(2, 2, board, boardSize);
+    assert(count === 1, 'Center cell with 1 adjacent mine should return 1');
+  }
+
+  // Test 6: calculateAdjacentMines - Center cell with 8 mines
+  {
+    const board = { mine_positions: [
+      { r: 1, c: 1 }, { r: 1, c: 2 }, { r: 1, c: 3 },
+      { r: 2, c: 1 },                 { r: 2, c: 3 },
+      { r: 3, c: 1 }, { r: 3, c: 2 }, { r: 3, c: 3 }
+    ] };
+    const boardSize = 5;
+    const count = calculateAdjacentMines(2, 2, board, boardSize);
+    assert(count === 8, 'Center cell with 8 adjacent mines should return 8');
+  }
+
+  // Test 7: calculateAdjacentMines - Corner cell (top-left) with 3 mines
+  {
+    const board = { mine_positions: [{ r: 0, c: 1 }, { r: 1, c: 0 }, { r: 1, c: 1 }] };
+    const boardSize = 5;
+    const count = calculateAdjacentMines(0, 0, board, boardSize);
+    assert(count === 3, 'Top-left corner cell with 3 adjacent mines should return 3');
+  }
+
+  // Test 8: calculateAdjacentMines - Corner cell (bottom-right) with 3 mines
+  {
+    const board = { mine_positions: [{ r: 3, c: 4 }, { r: 4, c: 3 }, { r: 3, c: 3 }] };
+    const boardSize = 5;
+    const count = calculateAdjacentMines(4, 4, board, boardSize);
+    assert(count === 3, 'Bottom-right corner cell with 3 adjacent mines should return 3');
+  }
+
+  // Test 9: calculateAdjacentMines - Edge cell with 5 mines
+  {
+    const board = { mine_positions: [
+      { r: 0, c: 1 },                 { r: 0, c: 3 },
+      { r: 1, c: 1 }, { r: 1, c: 2 }, { r: 1, c: 3 }
+    ] };
+    const boardSize = 5;
+    const count = calculateAdjacentMines(0, 2, board, boardSize);
+    assert(count === 5, 'Top edge cell with 5 adjacent mines should return 5');
+  }
+
+  // Test 10: calculateAdjacentMines - Mines outside bounds are ignored
+  {
+    const board = { mine_positions: [{ r: -1, c: 0 }, { r: 0, c: -1 }, { r: 5, c: 4 }] };
+    const boardSize = 5;
+    const count = calculateAdjacentMines(0, 0, board, boardSize);
+    assert(count === 0, 'Mines outside bounds should not be counted');
   }
 
   console.log(`\nTests complete: ${passed} passed, ${failed} failed`);
