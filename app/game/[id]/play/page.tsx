@@ -216,6 +216,16 @@ export default function PlayPhase() {
   const opponentMovesMap = new Map<string, any>()
   opponentMoves.forEach(m => opponentMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
 
+  let mySafeMovesCount = 0;
+  for (const move of myMovesMap.values()) {
+    if (!move.hit_mine) mySafeMovesCount++;
+  }
+
+  let opponentSafeMovesCount = 0;
+  for (const move of opponentMovesMap.values()) {
+    if (!move.hit_mine) opponentSafeMovesCount++;
+  }
+
   return (
     <div className="flex flex-1 w-full flex-col items-center justify-center p-6  from-transparent to-transparent">
       <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-start pt-4 pb-20">
@@ -304,7 +314,7 @@ export default function PlayPhase() {
             <div className="bg-brown-900/50 px-6 py-3 rounded-2xl border border-brown-700/50 flex flex-col items-center shadow-inner w-full">
                 <div className="text-sm text-pink-300/60 font-bold uppercase tracking-wider mb-1">Progress</div>
                 <div className="text-2xl font-mono font-bold text-pink-400">
-                    {new Set(myMoves.filter(m => !m.hit_mine).map(m => `${m.cell.r},${m.cell.c}`)).size} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
+                    {mySafeMovesCount} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
                 </div>
             </div>
 
@@ -359,7 +369,7 @@ export default function PlayPhase() {
             <div className="bg-brown-900/50/80 px-6 py-3 rounded-2xl border border-brown-700/50 flex flex-col items-center w-full">
                 <div className="text-xs text-pink-300/60 font-bold uppercase tracking-wider mb-1">Opponent Progress</div>
                 <div className="text-lg font-mono font-bold text-brown-700">
-                    {new Set(opponentMoves.filter(m => !m.hit_mine).map(m => `${m.cell.r},${m.cell.c}`)).size} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
+                    {opponentSafeMovesCount} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
                 </div>
             </div>
         </div>
