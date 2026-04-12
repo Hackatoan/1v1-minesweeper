@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../../lib/supabase'
 
 import { useGamePresence } from '../../../lib/useGamePresence'
+import { calculateAdjacentMines } from '../../../lib/game-logic'
 
 // boardSize removed
 // maxMines removed
@@ -82,21 +83,6 @@ export default function PlayPhase() {
     }
   }, [gameId, router])
 
-  const calculateAdjacentMines = (r: number, c: number, board: any) => {
-      let count = 0
-      for (let i = -1; i <= 1; i++) {
-          for (let j = -1; j <= 1; j++) {
-              if (i === 0 && j === 0) continue
-              const nr = r + i
-              const nc = c + j
-              if (nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize) {
-                  if (board.mine_positions.some((m: any) => m.r === nr && m.c === nc)) count++
-              }
-          }
-      }
-      return count
-  }
-
   const toggleFlag = (e: React.MouseEvent | React.TouchEvent | undefined, r: number, c: number) => {
       if (e) e.preventDefault()
       if (myMoves.some(m => m.cell.r === r && m.cell.c === c)) return
@@ -133,7 +119,7 @@ export default function PlayPhase() {
 
           while (queue.length > 0) {
               const current = queue.shift()!
-              const adjMines = calculateAdjacentMines(current.r, current.c, opponentBoard)
+              const adjMines = calculateAdjacentMines(current.r, current.c, opponentBoard, boardSize)
 
               movesToInsertMap.set(`${current.r},${current.c}`, {
                   game_id: gameId,
@@ -267,7 +253,7 @@ export default function PlayPhase() {
                     const move = myMoves.find(m => m.cell.r === r && m.cell.c === c)
                     const isRevealed = !!move
                     const hitMine = move?.hit_mine
-                    const adjacentMines = isRevealed && !hitMine ? calculateAdjacentMines(r, c, opponentBoard) : 0
+                    const adjacentMines = isRevealed && !hitMine ? calculateAdjacentMines(r, c, opponentBoard, boardSize) : 0
                     const isFlagged = flags.some(f => f.r === r && f.c === c)
 
                     return (
