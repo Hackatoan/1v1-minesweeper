@@ -1,7 +1,7 @@
 'use client'
 
 import { RealtimeChannel } from "@supabase/supabase-js"
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../../lib/supabase'
 
@@ -28,7 +28,7 @@ export default function PlayPhase() {
   const [flags, setFlags] = useState<{r: number, c: number}[]>([])
   const [flagMode, setFlagMode] = useState(false)
   const [loading, setLoading] = useState(true)
-  const revealedRef = useRef<Set<string>>(new Set())
+
 
   const onlineUsers = useGamePresence(gameId, userId)
   const isOpponentOnline = game ? (game.player1_id === userId ? onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id)) : false
@@ -202,18 +202,18 @@ export default function PlayPhase() {
     }
   }
 
-  const myMovesMap = new Map()
+  const myMovesMap = new Map<string, any>()
   myMoves.forEach(m => myMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
 
-  const flagsSet = new Set()
+  const flagsSet = new Set<string>()
   flags.forEach(f => flagsSet.add(`${f.r},${f.c}`))
 
-  const myMinesSet = new Set()
+  const myMinesSet = new Set<string>()
   if (myBoard?.mine_positions) {
     myBoard.mine_positions.forEach((m: any) => myMinesSet.add(`${m.r},${m.c}`))
   }
 
-  const opponentMovesMap = new Map()
+  const opponentMovesMap = new Map<string, any>()
   opponentMoves.forEach(m => opponentMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
 
   return (
