@@ -202,6 +202,20 @@ export default function PlayPhase() {
     }
   }
 
+  const myMovesMap = new Map()
+  myMoves.forEach(m => myMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
+
+  const flagsSet = new Set()
+  flags.forEach(f => flagsSet.add(`${f.r},${f.c}`))
+
+  const myMinesSet = new Set()
+  if (myBoard?.mine_positions) {
+    myBoard.mine_positions.forEach((m: any) => myMinesSet.add(`${m.r},${m.c}`))
+  }
+
+  const opponentMovesMap = new Map()
+  opponentMoves.forEach(m => opponentMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
+
   return (
     <div className="flex flex-1 w-full flex-col items-center justify-center p-6  from-transparent to-transparent">
       <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-start pt-4 pb-20">
@@ -251,11 +265,12 @@ export default function PlayPhase() {
             >
                 {Array.from({ length: boardSize }).map((_, r) => (
                 Array.from({ length: boardSize }).map((_, c) => {
-                    const move = myMoves.find(m => m.cell.r === r && m.cell.c === c)
+                    const key = `${r},${c}`
+                    const move = myMovesMap.get(key)
                     const isRevealed = !!move
                     const hitMine = move?.hit_mine
                     const adjacentMines = isRevealed && !hitMine ? calculateAdjacentMines(r, c, opponentBoard, boardSize) : 0
-                    const isFlagged = flags.some(f => f.r === r && f.c === c)
+                    const isFlagged = flagsSet.has(key)
 
                     return (
                     <button
@@ -316,8 +331,9 @@ export default function PlayPhase() {
             >
                 {Array.from({ length: boardSize }).map((_, r) => (
                 Array.from({ length: boardSize }).map((_, c) => {
-                    const isMine = myBoard?.mine_positions.some((m: any) => m.r === r && m.c === c)
-                    const oppMove = opponentMoves.find(m => m.cell.r === r && m.cell.c === c)
+                    const key = `${r},${c}`
+                    const isMine = myMinesSet.has(key)
+                    const oppMove = opponentMovesMap.get(key)
                     const oppRevealed = !!oppMove
                     const oppHitMine = oppMove?.hit_mine
 
