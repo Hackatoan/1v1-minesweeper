@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../lib/supabase'
+import { copyToClipboard } from '../../lib/clipboard'
 
 export default function GameLobby() {
   const router = useRouter()
@@ -135,9 +136,7 @@ export default function GameLobby() {
   const inviteLink = typeof window !== 'undefined' ? window.location.href : ''
 
   const copyLink = () => {
-      navigator.clipboard.writeText(inviteLink)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      copyToClipboard(inviteLink, setCopied)
   }
 
   return (
