@@ -1,5 +1,6 @@
 'use client'
 
+import { RealtimeChannel } from "@supabase/supabase-js"
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase, getSession } from '../../../lib/supabase'
@@ -33,7 +34,7 @@ export default function PlayPhase() {
   const isOpponentOnline = game ? (game.player1_id === userId ? onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id)) : false
 
   useEffect(() => {
-    let subscription: any
+    let subscription: RealtimeChannel | null = null
 
     async function init() {
       const session = await getSession()
