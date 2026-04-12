@@ -35,18 +35,17 @@ ALTER TABLE games ENABLE ROW LEVEL SECURITY;
 ALTER TABLE boards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE moves ENABLE ROW LEVEL SECURITY;
 
--- Simple policies (since we'll use anon auth, we allow authenticated anon users to access rows)
--- In a real app we'd restrict further, but for this MVP:
+-- Simple policies restricted by user ID
 CREATE POLICY "Public games select" ON games FOR SELECT USING (true);
-CREATE POLICY "Public games insert" ON games FOR INSERT WITH CHECK (true);
-CREATE POLICY "Public games update" ON games FOR UPDATE USING (true);
+CREATE POLICY "Public games insert" ON games FOR INSERT WITH CHECK (auth.uid() = player1_id);
+CREATE POLICY "Public games update" ON games FOR UPDATE USING (auth.uid() = player1_id OR auth.uid() = player2_id OR player2_id IS NULL);
 
 CREATE POLICY "Public boards select" ON boards FOR SELECT USING (true);
-CREATE POLICY "Public boards insert" ON boards FOR INSERT WITH CHECK (true);
-CREATE POLICY "Public boards update" ON boards FOR UPDATE USING (true);
+CREATE POLICY "Public boards insert" ON boards FOR INSERT WITH CHECK (auth.uid() = owner_id);
+CREATE POLICY "Public boards update" ON boards FOR UPDATE USING (auth.uid() = owner_id);
 
 CREATE POLICY "Public moves select" ON moves FOR SELECT USING (true);
-CREATE POLICY "Public moves insert" ON moves FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public moves insert" ON moves FOR INSERT WITH CHECK (auth.uid() = player_id);
 
 -- Enable realtime for the tables
 BEGIN;
