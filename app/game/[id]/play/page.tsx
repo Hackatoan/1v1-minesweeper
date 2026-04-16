@@ -100,11 +100,15 @@ export default function PlayPhase() {
 
   const handleCellClick = async (r: number, c: number) => {
       if (!userId || !opponentBoard) return
-      if (myMoves.some(m => m.cell.r === r && m.cell.c === c)) return
-      if (flags.some(f => f.r === r && f.c === c)) return
+      const myMovesSetLocal = new Set(myMoves.map(m => `${m.cell.r},${m.cell.c}`))
+      const flagsSetLocal = new Set(flags.map(f => `${f.r},${f.c}`))
+      const opponentMinesSetLocal = new Set((opponentBoard.mine_positions || []).map((m: any) => `${m.r},${m.c}`))
+
+      if (myMovesSetLocal.has(`${r},${c}`)) return
+      if (flagsSetLocal.has(`${r},${c}`)) return
 
       const isMine = (row: number, col: number) =>
-          opponentBoard.mine_positions.some((m: any) => m.r === row && m.c === col)
+          opponentMinesSetLocal.has(`${row},${col}`)
 
       const hitMine = isMine(r, c)
 
@@ -120,7 +124,7 @@ export default function PlayPhase() {
 
           while (queue.length > 0) {
               const current = queue.shift()!
-              const adjMines = calculateAdjacentMines(current.r, current.c, opponentBoard, boardSize)
+              const adjMines = calculateAdjacentMines(current.r, current.c, opponentMinesSetLocal, boardSize)
 
               movesToInsertMap.set(`${current.r},${current.c}`, {
                   game_id: gameId,
@@ -138,7 +142,7 @@ export default function PlayPhase() {
 
                           if (nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize) {
                               const key = `${nr},${nc}`
-                              if (!visited.has(key) && !myMoves.some(m => m.cell.r === nr && m.cell.c === nc) && !movesToInsertMap.has(key)) {
+                              if (!visited.has(key) && !myMovesSetLocal.has(key) && !movesToInsertMap.has(key)) {
                                   visited.add(key)
                                   if (!isMine(nr, nc)) {
                                       queue.push({r: nr, c: nc})
@@ -154,10 +158,12 @@ export default function PlayPhase() {
       const movesToInsert = Array.from(movesToInsertMap.values())
 
       setMyMoves(prev => {
-        const newMoves = movesToInsert.filter(m => !prev.some(pm => pm.cell.r === m.cell.r && pm.cell.c === m.cell.c))
+        const prevKeys = new Set(prev.map(pm => `${pm.cell.r},${pm.cell.c}`))
+        const newMoves = movesToInsert.filter(m => !prevKeys.has(`${m.cell.r},${m.cell.c}`))
         return [...prev, ...newMoves]
       })
-      setFlags(prev => prev.filter(f => !movesToInsert.some(m => m.cell.r === f.r && m.cell.c === f.c)))
+      const movesToInsertKeys = new Set(movesToInsert.map(m => `${m.cell.r},${m.cell.c}`))
+      setFlags(prev => prev.filter(f => !movesToInsertKeys.has(`${f.r},${f.c}`)))
 
       const { error } = await supabase.from('moves').insert(movesToInsert)
       if (error) {
@@ -211,6 +217,11 @@ export default function PlayPhase() {
   const myMinesSet = new Set<string>()
   if (myBoard?.mine_positions) {
     myBoard.mine_positions.forEach((m: any) => myMinesSet.add(`${m.r},${m.c}`))
+  }
+
+  const opponentMinesSet = new Set<string>()
+  if (opponentBoard?.mine_positions) {
+    opponentBoard.mine_positions.forEach((m: any) => opponentMinesSet.add(`${m.r},${m.c}`))
   }
 
   const opponentMovesMap = new Map<string, any>()
@@ -279,7 +290,7 @@ export default function PlayPhase() {
                     const move = myMovesMap.get(key)
                     const isRevealed = !!move
                     const hitMine = move?.hit_mine
-                    const adjacentMines = isRevealed && !hitMine ? calculateAdjacentMines(r, c, opponentBoard, boardSize) : 0
+                    const adjacentMines = isRevealed && !hitMine ? calculateAdjacentMines(r, c, opponentMinesSet, boardSize) : 0
                     const isFlagged = flagsSet.has(key)
 
                     return (
