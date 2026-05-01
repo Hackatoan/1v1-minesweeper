@@ -102,7 +102,7 @@ export default function PlayPhase() {
       if (!userId || !opponentBoard) return
       const myMovesSetLocal = new Set(myMoves.map(m => `${m.cell.r},${m.cell.c}`))
       const flagsSetLocal = new Set(flags.map(f => `${f.r},${f.c}`))
-      const opponentMinesSetLocal = new Set((opponentBoard.mine_positions || []).map((m: any) => `${m.r},${m.c}`))
+      const opponentMinesSetLocal = new Set<string>((opponentBoard.mine_positions || []).map((m: any) => `${m.r},${m.c}`))
 
       if (myMovesSetLocal.has(`${r},${c}`)) return
       if (flagsSetLocal.has(`${r},${c}`)) return
