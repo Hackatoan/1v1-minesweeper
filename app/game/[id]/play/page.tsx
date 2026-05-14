@@ -268,7 +268,7 @@ export default function PlayPhase() {
                     const move = myMovesMap.get(key)
                     const isRevealed = !!move
                     const hitMine = move?.hit_mine
-                    const adjacentMines = isRevealed && !hitMine ? calculateAdjacentMines(r, c, opponentBoard, boardSize) : 0
+                    const adjacentMines = isRevealed && !hitMine && opponentBoard ? calculateAdjacentMines(r, c, opponentBoard, boardSize) : 0
                     const isFlagged = flagsSet.has(key)
 
                     return (
