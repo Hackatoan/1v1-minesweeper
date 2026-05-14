@@ -6,6 +6,7 @@ import { getPlayerId } from '../../../lib/session'
 import { getGame, getBoards, getMoves, insertMoves, updateGame, incrementGamesPlayed } from '../../../lib/api-client'
 import { useGamePresence } from '../../../lib/useGamePresence'
 import { calculateAdjacentMines } from '../../../lib/game-logic'
+import { Board, MinePosition } from '../../../lib/types'
 
 export default function PlayPhase() {
   const router = useRouter()
@@ -17,11 +18,11 @@ export default function PlayPhase() {
   const maxMines = Math.floor((boardSize * boardSize) * 0.15)
 
   const [userId, setUserId] = useState<string | null>(null)
-  const [myBoard, setMyBoard] = useState<any>(null)
-  const [opponentBoard, setOpponentBoard] = useState<any>(null)
+  const [myBoard, setMyBoard] = useState<Board | null>(null)
+  const [opponentBoard, setOpponentBoard] = useState<Board | null>(null)
   const [myMoves, setMyMoves] = useState<any[]>([])
   const [opponentMoves, setOpponentMoves] = useState<any[]>([])
-  const [flags, setFlags] = useState<{r: number, c: number}[]>([])
+  const [flags, setFlags] = useState<MinePosition[]>([])
   const [flagMode, setFlagMode] = useState(false)
   const [loading, setLoading] = useState(true)
 
