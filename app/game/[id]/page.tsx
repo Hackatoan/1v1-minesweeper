@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { supabase, getSession } from '../../lib/supabase'
+import { getPlayerId } from '../../lib/session'
+import { getGame, updateGame, pingGame } from '../../lib/api-client'
 import { copyToClipboard } from '../../lib/clipboard'
 
 export default function GameLobby() {
@@ -15,61 +16,34 @@ export default function GameLobby() {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    let subscription: any
-
     async function init() {
       try {
-        const session = await getSession()
-        const uid = session?.user.id
-        if (!uid) throw new Error('No user session')
+        const uid = getPlayerId()
+        if (!uid) throw new Error('No player ID')
         setUserId(uid)
 
         // Fetch initial game state
-        const { data: gameData, error } = await supabase
-          .from('games')
-          .select('*')
-          .eq('id', gameId)
-          .single()
-
-        if (error) throw error
+        const gameData = await getGame(gameId)
+        if (!gameData) throw new Error('Game not found')
         setGame(gameData)
 
         // If I am not player 1, and there is no player 2, join as player 2
         if (gameData.player1_id !== uid && !gameData.player2_id) {
-           const { data: updatedGame, error: updateError } = await supabase
-            .from('games')
-            .update({ player2_id: uid, status: 'setup' })
-            .eq('id', gameId)
-            .is('player2_id', null)
-            .select()
-            .single()
-
-           if (updateError) {
-             console.error('Update error or game is full:', updateError)
-             alert('Failed to join or game is already full.')
-             router.push('/')
-             return
-           }
-
-           setGame(updatedGame)
+          try {
+            const updatedGame = await updateGame(gameId, { player2_id: uid, status: 'setup' })
+            setGame(updatedGame)
+          } catch {
+            console.error('Failed to join or game is already full.')
+            alert('Failed to join or game is already full.')
+            router.push('/')
+            return
+          }
         } else if (gameData.player1_id !== uid && gameData.player2_id !== uid) {
-           // I am a 3rd person
-           alert('Game is already full.')
-           router.push('/')
-           return
+          // I am a 3rd person
+          alert('Game is already full.')
+          router.push('/')
+          return
         }
-
-        // Subscribe to changes
-        subscription = supabase
-          .channel(`game-${gameId}-${Math.random()}`)
-          .on(
-            'postgres_changes',
-            { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` },
-            (payload) => {
-              setGame(payload.new)
-            }
-          )
-          .subscribe()
 
       } catch (e) {
         console.error('Error in lobby:', e)
@@ -80,38 +54,25 @@ export default function GameLobby() {
     }
 
     init()
-
-    return () => {
-      if (subscription) {
-        supabase.removeChannel(subscription)
-      }
-    }
   }, [gameId, router])
 
-  // Polling fallback
+  // Polling game state
   useEffect(() => {
-    if (!game || game.status !== 'waiting') return
+    if (!userId) return
     const interval = setInterval(async () => {
-      const { data } = await supabase.from('games').select('status, player2_id').eq('id', gameId).single()
-      if (data && data.status !== 'waiting') {
-        setGame((prev: any) => ({ ...prev, ...data }))
-      }
-    }, 3000)
+      const g = await getGame(gameId)
+      if (g) setGame(g)
+    }, 1500)
     return () => clearInterval(interval)
-  }, [game?.status, gameId])
+  }, [userId, gameId])
 
   // Heartbeat for host in waiting room
   useEffect(() => {
-    if (!game || game.status !== 'waiting' || game.player1_id !== userId) return
-
-    const ping = async () => {
-      await supabase.from('games').update({ last_ping: new Date().toISOString() }).eq('id', gameId)
-    }
-
-    ping() // Initial ping
-    const interval = setInterval(ping, 5000)
+    if (!game || game.status !== 'waiting') return
+    const interval = setInterval(() => pingGame(gameId), 5000)
+    pingGame(gameId)
     return () => clearInterval(interval)
-  }, [game?.status, game?.player1_id, userId, gameId])
+  }, [game?.status, gameId])
 
   // Redirect when status changes
   useEffect(() => {
@@ -120,7 +81,7 @@ export default function GameLobby() {
     } else if (game?.status === 'playing') {
       router.push(`/game/${gameId}/play`)
     } else if (game?.status === 'finished') {
-       router.push(`/game/${gameId}/result`)
+      router.push(`/game/${gameId}/result`)
     }
   }, [game?.status, gameId, router])
 

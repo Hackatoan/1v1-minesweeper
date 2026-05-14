@@ -1,15 +1,11 @@
 'use client'
 
-import { RealtimeChannel } from "@supabase/supabase-js"
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { supabase, getSession } from '../../../lib/supabase'
-
+import { getPlayerId } from '../../../lib/session'
+import { getGame, getBoards, getMoves, insertMoves, updateGame, incrementGamesPlayed } from '../../../lib/api-client'
 import { useGamePresence } from '../../../lib/useGamePresence'
 import { calculateAdjacentMines } from '../../../lib/game-logic'
-
-// boardSize removed
-// maxMines removed
 
 export default function PlayPhase() {
   const router = useRouter()
@@ -29,60 +25,50 @@ export default function PlayPhase() {
   const [flagMode, setFlagMode] = useState(false)
   const [loading, setLoading] = useState(true)
 
-
-  const onlineUsers = useGamePresence(gameId, userId)
+  const onlineUsers = useGamePresence(gameId, game)
   const isOpponentOnline = game ? (game.player1_id === userId ? onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id)) : false
 
   useEffect(() => {
-    let subscription: RealtimeChannel | null = null
-
     async function init() {
-      const session = await getSession()
-      const uid = session?.user.id
+      const uid = getPlayerId()
       if (!uid) return router.push('/')
       setUserId(uid)
 
-      const { data: gameData } = await supabase.from('games').select('*').eq('id', gameId).single()
+      const gameData = await getGame(gameId)
       if (!gameData || gameData.status !== 'playing') {
-          if (gameData?.status === 'finished') router.push(`/game/${gameId}/result`)
+        if (gameData?.status === 'finished') router.push(`/game/${gameId}/result`)
       }
       setGame(gameData)
 
-      const { data: boardsData } = await supabase.from('boards').select('*').eq('game_id', gameId)
-      const myB = boardsData?.find(b => b.owner_id === uid)
-      const oppB = boardsData?.find(b => b.owner_id !== uid)
+      const boardsData = await getBoards(gameId)
+      const myB = boardsData?.find((b: any) => b.owner_id === uid)
+      const oppB = boardsData?.find((b: any) => b.owner_id !== uid)
       setMyBoard(myB)
       setOpponentBoard(oppB)
 
-      const { data: movesData } = await supabase.from('moves').select('*').eq('game_id', gameId)
-      setMyMoves(movesData?.filter(m => m.player_id === uid) || [])
-      setOpponentMoves(movesData?.filter(m => m.player_id !== uid) || [])
+      const movesData = await getMoves(gameId)
+      setMyMoves(movesData?.filter((m: any) => m.player_id === uid) || [])
+      setOpponentMoves(movesData?.filter((m: any) => m.player_id !== uid) || [])
 
-      subscription = supabase
-        .channel(`game-play-${gameId}`)
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
-           if (payload.new.status === 'finished') {
-               router.push(`/game/${gameId}/result`)
-           }
-        })
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'moves', filter: `game_id=eq.${gameId}` }, (payload) => {
-            if (payload.new.player_id === uid) {
-                setMyMoves(prev => { if (prev.some(m => m.id === payload.new.id || (m.cell.r === payload.new.cell.r && m.cell.c === payload.new.cell.c))) return prev; return [...prev, payload.new]; })
-            } else {
-                setOpponentMoves(prev => { if (prev.some(m => m.id === payload.new.id || (m.cell.r === payload.new.cell.r && m.cell.c === payload.new.cell.c))) return prev; return [...prev, payload.new]; })
-            }
-        })
-        .subscribe()
-
-        setLoading(false)
+      setLoading(false)
     }
 
     init()
-
-    return () => {
-      if (subscription) supabase.removeChannel(subscription)
-    }
   }, [gameId, router])
+
+  // Polling for game/moves updates
+  useEffect(() => {
+    if (!userId) return
+    const interval = setInterval(async () => {
+      const [updatedGame, updatedMoves] = await Promise.all([getGame(gameId), getMoves(gameId)])
+      if (updatedGame?.status === 'finished') router.push(`/game/${gameId}/result`)
+      setGame(updatedGame)
+      const myId = getPlayerId()
+      setMyMoves(updatedMoves.filter((m: any) => m.player_id === myId))
+      setOpponentMoves(updatedMoves.filter((m: any) => m.player_id !== myId))
+    }, 1500)
+    return () => clearInterval(interval)
+  }, [userId, gameId, router])
 
   const toggleFlag = (e: React.MouseEvent | React.TouchEvent | undefined, r: number, c: number) => {
       if (e) e.preventDefault()
@@ -97,7 +83,6 @@ export default function PlayPhase() {
       })
   }
 
-
   const handleCellClick = async (r: number, c: number) => {
       if (!userId || !opponentBoard) return
       if (myMoves.some(m => m.cell.r === r && m.cell.c === c)) return
@@ -111,7 +96,7 @@ export default function PlayPhase() {
       const movesToInsertMap = new Map<string, any>()
 
       if (hitMine) {
-          movesToInsertMap.set(`${r},${c}`, { game_id: gameId, player_id: userId, cell: { r, c }, hit_mine: true })
+          movesToInsertMap.set(`${r},${c}`, { cell: { r, c }, hit_mine: true })
       } else {
           // Flood fill
           const queue = [{r, c}]
@@ -123,8 +108,6 @@ export default function PlayPhase() {
               const adjMines = calculateAdjacentMines(current.r, current.c, opponentBoard, boardSize)
 
               movesToInsertMap.set(`${current.r},${current.c}`, {
-                  game_id: gameId,
-                  player_id: userId,
                   cell: { r: current.r, c: current.c },
                   hit_mine: false
               })
@@ -159,14 +142,16 @@ export default function PlayPhase() {
       })
       setFlags(prev => prev.filter(f => !movesToInsert.some(m => m.cell.r === f.r && m.cell.c === f.c)))
 
-      const { error } = await supabase.from('moves').insert(movesToInsert)
-      if (error) {
-          console.error('Error inserting moves:', error)
-          return
+      try {
+        await insertMoves(gameId, movesToInsert)
+      } catch (error) {
+        console.error('Error inserting moves:', error)
+        return
       }
 
       if (hitMine) {
-          await supabase.from('games').update({ status: 'finished', winner_id: opponentBoard.owner_id }).eq('id', gameId); await supabase.rpc('increment_games_played');
+          await updateGame(gameId, { status: 'finished', winner_id: opponentBoard.owner_id })
+          await incrementGamesPlayed()
       } else {
           // Because state update is async, we use the local calculated total length
           const currentTotalMoves = [...myMoves, ...movesToInsert].reduce((acc, m) => {
@@ -178,7 +163,8 @@ export default function PlayPhase() {
           }, new Set<string>()).size
           const totalNonMines = (boardSize * boardSize) - maxMines
           if (currentTotalMoves >= totalNonMines) {
-              await supabase.from('games').update({ status: 'finished', winner_id: userId }).eq('id', gameId); await supabase.rpc('increment_games_played');
+              await updateGame(gameId, { status: 'finished', winner_id: userId })
+              await incrementGamesPlayed()
           }
       }
   }
@@ -198,7 +184,9 @@ export default function PlayPhase() {
     if (!userId || !game) return
     if (confirm('Are you sure you want to forfeit? Your opponent will win.')) {
       const winnerId = game.player1_id === userId ? game.player2_id : game.player1_id
-      await supabase.from('games').update({ status: 'finished', winner_id: winnerId }).eq('id', gameId); await supabase.rpc('increment_games_played'); router.push('/');
+      await updateGame(gameId, { status: 'finished', winner_id: winnerId })
+      await incrementGamesPlayed()
+      router.push('/')
     }
   }
 

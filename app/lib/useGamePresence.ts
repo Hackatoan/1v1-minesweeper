@@ -1,38 +1,31 @@
+'use client'
 import { useEffect, useState } from 'react'
-import { supabase } from './supabase'
+import { getPlayerId } from './session'
+import { pingGame } from './api-client'
 
-export function useGamePresence(gameId: string, userId: string | null) {
+// Returns array of user IDs currently online (pinged within 15s)
+export function useGamePresence(gameId: string, game: any | null) {
   const [onlineUsers, setOnlineUsers] = useState<string[]>([])
 
   useEffect(() => {
-    if (!gameId || !userId) return
+    if (!gameId) return
+    const myId = getPlayerId()
+    if (!myId) return
 
-    const room = supabase.channel(`presence-${gameId}`, {
-      config: { presence: { key: userId } },
-    })
+    const ping = () => pingGame(gameId)
+    ping()
+    const interval = setInterval(ping, 5000)
+    return () => clearInterval(interval)
+  }, [gameId])
 
-    room
-      .on('presence', { event: 'sync' }, () => {
-        const state = room.presenceState()
-        const currentUsers = Object.keys(state)
-        setOnlineUsers(currentUsers)
-      })
-      .on('presence', { event: 'join' }, ({ key }) => {
-        setOnlineUsers((prev) => Array.from(new Set([...prev, key])))
-      })
-      .on('presence', { event: 'leave' }, ({ key }) => {
-        setOnlineUsers((prev) => prev.filter((id) => id !== key))
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await room.track({ user_id: userId, online_at: new Date().toISOString() })
-        }
-      })
-
-    return () => {
-      supabase.removeChannel(room)
-    }
-  }, [gameId, userId])
+  useEffect(() => {
+    if (!game?.player_pings) return
+    const cutoff = Date.now() - 15000
+    const online = Object.entries(game.player_pings as Record<string, string>)
+      .filter(([, ts]) => new Date(ts).getTime() > cutoff)
+      .map(([uid]) => uid)
+    setOnlineUsers(online)
+  }, [game?.player_pings])
 
   return onlineUsers
 }

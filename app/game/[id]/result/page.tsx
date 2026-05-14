@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { supabase, getSession } from '../../../lib/supabase'
-
+import { getPlayerId } from '../../../lib/session'
+import { getGame, createGame, updateGame } from '../../../lib/api-client'
 
 export default function ResultPhase() {
   const router = useRouter()
@@ -15,14 +15,12 @@ export default function ResultPhase() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    let subscription: any
     async function init() {
-      const session = await getSession()
-      const uid = session?.user.id
+      const uid = getPlayerId()
       if (!uid) return router.push('/')
       setUserId(uid)
 
-      const { data: gameData } = await supabase.from('games').select('*').eq('id', gameId).single()
+      const gameData = await getGame(gameId)
       setGame(gameData)
       setLoading(false)
 
@@ -30,29 +28,23 @@ export default function ResultPhase() {
         router.push(`/game/${gameData.rematch_game_id}`)
         return
       }
-
-      subscription = supabase
-        .channel(`game-result-${gameId}`)
-        .on(
-          'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` },
-          (payload) => {
-            if (payload.new.rematch_game_id) {
-              router.push(`/game/${payload.new.rematch_game_id}`)
-            }
-          }
-        )
-        .subscribe()
     }
 
     init()
-
-    return () => {
-      if (subscription) {
-        supabase.removeChannel(subscription)
-      }
-    }
   }, [gameId, router])
+
+  // Poll for rematch game ID
+  useEffect(() => {
+    if (!userId) return
+    const interval = setInterval(async () => {
+      const g = await getGame(gameId)
+      if (g?.rematch_game_id) {
+        router.push(`/game/${g.rematch_game_id}`)
+      }
+      if (g) setGame(g)
+    }, 1500)
+    return () => clearInterval(interval)
+  }, [userId, gameId, router])
 
   if (loading) return (
       <div className="flex flex-1 w-full items-center justify-center from-transparent to-transparent">
@@ -96,27 +88,17 @@ export default function ResultPhase() {
                 router.push(`/game/${game.rematch_game_id}`)
                 return
               }
-              const session = await getSession()
-              const uid = session?.user.id
+              const uid = getPlayerId()
               if (!uid) return
 
-              const { data: newGame, error } = await supabase
-                .from('games')
-                .insert({
-                  id: Math.random().toString(36).substring(2, 8).toUpperCase(),
-                  player1_id: uid,
-                  player2_id: game.player1_id === uid ? game.player2_id : game.player1_id,
-                  status: 'setup'
-                })
-                .select()
-                .single()
+              const newGame = await createGame({
+                board_size: game.board_size ?? 10,
+                is_public: false,
+                player2_id: game.player1_id === uid ? game.player2_id : game.player1_id,
+                status: 'setup'
+              })
 
-              if (error) {
-                console.error('Failed to create rematch', error)
-                return
-              }
-
-              await supabase.from('games').update({ rematch_game_id: newGame.id }).eq('id', gameId)
+              await updateGame(gameId, { rematch_game_id: newGame.id })
               router.push(`/game/${newGame.id}`)
             }}
             className="px-8 py-4 bg-pink-400 text-brown-900 rounded-2xl font-bold text-lg hover:bg-pink-500 transition-all shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-[0_0px_0_theme(colors.pink.600)] active:translate-y-[4px] relative z-10 uppercase tracking-wider"

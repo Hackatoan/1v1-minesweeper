@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { supabase, getSession } from '../../../lib/supabase'
+import { getPlayerId } from '../../../lib/session'
+import { getGame, updateGame, getBoards, submitBoard } from '../../../lib/api-client'
 import { useGamePresence } from '../../../lib/useGamePresence'
-
-// boardSize removed
-// maxMines removed
 
 export default function SetupPhase() {
   const router = useRouter()
@@ -22,60 +20,44 @@ export default function SetupPhase() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isWaiting, setIsWaiting] = useState(false)
 
-  const onlineUsers = useGamePresence(gameId, userId)
+  const onlineUsers = useGamePresence(gameId, game)
   const isOpponentOnline = game ? (game.player1_id === userId ? onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id)) : false
 
   useEffect(() => {
-    let subscription: any
-
     async function init() {
-      const session = await getSession()
-      const uid = session?.user.id
+      const uid = getPlayerId()
       if (!uid) return router.push('/')
       setUserId(uid)
 
-      const { data: gameData } = await supabase.from('games').select('*').eq('id', gameId).single()
+      const gameData = await getGame(gameId)
       if (!gameData || gameData.status !== 'setup') {
-         if(gameData?.status === 'playing') router.push(`/game/${gameId}/play`)
+        if (gameData?.status === 'playing') router.push(`/game/${gameId}/play`)
       }
       setGame(gameData)
 
-      const { data: boardData } = await supabase
-        .from('boards')
-        .select('*')
-        .eq('game_id', gameId)
-        .eq('owner_id', uid)
-        .maybeSingle()
-
-      if (boardData) {
+      // Check if I already submitted a board
+      const boards = await getBoards(gameId)
+      const myBoard = boards.find((b: any) => b.owner_id === uid)
+      if (myBoard) {
         setIsWaiting(true)
       }
-
-      subscription = supabase
-        .channel(`game-setup-${gameId}`)
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'games', filter: `id=eq.${gameId}` }, (payload) => {
-           if (payload.new.status === 'finished') {
-               router.push(`/game/${gameId}/result`)
-           }
-           if (payload.new.status === 'playing') {
-               router.push(`/game/${gameId}/play`)
-           }
-        })
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'boards', filter: `game_id=eq.${gameId}` }, async () => {
-             const { count } = await supabase.from('boards').select('*', { count: 'exact', head: true }).eq('game_id', gameId)
-             if (count === 2) {
-                 await supabase.from('games').update({ status: 'playing' }).eq('id', gameId)
-             }
-        })
-        .subscribe()
     }
 
     init()
-
-    return () => {
-      if (subscription) supabase.removeChannel(subscription)
-    }
   }, [gameId, router])
+
+  // Poll for game status changes
+  useEffect(() => {
+    if (!userId) return
+    const interval = setInterval(async () => {
+      const g = await getGame(gameId)
+      if (!g) return
+      setGame(g)
+      if (g.status === 'playing') router.push(`/game/${gameId}/play`)
+      if (g.status === 'finished') router.push(`/game/${gameId}/result`)
+    }, 1500)
+    return () => clearInterval(interval)
+  }, [userId, gameId, router])
 
   const toggleMine = (r: number, c: number) => {
     if (isWaiting) return
@@ -87,17 +69,11 @@ export default function SetupPhase() {
     }
   }
 
-  const submitBoard = async () => {
+  const handleSubmitBoard = async () => {
     if (mines.length !== maxMines || !userId) return
     setIsSubmitting(true)
     try {
-      const { error } = await supabase.from('boards').insert({
-        game_id: gameId,
-        owner_id: userId,
-        mine_positions: mines,
-        reveal_state: []
-      })
-      if (error) throw error
+      await submitBoard(gameId, mines)
       setIsWaiting(true)
     } catch (e) {
       console.error(e)
@@ -111,7 +87,8 @@ export default function SetupPhase() {
     if (!userId || !game) return
     if (confirm('Are you sure you want to leave? Your opponent will win.')) {
       const winnerId = game.player1_id === userId ? game.player2_id : game.player1_id
-      await supabase.from('games').update({ status: 'finished', winner_id: winnerId }).eq('id', gameId); router.push('/');
+      await updateGame(gameId, { status: 'finished', winner_id: winnerId })
+      router.push('/')
     }
   }
 
@@ -187,7 +164,7 @@ export default function SetupPhase() {
 
         <div className="flex justify-center pt-4">
            <button
-             onClick={submitBoard}
+             onClick={handleSubmitBoard}
              disabled={mines.length !== maxMines || isSubmitting}
              className="px-10 py-4 bg-pink-400 text-brown-900 text-lg rounded-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pink-500 border border-pink-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-[0_0px_0_theme(colors.pink.600)] active:translate-y-[4px] uppercase tracking-wider"
            >

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase, getSession } from './lib/supabase'
+import { getPlayerId } from './lib/session'
+import { createGame, updateGame, listWaitingGames } from './lib/api-client'
 
 export default function Home() {
   const router = useRouter()
@@ -13,108 +14,58 @@ export default function Home() {
 
   // Fetch queue size
   const fetchQueueSize = async () => {
-      // 15 seconds ago
-      const cutoff = new Date(Date.now() - 15000).toISOString()
-      const { count } = await supabase
-          .from('games')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'waiting')
-          .eq('is_public', true)
-              .eq('board_size', 10)
-          .gte('last_ping', cutoff)
-      setQueueSize(count || 0)
+    const games = await listWaitingGames(10, 15000)
+    setQueueSize(games.length || 0)
   }
 
   // Polling queue size
   useEffect(() => {
-      fetchQueueSize()
-      const interval = setInterval(fetchQueueSize, 5000)
-      return () => clearInterval(interval)
+    fetchQueueSize()
+    const interval = setInterval(fetchQueueSize, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   async function joinRandomGame() {
-      setIsQueueing(true)
-      try {
-          const session = await getSession()
-          const userId = session?.user.id
-          if (!userId) throw new Error('No user session')
+    setIsQueueing(true)
+    try {
+      const userId = getPlayerId()
+      if (!userId) throw new Error('No player ID')
 
-          // Try to find an existing waiting game
-          const cutoff = new Date(Date.now() - 15000).toISOString()
-          const { data: games } = await supabase
-              .from('games')
-              .select('*')
-              .eq('status', 'waiting')
-              .eq('is_public', true)
-              .eq('board_size', 10)
-              .neq('player1_id', userId)
-              .gte('last_ping', cutoff)
-              .order('created_at', { ascending: true })
-              .limit(1)
+      // Try to find an existing waiting game
+      const games = await listWaitingGames(10, 15000)
+      const available = games.filter((g: any) => g.player1_id !== userId)
 
-          if (games && games.length > 0) {
-              // Join the game
-              const gameId = games[0].id
-              const { error } = await supabase
-                  .from('games')
-                  .update({ player2_id: userId, status: 'setup' })
-                  .eq('id', gameId)
-                  .is('player2_id', null)
-
-              if (!error) {
-                  router.push(`/game/${gameId}`)
-                  return
-              }
-          }
-
-          // No game found or failed to join, create a new public game
-          const { data, error } = await supabase
-              .from('games')
-              .insert({
-                  id: Math.random().toString(36).substring(2, 8).toUpperCase(),
-                  player1_id: userId,
-                  status: 'waiting',
-                  board_size: 10,
-                  is_public: true
-              })
-              .select()
-              .single()
-
-          if (error) throw error
-          router.push(`/game/${data.id}`)
-
-      } catch (error) {
-          console.error('Error joining random game:', error)
-          alert('Failed to join random game')
-      } finally {
-          setIsQueueing(false)
+      if (available.length > 0) {
+        // Join the first available game
+        const gameId = available[0].id
+        try {
+          await updateGame(gameId, { player2_id: userId, status: 'setup' })
+          router.push(`/game/${gameId}`)
+          return
+        } catch {
+          // Failed to join (race condition), fall through to create
+        }
       }
+
+      // No game found or failed to join, create a new public game
+      const data = await createGame({ board_size: 10, is_public: true })
+      router.push(`/game/${data.id}`)
+
+    } catch (error) {
+      console.error('Error joining random game:', error)
+      alert('Failed to join random game')
+    } finally {
+      setIsQueueing(false)
+    }
   }
 
-  async function createGame() {
+  async function handleCreateGame() {
     setIsLoading(true)
     try {
-      const session = await getSession()
-      const userId = session?.user.id
+      const userId = getPlayerId()
+      if (!userId) throw new Error('No player ID')
 
-      if (!userId) {
-          throw new Error('No user session')
-      }
-
-      const { data, error } = await supabase
-        .from('games')
-        .insert({
-          id: Math.random().toString(36).substring(2, 8).toUpperCase(),
-          player1_id: userId,
-          status: 'waiting',
-          board_size: boardSize,
-          is_public: false
-        })
-        .select()
-        .single()
-
-      if (error) throw error
-
+      const data = await createGame({ board_size: boardSize, is_public: false })
       router.push(`/game/${data.id}`)
     } catch (error) {
       console.error('Error creating game:', error)
@@ -147,7 +98,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col sm:flex-row gap-4 w-full">
             <button
-              onClick={createGame}
+              onClick={handleCreateGame}
               disabled={isLoading || isQueueing}
               className="flex-1 px-8 py-4 bg-pink-400 text-brown-900 border border-pink-500 text-lg rounded-xl font-black uppercase tracking-wider hover:bg-pink-500 disabled:opacity-70 disabled:cursor-not-allowed shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-[0_0px_0_theme(colors.pink.600)] active:translate-y-[4px] transition-all"
             >

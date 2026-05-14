@@ -1,44 +1,19 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { getGamesPlayed } from '../lib/api-client';
 
 export function GamesPlayed() {
   const [gamesPlayed, setGamesPlayed] = useState<number | null>(null);
 
   useEffect(() => {
-    async function fetchGamesPlayed() {
-      const { data, error } = await supabase
-        .from('global_stats')
-        .select('games_played')
-        .eq('id', 1)
-        .single();
-
-      if (data) {
-        setGamesPlayed(data.games_played);
-      }
+    const fetchCount = async () => {
+      const count = await getGamesPlayed()
+      setGamesPlayed(count)
     }
 
-    fetchGamesPlayed();
-
-    const channel = supabase
-      .channel('global_stats_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'global_stats',
-          filter: 'id=eq.1'
-        },
-        (payload) => {
-          setGamesPlayed(payload.new.games_played);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    fetchCount()
+    const interval = setInterval(fetchCount, 10000)
+    return () => clearInterval(interval)
   }, []);
 
   if (gamesPlayed === null) return null;

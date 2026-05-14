@@ -14,31 +14,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "1v1 Sweeper",
-  description: "Challenge a friend to a game of competitive Minesweeper. Set up your board, then race to clear theirs without hitting a mine! Built by hackatoa.",
+  title: { default: '1v1 Minesweeper', template: '%s | 1v1 Minesweeper' },
+  description: 'Play competitive 1v1 Minesweeper online. Challenge a friend, place your mines, and race to clear their board first. Free multiplayer browser game.',
   metadataBase: new URL('https://1v1sw.hackatoa.com'),
+  keywords: ['minesweeper', '1v1 minesweeper', 'multiplayer minesweeper', 'competitive minesweeper', 'online minesweeper', 'browser game'],
+  authors: [{ name: 'Hackatoa', url: 'https://hackatoa.com' }],
   openGraph: {
-    title: "1v1 Minesweeper",
-    description: "Challenge a friend to a game of competitive Minesweeper. Setup your board and race to clear theirs first!",
-    url: "https://1v1sw.hackatoa.com",
-    siteName: "1v1 Minesweeper",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "1v1 Minesweeper preview",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
+    title: '1v1 Minesweeper — Competitive Multiplayer',
+    description: 'Race your opponent to clear a minefield in this competitive 1v1 take on the classic game.',
+    url: 'https://1v1sw.hackatoa.com',
+    siteName: '1v1 Minesweeper',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: '1v1 Minesweeper' }],
+    locale: 'en_US',
+    type: 'website',
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "1v1 Minesweeper",
-    description: "Challenge a friend to a game of competitive Minesweeper. Setup your board and race to clear theirs first!",
-    images: ["/og-image.png"],
-  },
+  twitter: { card: 'summary_large_image', title: '1v1 Minesweeper', description: 'Competitive multiplayer minesweeper in your browser.' },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
 };
 
 export default function RootLayout({
@@ -55,8 +46,13 @@ export default function RootLayout({
         <GamesPlayed />
         {children}
         <footer className="fixed bottom-0 w-full bg-brown-800 border-brown-700/80 backdrop-blur-sm border-t border-brown-700/50 py-3 px-6 flex justify-between items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] text-sm">
-          <div className="text-pink-200/80 font-medium">
-            Built by <a href="https://hackatoa.com" target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300 hover:underline font-bold transition-colors">hackatoa</a>
+          <div className="flex items-center gap-4">
+            <div className="text-pink-200/80 font-medium">
+              Built by <a href="https://hackatoa.com" target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300 hover:underline font-bold transition-colors">hackatoa</a>
+            </div>
+            <a href="https://games.hackatoa.com" target="_blank" rel="noopener noreferrer" className="text-pink-300/60 hover:text-pink-400 font-semibold transition-colors hover:underline">
+              All Games →
+            </a>
           </div>
           <a href="https://buymeacoffee.com/hackatoa" target="_blank" rel="noopener noreferrer" className="bg-pink-200 hover:bg-pink-300 text-pink-900 px-4 py-1.5 rounded-full font-bold shadow-sm border border-pink-300 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
             <span>☕</span> Buy me a coffee
