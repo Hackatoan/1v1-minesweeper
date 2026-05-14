@@ -238,7 +238,7 @@ export default function PlayPhase() {
         )}
 
         {/* Opponent's Board (The one I click) */}
-        <div className="flex flex-col items-center gap-6 bg-brown-800 border-brown-700 p-8 rounded-3xl shadow-xl border border-brown-700 order-first lg:order-last">
+        <div className="flex flex-col items-center gap-4 sm:gap-6 bg-brown-800 border-brown-700 p-4 sm:p-8 rounded-3xl shadow-xl border border-brown-700 order-first lg:order-last">
             <div className="text-center w-full flex flex-col items-center">
                 <h2 className="text-3xl font-extrabold text-pink-100">Attack Board</h2>
                 <p className="text-pink-300/60 mt-2">Find safe zones. Avoid the mines!</p>
