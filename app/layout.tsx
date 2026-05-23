@@ -58,6 +58,23 @@ export default function RootLayout({
             <span>☕</span> Buy me a coffee
           </a>
         </footer>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{__html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoGame",
+            "name": "1v1 Minesweeper",
+            "url": "https://1v1sw.hackatoa.com/",
+            "description": "Play competitive 1v1 Minesweeper online. Both players place mines on each other's boards, then race to clear the minefield first.",
+            "genre": ["Strategy", "Puzzle"],
+            "playMode": "MultiPlayer",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Web Browser",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "author": { "@type": "Person", "name": "Jacob P Harris", "alternateName": "Hackatoa", "url": "https://hackatoa.com" },
+            "isPartOf": { "@type": "WebSite", "name": "Hackatoa Games", "url": "https://games.hackatoa.com" }
+          })}}
+        />
       </body>
     </html>
   );
