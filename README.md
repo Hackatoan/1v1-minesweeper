@@ -1,32 +1,43 @@
-[![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/hackatoa)
-
 # 1v1 Minesweeper
 
-Real-time competitive 1v1 Minesweeper. Two players, one board — race to clear the most cells without hitting a mine.
+![1v1 Minesweeper](https://1v1sw.hackatoa.com/og-image.svg)
 
-**Live:** [1v1sw.hackatoa.com](https://1v1sw.hackatoa.com)
+Competitive multiplayer minesweeper. Both players secretly place mines on each other's boards, then race to clear the minefield without detonating.
+
+**▶ Play at [1v1sw.hackatoa.com](https://1v1sw.hackatoa.com)**
+
+## Features
+
+- **vs AI** — three difficulty levels (Easy, Medium, Hard)
+  - Easy: slow and random
+  - Medium: avoids neighbors of previous explosions  
+  - Hard: perfect solver — always picks safe cells
+- **Real-time multiplayer** — private invite link or random matchmaking
+- Adjustable board size (5×5 to 20×20)
+- Flood-fill reveal on zero-mine-adjacent cells
+- Flag mode (right-click or toggle)
 
 ## How to play
 
-1. Share the game link with a friend
-2. Both players see the same board and take turns (or race simultaneously)
-3. The player with the highest score when the board is cleared wins
+1. Both players place mines on their own board
+2. Once both are ready, the race begins
+3. Click cells on your opponent's board to reveal safe zones
+4. **First to reveal all safe cells wins — hit a mine and you lose!**
 
-## Running locally
+## Tech stack
+
+- Next.js 15 (App Router)
+- Supabase (PostgreSQL for game state)
+- Tailwind CSS
+- Docker + GitHub Actions CI/CD
+
+## Self-hosting
 
 ```bash
-git clone https://github.com/Hackatoan/1v1-minesweeper
-cd 1v1-minesweeper
-npm install
-npm run dev
+# Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+docker run -p 3000:3000 ghcr.io/hackatoan/1v1-minesweeper:latest
 ```
-
-Open [http://localhost:3000](http://localhost:3000)
-
-## Deploy
-
-The live site auto-deploys via GitHub Actions on push to main. Built with Next.js and containerized via Docker.
 
 ---
 
-[hackatoa.com](https://hackatoa.com) · [GitHub](https://github.com/Hackatoan) · [Buy Me A Coffee](https://buymeacoffee.com/hackatoa)
+Part of [Hackatoa Games](https://games.hackatoa.com) · [Buy me a coffee](https://buymeacoffee.com/hackatoa)
