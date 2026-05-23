@@ -53,6 +53,9 @@ export default function RootLayout({
             <a href="https://games.hackatoa.com" target="_blank" rel="noopener noreferrer" className="text-pink-300/60 hover:text-pink-400 font-semibold transition-colors hover:underline">
               All Games →
             </a>
+            <a href="https://github.com/Hackatoan/1v1-minesweeper" target="_blank" rel="noopener noreferrer" className="text-pink-300/40 hover:text-pink-400 font-medium transition-colors hover:underline hidden sm:inline">
+              Source
+            </a>
           </div>
           <a href="https://buymeacoffee.com/hackatoa" target="_blank" rel="noopener noreferrer" className="bg-pink-200 hover:bg-pink-300 text-pink-900 px-4 py-1.5 rounded-full font-bold shadow-sm border border-pink-300 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
             <span>☕</span> Buy me a coffee
