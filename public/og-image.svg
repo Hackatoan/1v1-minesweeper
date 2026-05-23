@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3a1a2a"/>
+      <stop offset="100%" style="stop-color:#1a0a14"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="bigblur"><feGaussianBlur stdDeviation="60"/></filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Pink glow -->
+  <ellipse cx="300" cy="315" rx="280" ry="220" fill="#f43f5e" opacity="0.12" filter="url(#bigblur)"/>
+  <ellipse cx="900" cy="315" rx="280" ry="220" fill="#f472b6" opacity="0.12" filter="url(#bigblur)"/>
+  <!-- Left player board (mini) -->
+  <g transform="translate(80,150)">
+    <text x="100" y="-15" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#f43f5e" letter-spacing="3">PLAYER 1</text>
+    <g fill="#2a1020" stroke="#9d174d" stroke-width="1.5">
+      <rect x="0" y="0" width="45" height="45" rx="3"/><rect x="50" y="0" width="45" height="45" rx="3"/>
+      <rect x="100" y="0" width="45" height="45" rx="3"/><rect x="150" y="0" width="45" height="45" rx="3"/>
+      <rect x="0" y="50" width="45" height="45" rx="3"/><rect x="50" y="50" width="45" height="45" rx="3"/>
+      <rect x="100" y="50" width="45" height="45" rx="3"/><rect x="150" y="50" width="45" height="45" rx="3"/>
+      <rect x="0" y="100" width="45" height="45" rx="3"/><rect x="50" y="100" width="45" height="45" rx="3"/>
+      <rect x="100" y="100" width="45" height="45" rx="3"/><rect x="150" y="100" width="45" height="45" rx="3"/>
+      <rect x="0" y="150" width="45" height="45" rx="3"/><rect x="50" y="150" width="45" height="45" rx="3"/>
+      <rect x="100" y="150" width="45" height="45" rx="3"/><rect x="150" y="150" width="45" height="45" rx="3"/>
+    </g>
+    <!-- Mines placed -->
+    <circle cx="22" cy="22" r="12" fill="#f43f5e" opacity="0.9"/>
+    <circle cx="122" cy="72" r="12" fill="#f43f5e" opacity="0.9"/>
+    <circle cx="172" cy="172" r="12" fill="#f43f5e" opacity="0.9"/>
+    <circle cx="72" cy="122" r="12" fill="#f43f5e" opacity="0.9"/>
+    <!-- Explosion on one -->
+    <text x="172" y="230" text-anchor="middle" font-size="30" fill="#fbbf24">💥</text>
+  </g>
+  <!-- VS in center -->
+  <text x="600" y="280" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="120" font-weight="900" fill="#f9a8d4" opacity="0.15">VS</text>
+  <text x="600" y="350" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="80" font-weight="900" fill="#f472b6" filter="url(#glow)">VS</text>
+  <!-- Right player board -->
+  <g transform="translate(870,150)">
+    <text x="100" y="-15" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#f472b6" letter-spacing="3">PLAYER 2</text>
+    <g fill="#2a1020" stroke="#be185d" stroke-width="1.5">
+      <rect x="0" y="0" width="45" height="45" rx="3"/><rect x="50" y="0" width="45" height="45" rx="3"/>
+      <rect x="100" y="0" width="45" height="45" rx="3"/><rect x="150" y="0" width="45" height="45" rx="3"/>
+      <rect x="0" y="50" width="45" height="45" rx="3"/><rect x="50" y="50" width="45" height="45" rx="3"/>
+      <rect x="100" y="50" width="45" height="45" rx="3"/><rect x="150" y="50" width="45" height="45" rx="3"/>
+      <rect x="0" y="100" width="45" height="45" rx="3"/><rect x="50" y="100" width="45" height="45" rx="3"/>
+      <rect x="100" y="100" width="45" height="45" rx="3"/><rect x="150" y="100" width="45" height="45" rx="3"/>
+      <rect x="0" y="150" width="45" height="45" rx="3"/><rect x="50" y="150" width="45" height="45" rx="3"/>
+      <rect x="100" y="150" width="45" height="45" rx="3"/><rect x="150" y="150" width="45" height="45" rx="3"/>
+    </g>
+    <circle cx="72" cy="22" r="12" fill="#f472b6" opacity="0.9"/>
+    <circle cx="22" cy="122" r="12" fill="#f472b6" opacity="0.9"/>
+    <circle cx="172" cy="72" r="12" fill="#f472b6" opacity="0.9"/>
+    <circle cx="122" cy="172" r="12" fill="#f472b6" opacity="0.9"/>
+  </g>
+  <!-- Title -->
+  <text x="600" y="480" text-anchor="middle" font-family="Arial Black,sans-serif" font-size="54" font-weight="900" letter-spacing="3" fill="#fbcfe8">1v1 MINESWEEPER</text>
+  <text x="600" y="535" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" letter-spacing="5" fill="#a18072">PLACE MINES  ·  RACE TO CLEAR  ·  FREE</text>
+  <rect x="0" y="580" width="1200" height="50" fill="#1a0a14" opacity="0.7"/>
+  <text x="600" y="612" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" fill="#846358" letter-spacing="4">HACKATOA GAMES  ·  games.hackatoa.com</text>
+</svg>
