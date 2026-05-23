@@ -117,6 +117,14 @@ export default function Home() {
                 </div>
             </div>
         </div>
+        <div className="pt-4 border-t border-brown-700/50 w-full flex justify-center">
+            <a
+              href="/solo"
+              className="w-full sm:w-auto px-8 py-3 bg-brown-700 text-pink-300 border border-brown-600/60 text-base rounded-xl font-bold uppercase tracking-wider hover:bg-brown-600 hover:text-pink-200 transition-all text-center"
+            >
+              🤖 Play vs AI
+            </a>
+        </div>
       </div>
     </main>
   )
