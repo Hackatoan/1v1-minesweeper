@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     description: 'Race your opponent to clear a minefield in this competitive 1v1 take on the classic game.',
     url: 'https://1v1sw.hackatoa.com',
     siteName: '1v1 Minesweeper',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: '1v1 Minesweeper' }],
+    images: [{ url: '/og-image.svg', width: 1200, height: 630, alt: '1v1 Minesweeper' }],
     locale: 'en_US',
     type: 'website',
   },
