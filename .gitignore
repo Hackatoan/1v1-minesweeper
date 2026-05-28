@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Dev/CI artifacts (should not be committed)
+dev_server.log
+next_output.log
+next_pid.txt
+plan_step_complete.sh
+commit.py
