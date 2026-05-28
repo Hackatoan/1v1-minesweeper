@@ -7,6 +7,44 @@ import { getGame, getBoards, getMoves, insertMoves, updateGame, incrementGamesPl
 import { useGamePresence } from '../../../lib/useGamePresence'
 import { calculateAdjacentMines } from '../../../lib/game-logic'
 import { Board, MinePosition } from '../../../lib/types'
+import useLongPress from '../../../lib/useLongPress'
+
+const NUMBER_COLORS = ['text-transparent', 'text-blue-500', 'text-orange-500', 'text-rose-500', 'text-purple-500', 'text-amber-500', 'text-cyan-500', 'text-zinc-800', 'text-zinc-500']
+
+function MineCellButton({
+  r, c, isRevealed, hitMine, adjacentMines, isFlagged,
+  onDig, onFlag
+}: {
+  r: number; c: number
+  isRevealed: boolean; hitMine: boolean; adjacentMines: number; isFlagged: boolean
+  onDig: (r: number, c: number) => void
+  onFlag: (r: number, c: number) => void
+}) {
+  const longPress = useLongPress(
+    () => onFlag(r, c),
+    () => onDig(r, c)
+  )
+
+  if (isRevealed) {
+    return (
+      <div className={`mine-cell w-10 h-10 sm:w-12 sm:h-12 text-xl font-black flex items-center justify-center
+        ${hitMine ? 'bg-rose-500 shadow-inner' : 'bg-brown-700 border border-brown-600/50 shadow-inner'}`}>
+        {hitMine && '💥'}
+        {!hitMine && adjacentMines > 0 && <span className={NUMBER_COLORS[adjacentMines] || 'text-zinc-800'}>{adjacentMines}</span>}
+      </div>
+    )
+  }
+
+  return (
+    <button
+      {...longPress}
+      onContextMenu={(e) => { e.preventDefault(); onFlag(r, c) }}
+      className="mine-cell w-10 h-10 sm:w-12 sm:h-12 text-xl font-black flex items-center justify-center bg-brown-600 border border-brown-500/50 hover:bg-pink-300 cursor-pointer shadow-sm hover:shadow active:scale-95"
+    >
+      {isFlagged && '🚩'}
+    </button>
+  )
+}
 
 export default function PlayPhase() {
   const router = useRouter()
@@ -71,8 +109,7 @@ export default function PlayPhase() {
     return () => clearInterval(interval)
   }, [userId, gameId, router])
 
-  const toggleFlag = (e: React.MouseEvent | React.TouchEvent | undefined, r: number, c: number) => {
-      if (e) e.preventDefault()
+  const toggleFlag = (r: number, c: number) => {
       if (myMoves.some(m => m.cell.r === r && m.cell.c === c)) return
       setFlags(prev => {
           const isFlagged = prev.some(f => f.r === r && f.c === c)
@@ -82,6 +119,14 @@ export default function PlayPhase() {
               return [...prev, {r, c}]
           }
       })
+  }
+
+  const handleCellAction = (r: number, c: number) => {
+    if (flagMode) {
+      toggleFlag(r, c)
+    } else {
+      handleCellClick(r, c)
+    }
   }
 
   const handleCellClick = async (r: number, c: number) => {
@@ -176,11 +221,6 @@ export default function PlayPhase() {
       </div>
   )
 
-  const getNumberColor = (num: number) => {
-      const colors = ['text-transparent', 'text-blue-500', 'text-orange-500', 'text-rose-500', 'text-purple-500', 'text-amber-500', 'text-cyan-500', 'text-zinc-800', 'text-zinc-500']
-      return colors[num] || 'text-zinc-800'
-  }
-
   const forfeitGame = async () => {
     if (!userId || !game) return
     if (confirm('Are you sure you want to forfeit? Your opponent will win.')) {
@@ -215,9 +255,16 @@ export default function PlayPhase() {
     if (!move.hit_mine) opponentSafeMovesCount++;
   }
 
+  const toggleButtonClasses = (active: boolean, variant: 'dig' | 'flag') =>
+    `px-4 py-2 rounded-lg font-bold text-sm transition-all ${
+      active
+        ? variant === 'flag' ? 'bg-rose-500 text-white shadow-md' : 'bg-brown-600 border border-brown-500/50 hover:bg-brown-500 text-white shadow-md'
+        : 'text-pink-300/60 hover:text-brown-700 hover:bg-brown-700 border border-brown-600/50 shadow-inner'
+    }`
+
   return (
-    <div className="flex flex-1 w-full flex-col items-center justify-center p-6  from-transparent to-transparent">
-      <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-start pt-4 pb-20">
+    <div className="flex flex-1 w-full flex-col items-center justify-center p-6 from-transparent to-transparent">
+      <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-start pt-4 pb-28 lg:pb-20">
 
         {!isOpponentOnline && (
           <div className="col-span-full bg-rose-950/30 border border-rose-900/50 text-rose-400 px-6 py-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
@@ -242,20 +289,13 @@ export default function PlayPhase() {
             <div className="text-center w-full flex flex-col items-center">
                 <h2 className="text-3xl font-extrabold text-pink-100">Attack Board</h2>
                 <p className="text-pink-300/60 mt-2">Find safe zones. Avoid the mines!</p>
-                <div className="mt-4 flex gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50">
-                    <button
-                        onClick={() => setFlagMode(false)}
-                        className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${!flagMode ? 'bg-brown-600 border border-brown-500/50 hover:bg-brown-500 text-white shadow-md' : 'text-pink-300/60 hover:text-brown-700 hover:bg-brown-700 border border-brown-600/50 shadow-inner'}`}
-                    >
-                        ⛏️ Dig
-                    </button>
-                    <button
-                        onClick={() => setFlagMode(true)}
-                        className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${flagMode ? 'bg-rose-500 text-white shadow-md' : 'text-pink-300/60 hover:text-brown-700 hover:bg-brown-700 border border-brown-600/50 shadow-inner'}`}
-                    >
-                        🚩 Flag
-                    </button>
+                {/* Desktop toggle — hidden on mobile (sticky bar handles it) */}
+                <div className="hidden lg:flex mt-4 gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50">
+                    <button onClick={() => setFlagMode(false)} className={toggleButtonClasses(!flagMode, 'dig')}>⛏️ Dig</button>
+                    <button onClick={() => setFlagMode(true)} className={toggleButtonClasses(flagMode, 'flag')}>🚩 Flag</button>
                 </div>
+                {/* Mobile hint */}
+                <p className="lg:hidden text-xs text-pink-300/40 mt-3">Tap to dig · Hold to flag</p>
             </div>
 
             <div
@@ -267,34 +307,21 @@ export default function PlayPhase() {
                     const key = `${r},${c}`
                     const move = myMovesMap.get(key)
                     const isRevealed = !!move
-                    const hitMine = move?.hit_mine
+                    const hitMine = move?.hit_mine ?? false
                     const adjacentMines = isRevealed && !hitMine && opponentBoard ? calculateAdjacentMines(r, c, opponentBoard, boardSize) : 0
                     const isFlagged = flagsSet.has(key)
 
                     return (
-                    <button
+                      <MineCellButton
                         key={`opp-${r}-${c}`}
-                        onClick={(e) => {
-                            if (flagMode) {
-                                toggleFlag(e, r, c)
-                            } else {
-                                handleCellClick(r, c)
-                            }
-                        }}
-                        onContextMenu={(e) => toggleFlag(e, r, c)}
-                        disabled={isRevealed}
-                        className={`mine-cell w-10 h-10 sm:w-12 sm:h-12 text-xl font-black flex items-center justify-center
-                        ${!isRevealed ? 'bg-brown-600 border border-brown-500/50 hover:bg-pink-300 cursor-pointer shadow-sm hover:shadow active:scale-95'
-                          : hitMine ? 'bg-rose-500 shadow-inner'
-                          : 'bg-brown-700 border border-brown-600/50 shadow-inner'}
-                        `}
-                    >
-                        {hitMine && '💥'}
-                        {!isRevealed && isFlagged && '🚩'}
-                        {isRevealed && !hitMine && adjacentMines > 0 && (
-                            <span className={getNumberColor(adjacentMines)}>{adjacentMines}</span>
-                        )}
-                    </button>
+                        r={r} c={c}
+                        isRevealed={isRevealed}
+                        hitMine={hitMine}
+                        adjacentMines={adjacentMines}
+                        isFlagged={isFlagged}
+                        onDig={handleCellAction}
+                        onFlag={toggleFlag}
+                      />
                     )
                 })
                 ))}
@@ -363,6 +390,22 @@ export default function PlayPhase() {
             </div>
         </div>
 
+      </div>
+
+      {/* Sticky mobile toggle — always visible at bottom of screen */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-brown-900/95 border-t border-brown-700/60 backdrop-blur-sm flex items-center justify-center gap-3">
+        <button
+          onClick={() => setFlagMode(false)}
+          className={`flex-1 max-w-40 py-3 rounded-xl font-bold text-base transition-all ${toggleButtonClasses(!flagMode, 'dig')}`}
+        >
+          ⛏️ Dig
+        </button>
+        <button
+          onClick={() => setFlagMode(true)}
+          className={`flex-1 max-w-40 py-3 rounded-xl font-bold text-base transition-all ${toggleButtonClasses(flagMode, 'flag')}`}
+        >
+          🚩 Flag
+        </button>
       </div>
     </div>
   )
