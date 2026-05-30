@@ -112,9 +112,11 @@ export default function Home() {
                 >
                 {isQueueing ? 'Joining...' : 'Find Random Match'}
                 </button>
-                <div className="absolute -bottom-8 w-full text-center text-xs font-medium text-pink-300/60">
+                {queueSize > 0 && (
+                  <div className="absolute -bottom-8 w-full text-center text-xs font-medium text-pink-300/60">
                     Players waiting in queue: {queueSize}
-                </div>
+                  </div>
+                )}
             </div>
         </div>
         <div className="pt-4 border-t border-brown-700/50 w-full flex justify-center">
