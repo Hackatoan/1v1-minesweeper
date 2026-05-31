@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { GamesPlayed } from "./components/GamesPlayed";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -77,6 +78,13 @@ export default function RootLayout({
             "author": { "@type": "Person", "name": "Jacob P Harris", "alternateName": "Hackatoa", "url": "https://hackatoa.com" },
             "isPartOf": { "@type": "WebSite", "name": "Hackatoa Games", "url": "https://games.hackatoa.com" }
           })}}
+        />
+        {/* Cloudflare Web Analytics */}
+        <Script
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={'{"token": "1fb943269b344332804cfc907bf18ee5"}'}
+          strategy="afterInteractive"
         />
       </body>
     </html>
