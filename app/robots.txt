@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /game/
 
 Sitemap: https://1v1sw.hackatoa.com/sitemap.xml
