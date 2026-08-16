@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getPlayerId } from './lib/session'
-import { createGame, updateGame, listWaitingGames } from './lib/api-client'
+import { getPlayerId, getPlayerName, setPlayerName } from './lib/session'
+import { createGame, updateGame, listWaitingGames, getLeaderboard } from './lib/api-client'
 
 export default function Home() {
   const router = useRouter()
@@ -11,6 +11,15 @@ export default function Home() {
   const [isQueueing, setIsQueueing] = useState(false)
   const [boardSize, setBoardSize] = useState(10)
   const [queueSize, setQueueSize] = useState(0)
+  const [name, setName] = useState('')
+  const [leaders, setLeaders] = useState<any[]>([])
+  const [lbLoaded, setLbLoaded] = useState(false)
+
+  // Nickname + leaderboard
+  useEffect(() => {
+    setName(getPlayerName())
+    getLeaderboard().then(d => { setLeaders(d.players || []); setLbLoaded(true) }).catch(() => setLbLoaded(true))
+  }, [])
 
   // Fetch queue size
   const fetchQueueSize = async () => {
@@ -85,6 +94,17 @@ export default function Home() {
             Set up your board, then race to clear theirs without hitting a mine!
             </p>
         </div>
+        <div className="flex flex-col gap-2 items-center w-full max-w-xs">
+          <label className="text-pink-200/80 font-medium">Nickname</label>
+          <input
+            type="text"
+            value={name}
+            maxLength={24}
+            placeholder="Enter a nickname for the leaderboard"
+            onChange={(e) => { setName(e.target.value); setPlayerName(e.target.value) }}
+            className="w-full px-4 py-2 rounded-xl bg-brown-900/50 border border-brown-600/60 text-pink-100 placeholder:text-pink-300/40 text-center focus:outline-none focus:border-pink-400"
+          />
+        </div>
         <div className="flex flex-col gap-2 items-center w-full max-w-xs mb-4">
           <label className="text-pink-200/80 font-medium">Board Size: {boardSize}x{boardSize}</label>
           <input
@@ -126,6 +146,36 @@ export default function Home() {
             >
               🤖 Play vs AI
             </a>
+        </div>
+
+        <div className="w-full pt-4 border-t border-brown-700/50">
+            <h2 className="text-center text-pink-300 font-bold uppercase tracking-wider mb-3">🏆 Leaderboard</h2>
+            <table className="w-full text-sm text-pink-100">
+              <thead>
+                <tr className="text-pink-300/60">
+                  <th className="text-left font-medium py-1 px-2">#</th>
+                  <th className="text-left font-medium py-1 px-2">Player</th>
+                  <th className="text-right font-medium py-1 px-2">W</th>
+                  <th className="text-right font-medium py-1 px-2">L</th>
+                </tr>
+              </thead>
+              <tbody>
+                {!lbLoaded && (
+                  <tr><td colSpan={4} className="py-2 px-2 text-pink-300/50">Loading…</td></tr>
+                )}
+                {lbLoaded && leaders.length === 0 && (
+                  <tr><td colSpan={4} className="py-2 px-2 text-pink-300/50">No games played yet — be the first!</td></tr>
+                )}
+                {leaders.map((p, i) => (
+                  <tr key={p.player} className={p.player === name ? 'text-pink-400 font-bold' : ''}>
+                    <td className="py-1 px-2">{i + 1}</td>
+                    <td className="py-1 px-2">{p.player}</td>
+                    <td className="py-1 px-2 text-right">{p.wins}</td>
+                    <td className="py-1 px-2 text-right">{p.losses}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
         </div>
       </div>
     </main>

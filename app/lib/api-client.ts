@@ -1,8 +1,8 @@
 'use client'
-import { getPlayerId } from './session'
+import { getPlayerId, getPlayerName } from './session'
 
 function headers() {
-  return { 'Content-Type': 'application/json', 'X-Player-Id': getPlayerId() }
+  return { 'Content-Type': 'application/json', 'X-Player-Id': getPlayerId(), 'X-Player-Name': getPlayerName() }
 }
 
 // Games
@@ -77,4 +77,11 @@ export async function getGamesPlayed(): Promise<number> {
 
 export async function incrementGamesPlayed() {
   await fetch('/api/stats/increment', { method: 'POST', headers: headers() })
+}
+
+// Leaderboard
+export async function getLeaderboard(): Promise<{ game: string, players: any[] }> {
+  const res = await fetch('/api/leaderboard')
+  if (!res.ok) return { game: '', players: [] }
+  return res.json()
 }

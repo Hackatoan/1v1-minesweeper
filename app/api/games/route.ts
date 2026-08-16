@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { pool } from '../../lib/db'
+import { cleanName } from '../../lib/leaderboard'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -35,11 +36,12 @@ export async function POST(req: NextRequest) {
   const isPublic = body.is_public ?? false
   const player2Id = body.player2_id ?? null
   const status = body.status ?? 'waiting'
+  const player1Name = cleanName(req.headers.get('X-Player-Name')) || null
 
   const { rows } = await pool.query(
-    `INSERT INTO games (id, player1_id, player2_id, status, board_size, is_public, player_pings)
-     VALUES ($1, $2, $3, $4::game_status, $5, $6, $7) RETURNING *`,
-    [id, playerId, player2Id, status, boardSize, isPublic, JSON.stringify({ [playerId]: new Date().toISOString() })]
+    `INSERT INTO games (id, player1_id, player2_id, status, board_size, is_public, player_pings, player1_name)
+     VALUES ($1, $2, $3, $4::game_status, $5, $6, $7, $8) RETURNING *`,
+    [id, playerId, player2Id, status, boardSize, isPublic, JSON.stringify({ [playerId]: new Date().toISOString() }), player1Name]
   )
   return NextResponse.json(rows[0])
 }

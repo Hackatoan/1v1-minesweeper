@@ -49,3 +49,7 @@ $$ LANGUAGE plpgsql;
 CREATE INDEX idx_games_status ON games(status);
 CREATE INDEX idx_games_last_ping ON games(last_ping);
 CREATE INDEX idx_moves_game_id ON moves(game_id);
+
+-- Player nicknames for the shared cross-game leaderboards. Added 2026-08-15.
+ALTER TABLE games ADD COLUMN IF NOT EXISTS player1_name TEXT;
+ALTER TABLE games ADD COLUMN IF NOT EXISTS player2_name TEXT;
