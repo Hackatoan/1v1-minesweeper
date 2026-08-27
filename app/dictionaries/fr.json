@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "title": "1v1 Minesweeper — Multijoueur compétitif",
+    "description": "Jouez à 1v1 Minesweeper en ligne de manière compétitive. Défiez un ami, placez vos mines et soyez le premier à vider sa grille. Jeu de navigateur multijoueur gratuit."
+  },
+  "landing": {
+    "tagline": "Défiez un ami à une partie de Démineur compétitif. Configurez votre grille, puis essayez d'être le plus rapide à vider la sienne sans tomber sur une mine !",
+    "nickname": "Pseudo",
+    "nicknamePlaceholder": "Entrez un pseudo pour le classement",
+    "boardSize": "Taille de la grille",
+    "creating": "Création...",
+    "createPrivate": "Créer une partie privée",
+    "joining": "Connexion...",
+    "findMatch": "Trouver une partie aléatoire",
+    "queueWaiting": "Joueurs en attente dans la file",
+    "playVsAi": "🤖 Jouer contre l'IA",
+    "leaderboard": "🏆 Classement",
+    "colPlayer": "Joueur",
+    "loading": "Chargement…",
+    "noGames": "Aucune partie jouée pour l'instant — soyez le premier !",
+    "failRandom": "Échec de la connexion à la partie aléatoire",
+    "failCreate": "Échec de la création de la partie"
+  }
+}

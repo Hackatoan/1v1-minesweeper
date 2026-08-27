@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "title": "1v1 Minesweeper — Kompetitives Multiplayer",
+    "description": "Spiele kompetitives 1v1 Minesweeper online. Fordere einen Freund heraus, platziere deine Minen und rase darum, sein Spielfeld zuerst zu räumen. Kostenloses Browser-Multiplayer-Spiel."
+  },
+  "landing": {
+    "tagline": "Fordere einen Freund zu einer Runde kompetitivem Minesweeper heraus. Baue dein Spielfeld auf und rase dann darum, seines zu räumen, ohne eine Mine zu treffen!",
+    "nickname": "Spitzname",
+    "nicknamePlaceholder": "Gib einen Spitznamen für die Bestenliste ein",
+    "boardSize": "Spielfeldgröße",
+    "creating": "Wird erstellt...",
+    "createPrivate": "Private Partie erstellen",
+    "joining": "Wird beigetreten...",
+    "findMatch": "Zufälliges Match finden",
+    "queueWaiting": "Spieler in der Warteschlange",
+    "playVsAi": "🤖 Gegen KI spielen",
+    "leaderboard": "🏆 Bestenliste",
+    "colPlayer": "Spieler",
+    "loading": "Wird geladen...",
+    "noGames": "Noch keine Spiele gespielt — sei der Erste!",
+    "failRandom": "Fehler beim Beitreten des zufälligen Spiels",
+    "failCreate": "Fehler beim Erstellen des Spiels"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "title": "1v1 Minesweeper — Multijugador Competitivo",
+    "description": "Juega a 1v1 Minesweeper online de forma competitiva. Desafía a un amigo, coloca tus minas y sé el primero en despejar su tablero. Juego multijugador gratuito para navegador."
+  },
+  "landing": {
+    "tagline": "Desafía a un amigo a una partida de Buscaminas competitivo. ¡Prepara tu tablero y compite para despejar el suyo sin pisar una mina!",
+    "nickname": "Apodo",
+    "nicknamePlaceholder": "Introduce un apodo para la clasificación",
+    "boardSize": "Tamaño del tablero",
+    "creating": "Creando...",
+    "createPrivate": "Crear partida privada",
+    "joining": "Uniéndose...",
+    "findMatch": "Buscar partida aleatoria",
+    "queueWaiting": "Jugadores esperando en la cola",
+    "playVsAi": "🤖 Jugar contra la IA",
+    "leaderboard": "🏆 Clasificación",
+    "colPlayer": "Jugador",
+    "loading": "Cargando...",
+    "noGames": "Aún no se han jugado partidas; ¡sé el primero!",
+    "failRandom": "No se pudo unir a la partida aleatoria",
+    "failCreate": "No se pudo crear la partida"
+  }
+}

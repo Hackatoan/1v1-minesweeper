@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "title": "1v1 Minesweeper — Đấu Trận Đối Kháng Trực Tuyến",
+    "description": "Chơi 1v1 Minesweeper đối kháng trực tuyến. Thách đấu bạn bè, đặt mìn và chạy đua phá đảo bảng của đối thủ trước. Trò chơi nhiều người chơi miễn phí trên trình duyệt."
+  },
+  "landing": {
+    "tagline": "Thách đấu bạn bè một ván Dò Mìn đối kháng. Thiết lập bảng của bạn, sau đó chạy đua phá đảo bảng của đối phương mà không dẫm phải mìn!",
+    "nickname": "Biệt danh",
+    "nicknamePlaceholder": "Nhập biệt danh cho bảng xếp hạng",
+    "boardSize": "Kích thước bảng",
+    "creating": "Đang tạo...",
+    "createPrivate": "Tạo Phòng Riêng",
+    "joining": "Đang tham gia...",
+    "findMatch": "Tìm Trận Ngẫu Nhiên",
+    "queueWaiting": "Người chơi đang chờ trong hàng đợi",
+    "playVsAi": "🤖 Chơi với AI",
+    "leaderboard": "🏆 Bảng Xếp Hạng",
+    "colPlayer": "Người chơi",
+    "loading": "Đang tải…",
+    "noGames": "Chưa có trận đấu nào — hãy là người đầu tiên!",
+    "failRandom": "Không thể tham gia trận ngẫu nhiên",
+    "failCreate": "Không thể tạo trận đấu"
+  }
+}
