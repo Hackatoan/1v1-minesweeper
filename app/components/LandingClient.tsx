@@ -18,6 +18,15 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
   const [leaders, setLeaders] = useState<any[]>([])
   const [lbLoaded, setLbLoaded] = useState(false)
 
+  // Remember the visitor's locale so the locale-less solo + game-room pages
+  // (which resolve language per-player from hk_lang) show their language. Also
+  // set <html lang> here: the shared root layout renders lang="en" for SSR, so
+  // correct it client-side on the localized routes for a11y/JS-aware crawlers.
+  useEffect(() => {
+    try { localStorage.setItem('hk_lang', locale) } catch { /* ignore */ }
+    try { document.documentElement.lang = locale } catch { /* ignore */ }
+  }, [locale])
+
   useEffect(() => {
     setName(getPlayerName())
     getLeaderboard().then(d => { setLeaders(d.players || []); setLbLoaded(true) }).catch(() => setLbLoaded(true))

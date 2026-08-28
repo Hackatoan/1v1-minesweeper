@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { getPlayerId } from '../../../lib/session'
 import { getGame, createGame, updateGame } from '../../../lib/api-client'
+import { useT } from '../../../lib/i18n-client'
 
 export default function ResultPhase() {
+  const { t } = useT()
   const router = useRouter()
   const params = useParams()
   const gameId = params.id as string
@@ -55,7 +57,7 @@ export default function ResultPhase() {
   if (!game || game.status !== 'finished') {
       return (
           <div className="flex flex-1 w-full items-center justify-center from-transparent to-transparent">
-             <div className="bg-brown-800 p-8 rounded-2xl shadow-md text-center border border-brown-700">Game is not finished yet.</div>
+             <div className="bg-brown-800 p-8 rounded-2xl shadow-md text-center border border-brown-700">{t('game.notFinished')}</div>
           </div>
       )
   }
@@ -73,12 +75,12 @@ export default function ResultPhase() {
                 {didIWin ? '🏆' : '💥'}
             </div>
             <h2 className={`text-5xl font-black tracking-tight ${didIWin ? 'text-pink-400' : 'text-rose-400'}`}>
-            {didIWin ? 'Victory!' : 'Defeat!'}
+            {didIWin ? t('game.victory') : t('game.defeat')}
             </h2>
             <p className="text-xl text-pink-200/80 leading-relaxed font-medium px-4">
             {didIWin
-                ? 'You expertly navigated the minefield while your opponent perished.'
-                : 'You hit a mine or were outpaced by your opponent.'}
+                ? t('game.victoryDesc')
+                : t('game.defeatDesc')}
             </p>
         </div>
 
@@ -103,7 +105,7 @@ export default function ResultPhase() {
             }}
             className="px-8 py-4 bg-pink-400 text-brown-900 rounded-2xl font-bold text-lg hover:bg-pink-500 transition-all shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-[0_0px_0_theme(colors.pink.600)] active:translate-y-[4px] relative z-10 uppercase tracking-wider"
         >
-          Rematch
+          {t('game.rematch')}
         </button>
       </div>
     </div>

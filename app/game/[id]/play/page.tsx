@@ -8,6 +8,7 @@ import { useGamePresence } from '../../../lib/useGamePresence'
 import { calculateAdjacentMines } from '../../../lib/game-logic'
 import { Board, MinePosition } from '../../../lib/types'
 import useLongPress from '../../../lib/useLongPress'
+import { useT } from '../../../lib/i18n-client'
 
 const NUMBER_COLORS = ['text-transparent', 'text-blue-500', 'text-orange-500', 'text-rose-500', 'text-purple-500', 'text-amber-500', 'text-cyan-500', 'text-zinc-800', 'text-zinc-500']
 
@@ -47,6 +48,7 @@ function MineCellButton({
 }
 
 export default function PlayPhase() {
+  const { t } = useT()
   const router = useRouter()
   const params = useParams()
   const gameId = params.id as string
@@ -223,7 +225,7 @@ export default function PlayPhase() {
 
   const forfeitGame = async () => {
     if (!userId || !game) return
-    if (confirm('Are you sure you want to forfeit? Your opponent will win.')) {
+    if (confirm(t('game.confirmForfeit'))) {
       const winnerId = game.player1_id === userId ? game.player2_id : game.player1_id
       await updateGame(gameId, { status: 'finished', winner_id: winnerId })
       await incrementGamesPlayed()
@@ -271,15 +273,15 @@ export default function PlayPhase() {
             <div className="flex items-center gap-3">
               <span className="text-2xl">⚠️</span>
               <div>
-                <p className="font-bold">Opponent Disconnected</p>
-                <p className="text-sm opacity-90">Your opponent has left the game or lost connection. You can wait for them to return or leave the game.</p>
+                <p className="font-bold">{t('game.oppDisconnected')}</p>
+                <p className="text-sm opacity-90">{t('game.oppDisconnectedDesc')}</p>
               </div>
             </div>
             <button
               onClick={forfeitGame}
               className="bg-rose-900/50 hover:bg-rose-800 text-rose-200 px-4 py-2 rounded-xl font-bold transition-colors whitespace-nowrap"
             >
-              Leave Game
+              {t('game.leaveGame')}
             </button>
           </div>
         )}
@@ -287,15 +289,15 @@ export default function PlayPhase() {
         {/* Opponent's Board (The one I click) */}
         <div className="flex flex-col items-center gap-4 sm:gap-6 bg-brown-800 border-brown-700 p-4 sm:p-8 rounded-3xl shadow-xl border border-brown-700 order-first lg:order-last">
             <div className="text-center w-full flex flex-col items-center">
-                <h2 className="text-3xl font-extrabold text-pink-100">Attack Board</h2>
-                <p className="text-pink-300/60 mt-2">Find safe zones. Avoid the mines!</p>
+                <h2 className="text-3xl font-extrabold text-pink-100">{t('game.attackBoard')}</h2>
+                <p className="text-pink-300/60 mt-2">{t('game.attackDesc')}</p>
                 {/* Desktop toggle — hidden on mobile (sticky bar handles it) */}
                 <div className="hidden lg:flex mt-4 gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50">
-                    <button onClick={() => setFlagMode(false)} className={toggleButtonClasses(!flagMode, 'dig')}>⛏️ Dig</button>
-                    <button onClick={() => setFlagMode(true)} className={toggleButtonClasses(flagMode, 'flag')}>🚩 Flag</button>
+                    <button onClick={() => setFlagMode(false)} className={toggleButtonClasses(!flagMode, 'dig')}>{t('game.dig')}</button>
+                    <button onClick={() => setFlagMode(true)} className={toggleButtonClasses(flagMode, 'flag')}>{t('game.flag')}</button>
                 </div>
                 {/* Mobile hint */}
-                <p className="lg:hidden text-xs text-pink-300/40 mt-3">Tap to dig · Hold to flag</p>
+                <p className="lg:hidden text-xs text-pink-300/40 mt-3">{t('game.tapHint')}</p>
             </div>
 
             <div
@@ -328,7 +330,7 @@ export default function PlayPhase() {
             </div>
 
             <div className="bg-brown-900/50 px-6 py-3 rounded-2xl border border-brown-700/50 flex flex-col items-center shadow-inner w-full">
-                <div className="text-sm text-pink-300/60 font-bold uppercase tracking-wider mb-1">Progress</div>
+                <div className="text-sm text-pink-300/60 font-bold uppercase tracking-wider mb-1">{t('game.progress')}</div>
                 <div className="text-2xl font-mono font-bold text-pink-400">
                     {mySafeMovesCount} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
                 </div>
@@ -339,7 +341,7 @@ export default function PlayPhase() {
                 onClick={forfeitGame}
                 className="text-brown-400 hover:text-rose-600 font-medium transition-colors hover:underline text-sm"
               >
-                Forfeit Match
+                {t('game.forfeitMatch')}
               </button>
             </div>
         </div>
@@ -347,8 +349,8 @@ export default function PlayPhase() {
         {/* My Board (Mini map to watch opponent) */}
         <div className="hidden lg:flex flex-col items-center gap-6 bg-brown-800 border-brown-700/60 p-8 rounded-3xl border border-brown-700/50 order-last lg:order-first">
             <div className="text-center">
-                <h2 className="text-2xl font-bold text-brown-700">Your Defenses</h2>
-                <p className="text-sm text-pink-300/60 mt-1">Watch your opponent&apos;s progress</p>
+                <h2 className="text-2xl font-bold text-brown-700">{t('game.yourDefenses')}</h2>
+                <p className="text-sm text-pink-300/60 mt-1">{t('game.watchOpponentProgress')}</p>
             </div>
 
             <div
@@ -383,7 +385,7 @@ export default function PlayPhase() {
             </div>
 
             <div className="bg-brown-900/50/80 px-6 py-3 rounded-2xl border border-brown-700/50 flex flex-col items-center w-full">
-                <div className="text-xs text-pink-300/60 font-bold uppercase tracking-wider mb-1">Opponent Progress</div>
+                <div className="text-xs text-pink-300/60 font-bold uppercase tracking-wider mb-1">{t('game.opponentProgress')}</div>
                 <div className="text-lg font-mono font-bold text-brown-700">
                     {opponentSafeMovesCount} <span className="text-brown-400">/</span> {(boardSize * boardSize) - maxMines}
                 </div>
@@ -398,13 +400,13 @@ export default function PlayPhase() {
           onClick={() => setFlagMode(false)}
           className={`flex-1 max-w-40 py-3 rounded-xl font-bold text-base transition-all ${toggleButtonClasses(!flagMode, 'dig')}`}
         >
-          ⛏️ Dig
+          {t('game.dig')}
         </button>
         <button
           onClick={() => setFlagMode(true)}
           className={`flex-1 max-w-40 py-3 rounded-xl font-bold text-base transition-all ${toggleButtonClasses(flagMode, 'flag')}`}
         >
-          🚩 Flag
+          {t('game.flag')}
         </button>
       </div>
     </div>

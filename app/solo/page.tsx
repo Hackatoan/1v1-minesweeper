@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { useT } from '../lib/i18n-client'
 
 type Phase = 'menu' | 'setup' | 'play' | 'result'
 type Diff = 'easy' | 'medium' | 'hard'
@@ -39,14 +40,12 @@ function floodReveal(startR: number, startC: number, mines: Set<string>, reveale
 }
 
 const DIFF_DELAY: Record<Diff, number> = { easy: 2500, medium: 1400, hard: 700 }
-const DIFF_LABEL: Record<Diff, string> = { easy: '🎯 Easy', medium: '🧠 Medium', hard: '⚡ Hard' }
-const DIFF_DESC: Record<Diff, string> = {
-  easy: 'AI plays slowly and randomly',
-  medium: 'AI avoids obvious danger zones',
-  hard: 'AI plays perfectly — can you beat it?'
-}
+const cap = (d: string) => d[0].toUpperCase() + d.slice(1)
 
 export default function SoloPage() {
+  const { t } = useT()
+  const diffLabel = (d: Diff) => t('solo.diff' + cap(d))
+  const diffDesc = (d: Diff) => t('solo.desc' + cap(d))
   const [phase, setPhase] = useState<Phase>('menu')
   const [diff, setDiff] = useState<Diff>('medium')
   const [boardSize, setBoardSize] = useState(8)
@@ -191,26 +190,26 @@ export default function SoloPage() {
       <div className="max-w-lg w-full flex flex-col gap-8 bg-brown-800 border border-brown-700 p-10 rounded-3xl shadow-xl">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-extrabold text-pink-100">1v1 Minesweeper</h1>
-          <p className="text-pink-200/60">vs AI</p>
+          <p className="text-pink-200/60">{t('solo.subtitle')}</p>
         </div>
 
         <div className="flex flex-col gap-3">
-          <label className="text-pink-200/80 font-semibold text-sm uppercase tracking-wide text-center">Difficulty</label>
+          <label className="text-pink-200/80 font-semibold text-sm uppercase tracking-wide text-center">{t('solo.difficulty')}</label>
           <div className="flex gap-2">
             {(['easy', 'medium', 'hard'] as Diff[]).map(d => (
               <button key={d} onClick={() => setDiff(d)}
                 className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${diff === d
                   ? 'bg-pink-400 text-brown-900 shadow-[0_4px_0_theme(colors.pink.600)]'
                   : 'bg-brown-700 text-pink-200/60 border border-brown-600/50 hover:bg-brown-600'}`}>
-                {DIFF_LABEL[d]}
+                {diffLabel(d)}
               </button>
             ))}
           </div>
-          <p className="text-center text-pink-300/40 text-sm">{DIFF_DESC[diff]}</p>
+          <p className="text-center text-pink-300/40 text-sm">{diffDesc(diff)}</p>
         </div>
 
         <div className="flex flex-col gap-2 items-center">
-          <label className="text-pink-200/80 font-medium text-sm">Board Size: {boardSize}×{boardSize}</label>
+          <label className="text-pink-200/80 font-medium text-sm">{t('solo.boardSize')}: {boardSize}×{boardSize}</label>
           <input type="range" min="5" max="15" value={boardSize}
             onChange={e => setBoardSize(parseInt(e.target.value))}
             className="w-full accent-pink-400" />
@@ -219,11 +218,11 @@ export default function SoloPage() {
         <div className="flex flex-col sm:flex-row gap-3">
           <button onClick={() => { setPlayerMines(new Set()); setPhase('setup') }}
             className="flex-1 px-8 py-4 bg-pink-400 text-brown-900 border border-pink-500 text-lg rounded-xl font-black uppercase tracking-wider hover:bg-pink-500 shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-none active:translate-y-1 transition-all">
-            Play vs AI
+            {t('solo.playVsAi')}
           </button>
           <Link href="/"
             className="flex-1 px-8 py-4 bg-brown-700 text-pink-200 border border-brown-600 text-lg rounded-xl font-black uppercase tracking-wider text-center hover:bg-brown-600 shadow-[0_4px_0_theme(colors.brown.900)] active:shadow-none active:translate-y-1 transition-all">
-            vs Player
+            {t('solo.vsPlayer')}
           </Link>
         </div>
       </div>
@@ -234,11 +233,11 @@ export default function SoloPage() {
     <div className="flex flex-1 w-full flex-col items-center justify-center p-6">
       <div className="max-w-2xl w-full flex flex-col gap-8 bg-brown-800 border border-brown-700 p-8 sm:p-12 rounded-3xl shadow-xl">
         <div className="text-center space-y-3">
-          <h2 className="text-4xl font-extrabold text-pink-100">Setup Your Board</h2>
-          <p className="text-pink-200/80">Place your mines. The AI will need to navigate this minefield!</p>
+          <h2 className="text-4xl font-extrabold text-pink-100">{t('solo.setupTitle')}</h2>
+          <p className="text-pink-200/80">{t('solo.setupDesc')}</p>
           <div className="pt-4 flex justify-center">
             <div className="bg-brown-700 border border-brown-600/50 px-6 py-3 rounded-2xl font-mono font-bold text-xl flex items-center gap-3">
-              <span>Mines:</span>
+              <span>{t('solo.mines')}</span>
               <span className={`px-3 py-1 rounded-xl ${playerMines.size === maxMines ? 'bg-brown-900/50 text-pink-400' : 'bg-pink-200 text-pink-900'}`}>
                 {playerMines.size} / {maxMines}
               </span>
@@ -270,11 +269,11 @@ export default function SoloPage() {
         <div className="flex justify-center gap-4">
           <button onClick={() => setPhase('menu')}
             className="px-6 py-3 bg-brown-700 text-pink-200 rounded-xl font-bold hover:bg-brown-600 border border-brown-600/50">
-            Back
+            {t('solo.back')}
           </button>
           <button onClick={startPlay} disabled={playerMines.size !== maxMines}
             className="px-10 py-4 bg-pink-400 text-brown-900 text-lg rounded-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pink-500 border border-pink-600 shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-none active:translate-y-1 transition-all uppercase tracking-wider">
-            Ready For Battle!
+            {t('solo.readyForBattle')}
           </button>
         </div>
       </div>
@@ -285,16 +284,16 @@ export default function SoloPage() {
     <div className="flex flex-1 w-full flex-col items-center justify-center p-6">
       <div className="bg-brown-800 border border-brown-700 p-10 rounded-3xl shadow-xl max-w-sm w-full text-center flex flex-col items-center gap-8">
         <div className="text-7xl">{winner === 'player' ? '🎉' : '🤖'}</div>
-        <h2 className="text-4xl font-extrabold text-pink-100">{winner === 'player' ? 'You Win!' : 'AI Wins!'}</h2>
-        <p className="text-pink-200/60 text-sm">{diff === 'hard' && winner === 'player' ? 'Impressive — you beat the perfect AI!' : winner === 'player' ? 'You cleared the AI\'s board first!' : 'The AI was faster this time.'}</p>
+        <h2 className="text-4xl font-extrabold text-pink-100">{winner === 'player' ? t('solo.youWin') : t('solo.aiWins')}</h2>
+        <p className="text-pink-200/60 text-sm">{diff === 'hard' && winner === 'player' ? t('solo.resultBeatPerfect') : winner === 'player' ? t('solo.resultClearedFirst') : t('solo.resultAiFaster')}</p>
         <div className="flex flex-col sm:flex-row gap-3 w-full">
           <button onClick={() => { setPlayerMines(new Set()); setPhase('setup') }}
             className="flex-1 px-6 py-3 bg-pink-400 text-brown-900 rounded-xl font-bold hover:bg-pink-500 border border-pink-500 shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-none active:translate-y-1 transition-all uppercase">
-            Play Again
+            {t('solo.playAgain')}
           </button>
           <button onClick={() => setPhase('menu')}
             className="flex-1 px-6 py-3 bg-brown-700 text-pink-200 rounded-xl font-bold hover:bg-brown-600 border border-brown-600/50">
-            Menu
+            {t('solo.menu')}
           </button>
         </div>
       </div>
@@ -309,16 +308,16 @@ export default function SoloPage() {
         {/* Attack board — player clicks on AI's board */}
         <div className="flex flex-col items-center gap-4 bg-brown-800 border border-brown-700 p-4 sm:p-8 rounded-3xl shadow-xl order-first lg:order-last">
           <div className="text-center w-full flex flex-col items-center">
-            <h2 className="text-2xl font-extrabold text-pink-100">Attack Board</h2>
-            <p className="text-pink-300/50 mt-1 text-sm">Find all safe cells. Avoid the AI&apos;s mines!</p>
+            <h2 className="text-2xl font-extrabold text-pink-100">{t('solo.attackBoard')}</h2>
+            <p className="text-pink-300/50 mt-1 text-sm">{t('solo.attackDesc')}</p>
             <div className="mt-4 flex gap-2 bg-brown-900/50 p-1 rounded-xl border border-brown-700/50">
               <button onClick={() => setFlagMode(false)}
                 className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${!flagMode ? 'bg-brown-600 text-white shadow-md' : 'text-pink-300/60 hover:bg-brown-700'}`}>
-                ⛏️ Dig
+                {t('solo.dig')}
               </button>
               <button onClick={() => setFlagMode(true)}
                 className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${flagMode ? 'bg-rose-500 text-white shadow-md' : 'text-pink-300/60 hover:bg-brown-700'}`}>
-                🚩 Flag
+                {t('solo.flag')}
               </button>
             </div>
           </div>
@@ -353,7 +352,7 @@ export default function SoloPage() {
           </div>
 
           <div className="bg-brown-900/50 px-6 py-3 rounded-2xl border border-brown-700/50 w-full text-center shadow-inner">
-            <div className="text-xs text-pink-300/60 font-bold uppercase tracking-wider mb-1">Your Progress</div>
+            <div className="text-xs text-pink-300/60 font-bold uppercase tracking-wider mb-1">{t('solo.yourProgress')}</div>
             <div className="text-xl font-mono font-bold text-pink-400">
               {playerSafe} <span className="text-brown-500">/</span> {totalSafe}
             </div>
@@ -363,8 +362,8 @@ export default function SoloPage() {
         {/* Defense board — AI attacks player's board */}
         <div className="flex flex-col items-center gap-4 bg-brown-800/50 border border-brown-700/50 p-4 sm:p-6 rounded-3xl order-last lg:order-first">
           <div className="text-center">
-            <h2 className="text-xl font-bold text-brown-500">Your Defenses</h2>
-            <p className="text-xs text-pink-300/40 mt-1">Watch the AI&apos;s progress</p>
+            <h2 className="text-xl font-bold text-brown-500">{t('solo.yourDefenses')}</h2>
+            <p className="text-xs text-pink-300/40 mt-1">{t('solo.watchAiProgress')}</p>
           </div>
 
           <div className="mine-grid" style={{ gridTemplateColumns: `repeat(${boardSize}, minmax(0, 1fr))` }}>
@@ -389,7 +388,7 @@ export default function SoloPage() {
           </div>
 
           <div className="bg-brown-900/50 px-4 py-2 rounded-xl border border-brown-700/50 w-full text-center">
-            <div className="text-xs text-pink-300/40 font-bold uppercase tracking-wider">AI Progress</div>
+            <div className="text-xs text-pink-300/40 font-bold uppercase tracking-wider">{t('solo.aiProgress')}</div>
             <div className="text-base font-mono font-bold text-brown-500">
               {aiSafe} <span className="text-brown-600">/</span> {totalSafe}
             </div>

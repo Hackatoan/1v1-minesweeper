@@ -5,8 +5,10 @@ import { useRouter, useParams } from 'next/navigation'
 import { getPlayerId } from '../../../lib/session'
 import { getGame, updateGame, getBoards, submitBoard } from '../../../lib/api-client'
 import { useGamePresence } from '../../../lib/useGamePresence'
+import { useT } from '../../../lib/i18n-client'
 
 export default function SetupPhase() {
+  const { t } = useT()
   const router = useRouter()
   const params = useParams()
   const gameId = params.id as string
@@ -77,7 +79,7 @@ export default function SetupPhase() {
       setIsWaiting(true)
     } catch (e) {
       console.error(e)
-      alert('Failed to submit board')
+      alert(t('game.alertSubmitFail'))
     } finally {
       setIsSubmitting(false)
     }
@@ -85,7 +87,7 @@ export default function SetupPhase() {
 
   const forfeitGame = async () => {
     if (!userId || !game) return
-    if (confirm('Are you sure you want to leave? Your opponent will win.')) {
+    if (confirm(t('game.confirmLeave'))) {
       const winnerId = game.player1_id === userId ? game.player2_id : game.player1_id
       await updateGame(gameId, { status: 'finished', winner_id: winnerId })
       router.push('/')
@@ -99,21 +101,21 @@ export default function SetupPhase() {
             <div className="bg-brown-900/50 text-pink-400 p-4 rounded-full">
                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
             </div>
-            <h2 className="text-3xl font-bold text-pink-100">Board Submitted!</h2>
+            <h2 className="text-3xl font-bold text-pink-100">{t('game.boardSubmitted')}</h2>
             <div className="flex items-center gap-3">
                 <div className="animate-spin h-5 w-5 border-2 border-pink-500 border-t-transparent rounded-full"></div>
-                <p className="text-pink-200/80 font-medium">Waiting for opponent...</p>
+                <p className="text-pink-200/80 font-medium">{t('game.waitingOpponent')}</p>
             </div>
             {!isOpponentOnline && game?.player2_id && (
               <div className="mt-2 bg-rose-50 text-rose-700 px-4 py-2 text-sm rounded-xl border border-rose-200 w-full text-center">
-                Opponent seems to be offline.
+                {t('game.opponentOffline')}
               </div>
             )}
             <button
               onClick={forfeitGame}
               className="mt-4 text-pink-300/60 hover:text-rose-600 font-medium transition-colors hover:underline text-sm"
             >
-              Leave Game
+              {t('game.leaveGame')}
             </button>
         </div>
       </div>
@@ -124,13 +126,13 @@ export default function SetupPhase() {
     <div className="flex flex-1 w-full flex-col items-center justify-center p-6  from-transparent to-transparent">
       <div className="max-w-2xl w-full flex flex-col gap-8 bg-brown-800 border-brown-700 p-8 sm:p-12 rounded-3xl shadow-xl border border-brown-700">
         <div className="text-center space-y-3">
-          <h2 className="text-4xl font-extrabold text-pink-100">Setup Your Board</h2>
+          <h2 className="text-4xl font-extrabold text-pink-100">{t('game.setupTitle')}</h2>
           <p className="text-lg text-pink-200/80">
-            Place your mines. Your opponent will have to navigate this minefield!
+            {t('game.setupDesc')}
           </p>
           <div className="pt-4 flex justify-center items-center gap-4">
               <div className="bg-brown-700 border border-brown-600/50 shadow-inner px-6 py-3 rounded-2xl font-mono font-bold text-xl flex items-center gap-3 shadow-inner">
-                  <span>Mines:</span>
+                  <span>{t('game.mines')}</span>
                   <span className={`px-3 py-1 rounded-xl ${mines.length === maxMines ? 'bg-brown-900/50 text-pink-400' : 'bg-pink-200 text-pink-900'}`}>
                       {mines.length} / {maxMines}
                   </span>
@@ -168,7 +170,7 @@ export default function SetupPhase() {
              disabled={mines.length !== maxMines || isSubmitting}
              className="px-10 py-4 bg-pink-400 text-brown-900 text-lg rounded-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pink-500 border border-pink-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] transition-all shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-[0_0px_0_theme(colors.pink.600)] active:translate-y-[4px] uppercase tracking-wider"
            >
-             {isSubmitting ? 'Submitting...' : 'Ready For Battle!'}
+             {isSubmitting ? t('game.submitting') : t('game.readyForBattle')}
            </button>
         </div>
 
@@ -176,14 +178,14 @@ export default function SetupPhase() {
             {!isOpponentOnline && game?.player2_id && (
               <div className="bg-rose-50 text-rose-700 px-4 py-3 rounded-xl border border-rose-200 w-full text-center flex items-center justify-center gap-2">
                 <span className="text-xl">⚠️</span>
-                <span className="font-medium">Opponent is currently offline.</span>
+                <span className="font-medium">{t('game.opponentOfflineWarn')}</span>
               </div>
             )}
             <button
               onClick={forfeitGame}
               className="text-pink-300/60 hover:text-rose-600 font-medium transition-colors hover:underline text-sm"
             >
-              Leave Game
+              {t('game.leaveGame')}
             </button>
         </div>
       </div>

@@ -5,8 +5,10 @@ import { useRouter, useParams } from 'next/navigation'
 import { getPlayerId } from '../../lib/session'
 import { getGame, updateGame, pingGame } from '../../lib/api-client'
 import { copyToClipboard } from '../../lib/clipboard'
+import { useT } from '../../lib/i18n-client'
 
 export default function GameLobby() {
+  const { t } = useT()
   const router = useRouter()
   const params = useParams()
   const gameId = params.id as string
@@ -34,13 +36,13 @@ export default function GameLobby() {
             setGame(updatedGame)
           } catch {
             console.error('Failed to join or game is already full.')
-            alert('Failed to join or game is already full.')
+            alert(t('game.alertJoinFull'))
             router.push('/')
             return
           }
         } else if (gameData.player1_id !== uid && gameData.player2_id !== uid) {
           // I am a 3rd person
-          alert('Game is already full.')
+          alert(t('game.alertFull'))
           router.push('/')
           return
         }
@@ -91,7 +93,7 @@ export default function GameLobby() {
       </div>
   )
 
-  if (!game) return <div className="p-8 text-center text-pink-200/80">Game not found</div>
+  if (!game) return <div className="p-8 text-center text-pink-200/80">{t('game.notFound')}</div>
 
   const isPlayer1 = game.player1_id === userId
   const inviteLink = typeof window !== 'undefined' ? window.location.href : ''
@@ -103,7 +105,7 @@ export default function GameLobby() {
   return (
     <div className="flex flex-1 w-full flex-col items-center justify-center p-6 from-transparent to-transparent">
       <div className="bg-brown-800 border-brown-700 p-10 rounded-3xl shadow-xl max-w-md w-full flex flex-col gap-8 text-center border">
-        <h2 className="text-3xl font-extrabold text-pink-100">Game Lobby</h2>
+        <h2 className="text-3xl font-extrabold text-pink-100">{t('game.lobby')}</h2>
 
         {isPlayer1 && !game.player2_id ? (
           <div className="flex flex-col gap-6">
@@ -113,7 +115,7 @@ export default function GameLobby() {
                   <span className="relative inline-flex rounded-full h-4 w-4 bg-pink-500"></span>
                 </span>
             </div>
-            <p className="text-pink-200/80 font-medium">Waiting for an opponent to join...</p>
+            <p className="text-pink-200/80 font-medium">{t('game.waitingOpponentJoin')}</p>
             <div className="bg-brown-900/50 p-4 rounded-xl break-all text-sm font-mono text-pink-300/80 border border-brown-700/50 shadow-inner">
               {inviteLink}
             </div>
@@ -125,13 +127,13 @@ export default function GameLobby() {
                   : 'bg-pink-400 text-pink-900 hover:bg-pink-500 shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-[0_0px_0_theme(colors.pink.600)] active:translate-y-[4px]'
               }`}
             >
-              {copied ? 'Copied!' : 'Copy Invite Link'}
+              {copied ? t('game.copied') : t('game.copyInvite')}
             </button>
           </div>
         ) : (
           <div className="flex flex-col gap-4 items-center">
             <div className="animate-spin h-8 w-8 border-4 border-pink-500 border-t-transparent rounded-full"></div>
-            <p className="text-pink-200/80 font-medium text-lg">Starting game...</p>
+            <p className="text-pink-200/80 font-medium text-lg">{t('game.startingGame')}</p>
           </div>
         )}
       </div>
