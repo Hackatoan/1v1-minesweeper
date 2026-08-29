@@ -22,7 +22,7 @@
     "failCreate": "Không thể tạo trận đấu"
   },
   "solo": {
-    "subtitle": "vs AI",
+    "subtitle": "đấu với AI",
     "difficulty": "Độ khó",
     "diffEasy": "🎯 Dễ",
     "diffMedium": "🧠 Trung bình",

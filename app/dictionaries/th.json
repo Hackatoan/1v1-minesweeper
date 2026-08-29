@@ -22,7 +22,7 @@
     "failCreate": "สร้างเกมไม่สำเร็จ"
   },
   "solo": {
-    "subtitle": "vs AI",
+    "subtitle": "ปะทะ AI",
     "difficulty": "ระดับความยาก",
     "diffEasy": "🎯 ง่าย",
     "diffMedium": "🧠 ปานกลาง",
@@ -32,7 +32,7 @@
     "descHard": "AI เล่นอย่างไร้ที่ติ — คุณจะเอาชนะมันได้ไหม?",
     "boardSize": "ขนาดกระดาน",
     "playVsAi": "เล่นกับ AI",
-    "vsPlayer": "vs Player",
+    "vsPlayer": "ปะทะผู้เล่น",
     "setupTitle": "ตั้งค่ากระดานของคุณ",
     "setupDesc": "วางระเบิดของคุณ AI จะต้องฝ่าสนามระเบิดนี้ไปให้ได้!",
     "mines": "ระเบิด:",

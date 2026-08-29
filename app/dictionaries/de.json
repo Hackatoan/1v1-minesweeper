@@ -22,7 +22,7 @@
     "failCreate": "Fehler beim Erstellen des Spiels"
   },
   "solo": {
-    "subtitle": "vs AI",
+    "subtitle": "gegen KI",
     "difficulty": "Schwierigkeit",
     "diffEasy": "🎯 Leicht",
     "diffMedium": "🧠 Mittel",
