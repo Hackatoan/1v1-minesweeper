@@ -176,6 +176,9 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
               </tbody>
             </table>
         </div>
+        <div className="w-full pt-3 text-center text-xs text-pink-300/50">
+          <a href="https://github.com/Hackatoan/1v1-minesweeper/issues/new" target="_blank" rel="noopener" className="hover:text-pink-300 underline">Report an issue</a>
+        </div>
       </div>
     </main>
   )
