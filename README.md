@@ -1,43 +1,40 @@
 # 1v1 Minesweeper
 
-![1v1 Minesweeper](https://1v1sw.hackatoa.com/og-image.svg)
+Real-time competitive minesweeper — race an opponent on the same board.
 
-Competitive multiplayer minesweeper. Both players secretly place mines on each other's boards, then race to clear the minefield without detonating.
+🔗 **Live:** [1v1sw.hackatoa.com](https://1v1sw.hackatoa.com)   ·   ☕ **Support:** [Buy Me a Coffee](https://buymeacoffee.com/hackatoa)
 
-**▶ Play at [1v1sw.hackatoa.com](https://1v1sw.hackatoa.com)**
+## Overview
+
+Head-to-head minesweeper. Both players work the same board in real time; fastest safe clears win. Also includes a solo mode vs AI.
 
 ## Features
 
-- **vs AI** — three difficulty levels (Easy, Medium, Hard)
-  - Easy: slow and random
-  - Medium: avoids neighbors of previous explosions  
-  - Hard: perfect solver — always picks safe cells
-- **Real-time multiplayer** — private invite link or random matchmaking
-- Adjustable board size (5×5 to 20×20)
-- Flood-fill reveal on zero-mine-adjacent cells
-- Flag mode (right-click or toggle)
+- Real-time 1v1 matches + solo mode
+- Shared game rooms (locale-independent for cross-language play)
+- 6-language localized landing and solo UI
 
-## How to play
+## Tech Stack
 
-1. Both players place mines on their own board
-2. Once both are ready, the race begins
-3. Click cells on your opponent's board to reveal safe zones
-4. **First to reveal all safe cells wins — hit a mine and you lose!**
+Next.js (App Router) · TypeScript · Docker
 
-## Tech stack
-
-- Next.js 15 (App Router)
-- Supabase (PostgreSQL for game state)
-- Tailwind CSS
-- Docker + GitHub Actions CI/CD
-
-## Self-hosting
+## Development
 
 ```bash
-# Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
-docker run -p 3000:3000 ghcr.io/hackatoan/1v1-minesweeper:latest
+npm install
+npm run dev
 ```
+
+## Deployment
+
+Docker on the homelab games host; GHCR + Watchtower auto-deploy (`ghcr.io/hackatoan/1v1ms`).
+
+## Support
+
+If this project is useful to you, consider supporting development:
+
+☕ **[Buy Me a Coffee](https://buymeacoffee.com/hackatoa)**
 
 ---
 
-Part of [Hackatoa Games](https://games.hackatoa.com) · [Buy me a coffee](https://buymeacoffee.com/hackatoa)
+Part of the **[Hackatoa](https://hackatoa.com)** ecosystem — self-hosted apps, browser games, and bots. · [All repositories »](https://github.com/Hackatoan)
