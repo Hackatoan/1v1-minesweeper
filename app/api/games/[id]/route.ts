@@ -27,10 +27,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{id:
     }
     const before = cur.rows[0]
 
-    // Build dynamic update from the request body.
+    // Build dynamic update from the request body. Only these fields are ever
+    // sent by the client (see updateGame() call sites in app/) — restrict to
+    // an explicit allowlist so an arbitrary request body can't inject
+    // unexpected column names into the SQL (the values were already
+    // parameterized, but the column names were not).
+    const ALLOWED_FIELDS = new Set(['status', 'winner_id', 'player2_id', 'rematch_game_id'])
     const setClauses: string[] = []
     const values: any[] = []
     for (const [key, val] of Object.entries(body)) {
+      if (!ALLOWED_FIELDS.has(key)) continue
       values.push(val)
       if (key === 'status') {
         setClauses.push(`${key} = $${values.length}::game_status`)
