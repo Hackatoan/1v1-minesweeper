@@ -27,6 +27,63 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{id:
     }
     const before = cur.rows[0]
 
+    // player1_id is never client-settable; player2_id can be, in the same
+    // request that sets it (the join flow). Compute the effective pair once,
+    // used both for the winner_id check below and the name-capture logic.
+    const effP1 = before.player1_id
+    const effP2 = body.player2_id ?? before.player2_id
+
+    // Server-side validation of a self-reported winner_id (SECURITY: without
+    // this, any client could PATCH an arbitrary winner_id with no relation
+    // to what actually happened in the match). We don't have a full
+    // authoritative replay of the match (no server-side board/board-reveal
+    // engine — moves are recorded from client-computed flood fills), so this
+    // is deliberately scoped to what we CAN verify from the moves table
+    // recorded so far, rather than guessing at unvalidated game rules:
+    //   1. winner_id must be one of this game's two actual participants.
+    //   2. winner_id must not be a player who is on record as having hit a
+    //      mine in this game (you can't have exploded and also won).
+    //   3. winner_id must not be declared over an opponent who is on record
+    //      as having already cleared the board (every non-mine cell safely
+    //      revealed) — that opponent already won.
+    // This blocks the direct "PATCH myself a win" cases. It intentionally
+    // does NOT block a legitimate forfeit/disconnect win (winner_id set to
+    // the non-acting player with no moves evidence either way) — there's no
+    // server-tracked signal to distinguish that from e.g. an early win claim
+    // before the board is fully cleared, and rejecting all unevidenced
+    // transitions would break the real forfeit feature. Full outcome
+    // validation would need a server-side authoritative board state; noted
+    // as a follow-up rather than guessed at here.
+    if (Object.prototype.hasOwnProperty.call(body, 'winner_id') && body.winner_id != null) {
+      const winnerId = body.winner_id
+      if (winnerId !== effP1 && winnerId !== effP2) {
+        await client.query('ROLLBACK')
+        return NextResponse.json({ error: 'winner_id must be a participant in this game' }, { status: 400 })
+      }
+
+      const loserId = winnerId === effP1 ? effP2 : effP1
+      const { rows: moveRows } = await client.query(
+        'SELECT player_id, cell, hit_mine FROM moves WHERE game_id = $1',
+        [id]
+      )
+
+      const winnerExploded = moveRows.some((m) => m.player_id === winnerId && m.hit_mine)
+
+      const boardSize = before.board_size
+      const totalNonMines = boardSize * boardSize - Math.floor(boardSize * boardSize * 0.15)
+      const loserSafeCells = new Set(
+        moveRows
+          .filter((m) => m.player_id === loserId && !m.hit_mine)
+          .map((m) => `${m.cell.r},${m.cell.c}`)
+      )
+      const loserAlreadyCleared = loserId != null && loserSafeCells.size >= totalNonMines
+
+      if (winnerExploded || loserAlreadyCleared) {
+        await client.query('ROLLBACK')
+        return NextResponse.json({ error: 'winner_id contradicts recorded game history' }, { status: 409 })
+      }
+    }
+
     // Build dynamic update from the request body. Only these fields are ever
     // sent by the client (see updateGame() call sites in app/) — restrict to
     // an explicit allowlist so an arbitrary request body can't inject
@@ -47,8 +104,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{id:
 
     // Capture the acting player's nickname onto the correct slot. Handles the
     // join case (player2_id is being set in this same request) too.
-    const effP1 = body.player1_id ?? before.player1_id
-    const effP2 = body.player2_id ?? before.player2_id
     if (playerName && playerId && playerId === effP1) {
       values.push(playerName)
       setClauses.push(`player1_name = $${values.length}`)
