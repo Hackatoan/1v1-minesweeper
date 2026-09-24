@@ -77,6 +77,7 @@
     "alertSubmitFail": "Không thể gửi bảng",
     "oppDisconnected": "Đối thủ đã ngắt kết nối",
     "oppDisconnectedDesc": "Đối thủ của bạn đã rời trận đấu hoặc mất kết nối. Bạn có thể đợi họ quay lại hoặc rời trận đấu.",
+    "opponentReconnected": "Đối thủ đã kết nối lại.",
     "attackBoard": "Bảng tấn công",
     "attackDesc": "Tìm vùng an toàn. Tránh mìn!",
     "dig": "⛏️ Đào",

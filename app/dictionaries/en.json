@@ -77,6 +77,7 @@
     "alertSubmitFail": "Failed to submit board",
     "oppDisconnected": "Opponent Disconnected",
     "oppDisconnectedDesc": "Your opponent has left the game or lost connection. You can wait for them to return or leave the game.",
+    "opponentReconnected": "Opponent reconnected.",
     "attackBoard": "Attack Board",
     "attackDesc": "Find safe zones. Avoid the mines!",
     "dig": "⛏️ Dig",
