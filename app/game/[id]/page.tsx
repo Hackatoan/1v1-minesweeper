@@ -6,13 +6,14 @@ import { getPlayerId } from '../../lib/session'
 import { getGame, updateGame, pingGame } from '../../lib/api-client'
 import { copyToClipboard } from '../../lib/clipboard'
 import { useT } from '../../lib/i18n-client'
+import { Game } from '../../lib/types'
 
 export default function GameLobby() {
   const { t } = useT()
   const router = useRouter()
   const params = useParams()
   const gameId = params.id as string
-  const [game, setGame] = useState<any>(null)
+  const [game, setGame] = useState<Game | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
@@ -56,6 +57,13 @@ export default function GameLobby() {
     }
 
     init()
+    // t deliberately excluded: this is a run-once-on-mount init effect (fetch
+    // + join-as-player2), and t's identity changes once when the locale
+    // resolves post-mount (see useT) — including it would re-fire this whole
+    // flow a second time. The alert() calls just use whatever t is bound at
+    // error time; a split-second-stale (English) error message is an
+    // acceptable trade-off for not risking a duplicate join attempt.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameId, router])
 
   // Polling game state
@@ -70,7 +78,7 @@ export default function GameLobby() {
 
   // Heartbeat for host in waiting room
   useEffect(() => {
-    if (!game || game.status !== 'waiting') return
+    if (game?.status !== 'waiting') return
     const interval = setInterval(() => pingGame(gameId), 5000)
     pingGame(gameId)
     return () => clearInterval(interval)

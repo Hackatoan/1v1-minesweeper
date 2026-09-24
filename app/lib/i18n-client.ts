@@ -6,7 +6,7 @@
 // in their own language. The locale is resolved per-player from localStorage
 // 'hk_lang' (set by the localized landing) with a navigator.language fallback.
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import en from '../dictionaries/en.json'
 import es from '../dictionaries/es.json'
 import ptbr from '../dictionaries/pt-br.json'
@@ -41,16 +41,25 @@ export type TFunc = (path: string, params?: Record<string, string | number>) => 
 // <html lang>. Returns a t() that falls back to English then to the key itself.
 export function useT(): { t: TFunc; locale: string } {
   const [locale, setLocale] = useState('en')
+  // Resolving the real locale needs localStorage/navigator, both
+  // server-unavailable — this has to run post-mount to avoid an SSR
+  // hydration mismatch (render 'en' first, then swap in), which is exactly
+  // what an effect is for here; there's no derived-from-render-inputs
+  // alternative since the value depends on browser-only APIs, not props/state.
   useEffect(() => {
     const l = resolveLocale()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocale(l)
     try { document.documentElement.lang = l } catch { /* ignore */ }
   }, [])
   const dict = DICTS[locale] || en
-  const t: TFunc = (path, params) => {
+  // Memoized so consumers can safely list `t` in their own effect deps
+  // without it changing identity (and re-triggering those effects) on
+  // every render — only changes when the resolved dictionary does.
+  const t = useCallback<TFunc>((path, params) => {
     let s = lookup(dict, path) ?? lookup(en, path) ?? path
     if (params) for (const k in params) s = s.split('{' + k + '}').join(String(params[k]))
     return s
-  }
+  }, [dict])
   return { t, locale }
 }

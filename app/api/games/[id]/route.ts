@@ -91,7 +91,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{id:
     // parameterized, but the column names were not).
     const ALLOWED_FIELDS = new Set(['status', 'winner_id', 'player2_id', 'rematch_game_id'])
     const setClauses: string[] = []
-    const values: any[] = []
+    const values: unknown[] = []
     for (const [key, val] of Object.entries(body)) {
       if (!ALLOWED_FIELDS.has(key)) continue
       values.push(val)

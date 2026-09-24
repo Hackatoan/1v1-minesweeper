@@ -71,7 +71,11 @@ export default function SoloPage() {
   useEffect(() => { aiMovesRef.current = aiMoves }, [aiMoves])
   useEffect(() => { playerMinesRef.current = playerMines }, [playerMines])
 
-  // Win check
+  // Win check: this is a genuine state-machine transition (play -> result),
+  // not state mirroring a prop/derived value — winner/phase can't just be
+  // computed inline during render since they need to latch once triggered
+  // (gameOverRef guards against a stray move landing after the transition).
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (phase !== 'play' || winner !== null) return
     const pHitMine = [...playerMoves.values()].some(m => m.hitMine)
@@ -83,6 +87,7 @@ export default function SoloPage() {
     else if (pSafe >= totalSafe) { gameOverRef.current = true; setWinner('player'); setPhase('result') }
     else if (aSafe >= totalSafe) { gameOverRef.current = true; setWinner('ai'); setPhase('result') }
   }, [playerMoves, aiMoves, phase, winner, totalSafe])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function startPlay() {
     if (playerMines.size !== maxMines) return
@@ -166,7 +171,7 @@ export default function SoloPage() {
     const key = `${r},${c}`
     if (playerMoves.has(key)) return
     if (flagMode) {
-      setFlags(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n })
+      setFlags(prev => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n })
       return
     }
     if (flags.has(key)) return
@@ -254,7 +259,8 @@ export default function SoloPage() {
                   <button key={`${r}-${c}`}
                     onClick={() => setPlayerMines(prev => {
                       const n = new Set(prev)
-                      n.has(`${r},${c}`) ? n.delete(`${r},${c}`) : n.size < maxMines && n.add(`${r},${c}`)
+                      if (n.has(`${r},${c}`)) n.delete(`${r},${c}`)
+                      else if (n.size < maxMines) n.add(`${r},${c}`)
                       return n
                     })}
                     className={`mine-cell w-10 sm:w-12 text-lg ${isMine ? 'bg-rose-500 hover:bg-rose-600 text-white' : 'bg-brown-900/50 hover:bg-brown-200'}`}>
@@ -332,11 +338,11 @@ export default function SoloPage() {
                 const isFlagged = flags.has(key)
                 return (
                   <button key={`atk-${key}`}
-                    onClick={() => flagMode
-                      ? setFlags(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n })
-                      : handlePlayerClick(r, c)
-                    }
-                    onContextMenu={e => { e.preventDefault(); if (!isRevealed) setFlags(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n }) }}
+                    onClick={() => {
+                      if (flagMode) setFlags(prev => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n })
+                      else handlePlayerClick(r, c)
+                    }}
+                    onContextMenu={e => { e.preventDefault(); if (!isRevealed) setFlags(prev => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n }) }}
                     disabled={isRevealed}
                     className={`mine-cell w-8 h-8 sm:w-10 sm:h-10 text-sm font-black flex items-center justify-center
                       ${!isRevealed ? 'bg-brown-600 border border-brown-500/50 hover:bg-pink-300 cursor-pointer'

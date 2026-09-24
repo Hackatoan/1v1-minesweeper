@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { getPlayerId, getPlayerName, setPlayerName } from '../lib/session'
 import { createGame, updateGame, listWaitingGames, getLeaderboard } from '../lib/api-client'
 import { LanguageSwitcher } from './LanguageSwitcher'
+import { LeaderboardEntry, Game } from '../lib/types'
 
 type LandingDict = Record<string, string>
 
@@ -15,7 +17,7 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
   const [boardSize, setBoardSize] = useState(10)
   const [queueSize, setQueueSize] = useState(0)
   const [name, setName] = useState('')
-  const [leaders, setLeaders] = useState<any[]>([])
+  const [leaders, setLeaders] = useState<LeaderboardEntry[]>([])
   const [lbLoaded, setLbLoaded] = useState(false)
 
   // Remember the visitor's locale so the locale-less solo + game-room pages
@@ -48,8 +50,8 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
     try {
       const userId = getPlayerId()
       if (!userId) throw new Error('No player ID')
-      const games = await listWaitingGames(10, 15000)
-      const available = games.filter((g: any) => g.player1_id !== userId)
+      const games: Game[] = await listWaitingGames(10, 15000)
+      const available = games.filter((g) => g.player1_id !== userId)
       if (available.length > 0) {
         const gameId = available[0].id
         try {
@@ -139,12 +141,12 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
             </div>
         </div>
         <div className="pt-4 border-t border-brown-700/50 w-full flex justify-center">
-            <a
+            <Link
               href="/solo"
               className="w-full sm:w-auto px-8 py-3 bg-brown-700 text-pink-300 border border-brown-600/60 text-base rounded-xl font-bold uppercase tracking-wider hover:bg-brown-600 hover:text-pink-200 transition-all text-center"
             >
               {dict.playVsAi}
-            </a>
+            </Link>
         </div>
 
         <div className="w-full pt-4 border-t border-brown-700/50">
