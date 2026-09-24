@@ -1,5 +1,6 @@
 'use client'
 import { getPlayerId, getPlayerName } from './session'
+import { Board, MoveInput, LeaderboardEntry } from './types'
 
 function headers() {
   return { 'Content-Type': 'application/json', 'X-Player-Id': getPlayerId(), 'X-Player-Name': getPlayerName() }
@@ -45,8 +46,8 @@ export async function submitBoard(gameId: string, mines: {r: number, c: number}[
 
 export async function hasMyBoard(gameId: string): Promise<boolean> {
   const playerId = getPlayerId()
-  const boards = await getBoards(gameId)
-  return boards.some((b: any) => b.owner_id === playerId)
+  const boards: Board[] = await getBoards(gameId)
+  return boards.some((b) => b.owner_id === playerId)
 }
 
 // Moves
@@ -59,7 +60,7 @@ export async function getMoves(gameId: string, since?: string) {
   return res.json()
 }
 
-export async function insertMoves(gameId: string, moves: any[]) {
+export async function insertMoves(gameId: string, moves: MoveInput[]) {
   const res = await fetch(`/api/games/${gameId}/moves`, { method: 'POST', headers: headers(), body: JSON.stringify({ moves }) })
   if (!res.ok) throw new Error('Failed to insert moves')
   return res.json()
@@ -83,7 +84,7 @@ export async function incrementGamesPlayed() {
 }
 
 // Leaderboard
-export async function getLeaderboard(): Promise<{ game: string, players: any[] }> {
+export async function getLeaderboard(): Promise<{ game: string, players: LeaderboardEntry[] }> {
   const res = await fetch('/api/leaderboard')
   if (!res.ok) return { game: '', players: [] }
   return res.json()

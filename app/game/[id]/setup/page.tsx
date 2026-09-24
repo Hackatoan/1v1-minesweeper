@@ -6,6 +6,7 @@ import { getPlayerId } from '../../../lib/session'
 import { getGame, updateGame, getBoards, submitBoard } from '../../../lib/api-client'
 import { useGamePresence } from '../../../lib/useGamePresence'
 import { useT } from '../../../lib/i18n-client'
+import { Board, Game } from '../../../lib/types'
 
 export default function SetupPhase() {
   const { t } = useT()
@@ -13,7 +14,7 @@ export default function SetupPhase() {
   const params = useParams()
   const gameId = params.id as string
 
-  const [game, setGame] = useState<any>(null)
+  const [game, setGame] = useState<Game | null>(null)
   const boardSize = game?.board_size || 10
   const maxMines = Math.floor((boardSize * boardSize) * 0.15)
 
@@ -23,7 +24,9 @@ export default function SetupPhase() {
   const [isWaiting, setIsWaiting] = useState(false)
 
   const onlineUsers = useGamePresence(gameId, game)
-  const isOpponentOnline = game ? (game.player1_id === userId ? onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id)) : false
+  const isOpponentOnline = game
+    ? (game.player1_id === userId ? !!game.player2_id && onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id))
+    : false
 
   useEffect(() => {
     async function init() {
@@ -38,8 +41,8 @@ export default function SetupPhase() {
       setGame(gameData)
 
       // Check if I already submitted a board
-      const boards = await getBoards(gameId)
-      const myBoard = boards.find((b: any) => b.owner_id === uid)
+      const boards: Board[] = await getBoards(gameId)
+      const myBoard = boards.find((b) => b.owner_id === uid)
       if (myBoard) {
         setIsWaiting(true)
       }

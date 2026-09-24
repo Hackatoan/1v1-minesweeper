@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { getPlayerId } from '../../../lib/session'
 import { getGame, createGame, updateGame } from '../../../lib/api-client'
 import { useT } from '../../../lib/i18n-client'
+import { Game } from '../../../lib/types'
 
 export default function ResultPhase() {
   const { t } = useT()
@@ -13,7 +14,7 @@ export default function ResultPhase() {
   const gameId = params.id as string
 
   const [userId, setUserId] = useState<string | null>(null)
-  const [game, setGame] = useState<any>(null)
+  const [game, setGame] = useState<Game | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

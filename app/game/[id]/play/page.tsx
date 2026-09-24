@@ -6,7 +6,7 @@ import { getPlayerId } from '../../../lib/session'
 import { getGame, getBoards, getMoves, insertMoves, updateGame, incrementGamesPlayed } from '../../../lib/api-client'
 import { useGamePresence } from '../../../lib/useGamePresence'
 import { calculateAdjacentMines } from '../../../lib/game-logic'
-import { Board, MinePosition } from '../../../lib/types'
+import { Board, MinePosition, Move, Game, MoveInput } from '../../../lib/types'
 import useLongPress from '../../../lib/useLongPress'
 import { useT } from '../../../lib/i18n-client'
 
@@ -50,7 +50,7 @@ function MineCellButton({
 // Merge newly-polled moves into an existing per-player moves list, skipping
 // any cell already present (e.g. applied optimistically by handleCellClick
 // before the server round-trip confirmed it).
-function appendNewMoves(existing: any[], incoming: any[]) {
+function appendNewMoves(existing: Move[], incoming: Move[]) {
   const seen = new Set(existing.map(m => `${m.cell.r},${m.cell.c}`))
   const additions = incoming.filter(m => !seen.has(`${m.cell.r},${m.cell.c}`))
   return additions.length ? [...existing, ...additions] : existing
@@ -62,15 +62,15 @@ export default function PlayPhase() {
   const params = useParams()
   const gameId = params.id as string
 
-  const [game, setGame] = useState<any>(null)
+  const [game, setGame] = useState<Game | null>(null)
   const boardSize = game?.board_size || 10
   const maxMines = Math.floor((boardSize * boardSize) * 0.15)
 
   const [userId, setUserId] = useState<string | null>(null)
   const [myBoard, setMyBoard] = useState<Board | null>(null)
   const [opponentBoard, setOpponentBoard] = useState<Board | null>(null)
-  const [myMoves, setMyMoves] = useState<any[]>([])
-  const [opponentMoves, setOpponentMoves] = useState<any[]>([])
+  const [myMoves, setMyMoves] = useState<Move[]>([])
+  const [opponentMoves, setOpponentMoves] = useState<Move[]>([])
   const [flags, setFlags] = useState<MinePosition[]>([])
   const [flagMode, setFlagMode] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -80,7 +80,9 @@ export default function PlayPhase() {
   const lastMoveTsRef = useRef<string | null>(null)
 
   const onlineUsers = useGamePresence(gameId, game)
-  const isOpponentOnline = game ? (game.player1_id === userId ? onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id)) : false
+  const isOpponentOnline = game
+    ? (game.player1_id === userId ? !!game.player2_id && onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id))
+    : false
 
   // Announce opponent connection changes to screen readers — this is a real-time
   // competitive match, so this state shifts without any page navigation to cue it.
@@ -113,17 +115,17 @@ export default function PlayPhase() {
       }
       setGame(gameData)
 
-      const boardsData = await getBoards(gameId)
-      const myB = boardsData?.find((b: any) => b.owner_id === uid)
-      const oppB = boardsData?.find((b: any) => b.owner_id !== uid)
-      setMyBoard(myB)
-      setOpponentBoard(oppB)
+      const boardsData: Board[] = await getBoards(gameId)
+      const myB = boardsData?.find((b) => b.owner_id === uid)
+      const oppB = boardsData?.find((b) => b.owner_id !== uid)
+      setMyBoard(myB ?? null)
+      setOpponentBoard(oppB ?? null)
 
-      const movesData = await getMoves(gameId)
-      setMyMoves(movesData?.filter((m: any) => m.player_id === uid) || [])
-      setOpponentMoves(movesData?.filter((m: any) => m.player_id !== uid) || [])
+      const movesData: Move[] = await getMoves(gameId)
+      setMyMoves(movesData?.filter((m) => m.player_id === uid) || [])
+      setOpponentMoves(movesData?.filter((m) => m.player_id !== uid) || [])
       if (movesData?.length) {
-        lastMoveTsRef.current = movesData[movesData.length - 1].timestamp
+        lastMoveTsRef.current = movesData[movesData.length - 1].timestamp ?? null
       }
 
       setLoading(false)
@@ -139,7 +141,7 @@ export default function PlayPhase() {
   useEffect(() => {
     if (!userId) return
     const interval = setInterval(async () => {
-      const [updatedGame, updatedMoves] = await Promise.all([
+      const [updatedGame, updatedMoves]: [Game | null, Move[]] = await Promise.all([
         getGame(gameId),
         getMoves(gameId, lastMoveTsRef.current ?? undefined)
       ])
@@ -147,10 +149,10 @@ export default function PlayPhase() {
       setGame(updatedGame)
 
       if (updatedMoves?.length) {
-        lastMoveTsRef.current = updatedMoves[updatedMoves.length - 1].timestamp
+        lastMoveTsRef.current = updatedMoves[updatedMoves.length - 1].timestamp ?? null
         const myId = getPlayerId()
-        const newMine = updatedMoves.filter((m: any) => m.player_id === myId)
-        const newOpp = updatedMoves.filter((m: any) => m.player_id !== myId)
+        const newMine = updatedMoves.filter((m) => m.player_id === myId)
+        const newOpp = updatedMoves.filter((m) => m.player_id !== myId)
         if (newMine.length) setMyMoves(prev => appendNewMoves(prev, newMine))
         if (newOpp.length) setOpponentMoves(prev => appendNewMoves(prev, newOpp))
       }
@@ -184,11 +186,11 @@ export default function PlayPhase() {
       if (flags.some(f => f.r === r && f.c === c)) return
 
       const isMine = (row: number, col: number) =>
-          opponentBoard.mine_positions.some((m: any) => m.r === row && m.c === col)
+          opponentBoard.mine_positions.some((m) => m.r === row && m.c === col)
 
       const hitMine = isMine(r, c)
 
-      const movesToInsertMap = new Map<string, any>()
+      const movesToInsertMap = new Map<string, MoveInput>()
 
       if (hitMine) {
           movesToInsertMap.set(`${r},${c}`, { cell: { r, c }, hit_mine: true })
@@ -232,7 +234,9 @@ export default function PlayPhase() {
       const movesToInsert = Array.from(movesToInsertMap.values())
 
       setMyMoves(prev => {
-        const newMoves = movesToInsert.filter(m => !prev.some(pm => pm.cell.r === m.cell.r && pm.cell.c === m.cell.c))
+        const newMoves: Move[] = movesToInsert
+          .filter(m => !prev.some(pm => pm.cell.r === m.cell.r && pm.cell.c === m.cell.c))
+          .map(m => ({ ...m, player_id: userId }))
         return [...prev, ...newMoves]
       })
       setFlags(prev => prev.filter(f => !movesToInsert.some(m => m.cell.r === f.r && m.cell.c === f.c)))
@@ -280,7 +284,7 @@ export default function PlayPhase() {
     }
   }
 
-  const myMovesMap = new Map<string, any>()
+  const myMovesMap = new Map<string, Move>()
   myMoves.forEach(m => myMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
 
   const flagsSet = new Set<string>()
@@ -288,10 +292,10 @@ export default function PlayPhase() {
 
   const myMinesSet = new Set<string>()
   if (myBoard?.mine_positions) {
-    myBoard.mine_positions.forEach((m: any) => myMinesSet.add(`${m.r},${m.c}`))
+    myBoard.mine_positions.forEach((m) => myMinesSet.add(`${m.r},${m.c}`))
   }
 
-  const opponentMovesMap = new Map<string, any>()
+  const opponentMovesMap = new Map<string, Move>()
   opponentMoves.forEach(m => opponentMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
 
   let mySafeMovesCount = 0;

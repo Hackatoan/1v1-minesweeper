@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const since = searchParams.get('since')
 
   let query = 'SELECT * FROM games WHERE 1=1'
-  const params: any[] = []
+  const params: unknown[] = []
 
   if (status) { params.push(status); query += ` AND status = $${params.length}::game_status` }
   if (isPublic) { params.push(isPublic === 'true'); query += ` AND is_public = $${params.length}` }
