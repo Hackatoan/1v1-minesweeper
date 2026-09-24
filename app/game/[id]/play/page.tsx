@@ -82,6 +82,25 @@ export default function PlayPhase() {
   const onlineUsers = useGamePresence(gameId, game)
   const isOpponentOnline = game ? (game.player1_id === userId ? onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id)) : false
 
+  // Announce opponent connection changes to screen readers — this is a real-time
+  // competitive match, so this state shifts without any page navigation to cue it.
+  // Updated imperatively (not via setState) so the live region only speaks on
+  // actual transitions, not on every render.
+  const liveRegionRef = useRef<HTMLDivElement>(null)
+  const prevOnlineRef = useRef<boolean | null>(null)
+
+  useEffect(() => {
+    if (loading) return
+    if (prevOnlineRef.current === null) {
+      prevOnlineRef.current = isOpponentOnline
+      return
+    }
+    if (prevOnlineRef.current !== isOpponentOnline && liveRegionRef.current) {
+      liveRegionRef.current.textContent = isOpponentOnline ? t('game.opponentReconnected') : t('game.oppDisconnected')
+      prevOnlineRef.current = isOpponentOnline
+    }
+  }, [isOpponentOnline, loading, t])
+
   useEffect(() => {
     async function init() {
       const uid = getPlayerId()
@@ -294,6 +313,8 @@ export default function PlayPhase() {
 
   return (
     <div className="flex flex-1 w-full flex-col items-center justify-center p-6 from-transparent to-transparent">
+      <div ref={liveRegionRef} aria-live="polite" role="status" className="sr-only"></div>
+
       <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-start pt-4 pb-28 lg:pb-20">
 
         {!isOpponentOnline && (

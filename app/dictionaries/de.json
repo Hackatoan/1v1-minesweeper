@@ -77,6 +77,7 @@
     "alertSubmitFail": "Spielfeld konnte nicht gesendet werden",
     "oppDisconnected": "Gegner getrennt",
     "oppDisconnectedDesc": "Dein Gegner hat das Spiel verlassen oder die Verbindung verloren. Du kannst warten, bis er zurückkehrt, oder das Spiel verlassen.",
+    "opponentReconnected": "Gegner wieder verbunden.",
     "attackBoard": "Angriffsfeld",
     "attackDesc": "Finde sichere Zonen. Vermeide die Minen!",
     "dig": "⛏️ Graben",

@@ -77,6 +77,7 @@
     "alertSubmitFail": "Échec de l'envoi du plateau",
     "oppDisconnected": "Adversaire déconnecté",
     "oppDisconnectedDesc": "Votre adversaire a quitté la partie ou perdu la connexion. Vous pouvez attendre son retour ou quitter la partie.",
+    "opponentReconnected": "Adversaire reconnecté.",
     "attackBoard": "Plateau d'attaque",
     "attackDesc": "Trouvez les zones sûres. Évitez les mines !",
     "dig": "⛏️ Creuser",
