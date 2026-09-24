@@ -15,10 +15,23 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{id: 
   const { moves } = await req.json()
   if (!moves?.length) return NextResponse.json([])
 
-  const values: any[] = []
-  const rows_sql = moves.map((_: any, i: number) => {
+  // SECURITY: hit_mine must never be trusted from the client — otherwise a
+  // player can simply always report `hit_mine: false` and win every match
+  // without ever losing. Recompute it server-side from the opponent's
+  // stored mine layout instead of using the client-supplied value.
+  const { rows: oppBoardRows } = await pool.query(
+    'SELECT mine_positions FROM boards WHERE game_id = $1 AND owner_id != $2',
+    [id, playerId]
+  )
+  const minePositions: { r: number; c: number }[] = oppBoardRows[0]?.mine_positions ?? []
+  const isMine = (r: number, c: number) => minePositions.some((m) => m.r === r && m.c === c)
+
+  const values: unknown[] = []
+  const rows_sql = (moves as { cell?: { r: number; c: number } }[]).map((mv, i) => {
     const base = i * 4
-    values.push(id, playerId, JSON.stringify(moves[i].cell), moves[i].hit_mine ?? false)
+    const cell = mv?.cell ?? { r: -1, c: -1 }
+    const hitMine = isMine(cell.r, cell.c)
+    values.push(id, playerId, JSON.stringify(cell), hitMine)
     return `($${base+1}, $${base+2}, $${base+3}, $${base+4})`
   }).join(', ')
 
