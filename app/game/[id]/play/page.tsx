@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { getPlayerId } from '../../../lib/session'
 import { getGame, getBoards, getMoves, insertMoves, updateGame, incrementGamesPlayed } from '../../../lib/api-client'
@@ -47,6 +47,15 @@ function MineCellButton({
   )
 }
 
+// Merge newly-polled moves into an existing per-player moves list, skipping
+// any cell already present (e.g. applied optimistically by handleCellClick
+// before the server round-trip confirmed it).
+function appendNewMoves(existing: any[], incoming: any[]) {
+  const seen = new Set(existing.map(m => `${m.cell.r},${m.cell.c}`))
+  const additions = incoming.filter(m => !seen.has(`${m.cell.r},${m.cell.c}`))
+  return additions.length ? [...existing, ...additions] : existing
+}
+
 export default function PlayPhase() {
   const { t } = useT()
   const router = useRouter()
@@ -65,6 +74,10 @@ export default function PlayPhase() {
   const [flags, setFlags] = useState<MinePosition[]>([])
   const [flagMode, setFlagMode] = useState(false)
   const [loading, setLoading] = useState(true)
+  // Cursor for delta-polling /moves: the timestamp of the newest move we've
+  // already fetched from the server. Avoids re-fetching (and re-rendering)
+  // the whole move history on every 1.5s poll.
+  const lastMoveTsRef = useRef<string | null>(null)
 
   const onlineUsers = useGamePresence(gameId, game)
   const isOpponentOnline = game ? (game.player1_id === userId ? onlineUsers.includes(game.player2_id) : onlineUsers.includes(game.player1_id)) : false
@@ -90,6 +103,9 @@ export default function PlayPhase() {
       const movesData = await getMoves(gameId)
       setMyMoves(movesData?.filter((m: any) => m.player_id === uid) || [])
       setOpponentMoves(movesData?.filter((m: any) => m.player_id !== uid) || [])
+      if (movesData?.length) {
+        lastMoveTsRef.current = movesData[movesData.length - 1].timestamp
+      }
 
       setLoading(false)
     }
@@ -97,16 +113,28 @@ export default function PlayPhase() {
     init()
   }, [gameId, router])
 
-  // Polling for game/moves updates
+  // Polling for game/moves updates. Moves only ever grow during a match, so
+  // each tick fetches just the moves recorded since the last poll (instead
+  // of the full history) and appends them, rather than replacing the whole
+  // array and forcing a full board re-render every 1.5s.
   useEffect(() => {
     if (!userId) return
     const interval = setInterval(async () => {
-      const [updatedGame, updatedMoves] = await Promise.all([getGame(gameId), getMoves(gameId)])
+      const [updatedGame, updatedMoves] = await Promise.all([
+        getGame(gameId),
+        getMoves(gameId, lastMoveTsRef.current ?? undefined)
+      ])
       if (updatedGame?.status === 'finished') router.push(`/game/${gameId}/result`)
       setGame(updatedGame)
-      const myId = getPlayerId()
-      setMyMoves(updatedMoves.filter((m: any) => m.player_id === myId))
-      setOpponentMoves(updatedMoves.filter((m: any) => m.player_id !== myId))
+
+      if (updatedMoves?.length) {
+        lastMoveTsRef.current = updatedMoves[updatedMoves.length - 1].timestamp
+        const myId = getPlayerId()
+        const newMine = updatedMoves.filter((m: any) => m.player_id === myId)
+        const newOpp = updatedMoves.filter((m: any) => m.player_id !== myId)
+        if (newMine.length) setMyMoves(prev => appendNewMoves(prev, newMine))
+        if (newOpp.length) setOpponentMoves(prev => appendNewMoves(prev, newOpp))
+      }
     }, 1500)
     return () => clearInterval(interval)
   }, [userId, gameId, router])

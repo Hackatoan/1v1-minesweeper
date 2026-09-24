@@ -50,8 +50,11 @@ export async function hasMyBoard(gameId: string): Promise<boolean> {
 }
 
 // Moves
-export async function getMoves(gameId: string) {
-  const res = await fetch(`/api/games/${gameId}/moves`, { headers: headers() })
+export async function getMoves(gameId: string, since?: string) {
+  const url = since
+    ? `/api/games/${gameId}/moves?since=${encodeURIComponent(since)}`
+    : `/api/games/${gameId}/moves`
+  const res = await fetch(url, { headers: headers() })
   if (!res.ok) return []
   return res.json()
 }

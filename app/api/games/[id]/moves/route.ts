@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { pool } from '../../../../lib/db'
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{id: string}> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{id: string}> }) {
   const { id } = await params
-  const { rows } = await pool.query('SELECT * FROM moves WHERE game_id = $1 ORDER BY timestamp ASC', [id])
+  // Optional cursor: only return moves recorded after this timestamp. Lets
+  // the client's poll loop fetch just the delta instead of re-transferring
+  // (and re-diffing) the whole move history every 1.5s for the life of a match.
+  const since = req.nextUrl.searchParams.get('since')
+  const { rows } = since
+    ? await pool.query('SELECT * FROM moves WHERE game_id = $1 AND timestamp > $2 ORDER BY timestamp ASC', [id, since])
+    : await pool.query('SELECT * FROM moves WHERE game_id = $1 ORDER BY timestamp ASC', [id])
   return NextResponse.json(rows)
 }
 
