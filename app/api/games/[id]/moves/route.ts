@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { pool } from '../../../../lib/db'
+import { isValidRevealBatch } from '../../../../lib/game-logic'
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{id: string}> }) {
   const { id } = await params
@@ -32,10 +33,37 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{id: 
   const minePositions: { r: number; c: number }[] = oppBoardRows[0]?.mine_positions ?? []
   const isMine = (r: number, c: number) => minePositions.some((m) => m.r === r && m.c === c)
 
+  const cells = (moves as { cell?: { r: number; c: number } }[]).map((mv) => mv?.cell ?? { r: -1, c: -1 })
+  const anyMineHit = cells.some((c) => isMine(c.r, c.c))
+
+  // SECURITY: a single POST must correspond to exactly one legitimate dig —
+  // either one mine hit, or the flood-fill cascade that one safe click
+  // produces. Without this, a client can submit an arbitrary batch of safe
+  // cells (trivial to compute once you know the mine layout you're digging
+  // into, which every player legitimately has) and reveal the whole board —
+  // and therefore win — in a single request instead of actually playing.
+  if (anyMineHit) {
+    if (cells.length !== 1) {
+      return NextResponse.json({ error: 'Invalid move batch' }, { status: 400 })
+    }
+  } else {
+    const { rows: gameRows } = await pool.query('SELECT board_size FROM games WHERE id = $1', [id])
+    const boardSize: number = gameRows[0]?.board_size ?? 10
+    const { rows: existingMoveRows } = await pool.query(
+      'SELECT cell FROM moves WHERE game_id = $1 AND player_id = $2',
+      [id, playerId]
+    )
+    const alreadyRevealed = new Set<string>(
+      existingMoveRows.map((m) => `${m.cell.r},${m.cell.c}`)
+    )
+    if (!isValidRevealBatch(cells, minePositions, boardSize, alreadyRevealed)) {
+      return NextResponse.json({ error: 'Invalid move batch' }, { status: 400 })
+    }
+  }
+
   const values: unknown[] = []
-  const rows_sql = (moves as { cell?: { r: number; c: number } }[]).map((mv, i) => {
+  const rows_sql = cells.map((cell, i) => {
     const base = i * 4
-    const cell = mv?.cell ?? { r: -1, c: -1 }
     const hitMine = isMine(cell.r, cell.c)
     values.push(id, playerId, JSON.stringify(cell), hitMine)
     return `($${base+1}, $${base+2}, $${base+3}, $${base+4})`
