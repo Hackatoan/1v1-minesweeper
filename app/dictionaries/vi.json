@@ -52,7 +52,13 @@
     "yourProgress": "Tiến độ của bạn",
     "yourDefenses": "Phòng thủ của bạn",
     "watchAiProgress": "Xem tiến độ của AI",
-    "aiProgress": "Tiến độ AI"
+    "aiProgress": "Tiến độ AI",
+    "cellHidden": "Ô ẩn, hàng {row}, cột {col}",
+    "cellFlagged": "Ô đã cắm cờ, hàng {row}, cột {col}",
+    "cellRevealed": "Hàng {row}, cột {col}, {count} quả mìn liền kề",
+    "cellMineHit": "Hàng {row}, cột {col}, trúng mìn",
+    "cellSetupMine": "Đã đặt mìn, hàng {row}, cột {col}",
+    "cellSetupEmpty": "Trống, hàng {row}, cột {col}"
   },
   "game": {
     "notFound": "Không tìm thấy trận đấu",
@@ -94,6 +100,10 @@
     "defeat": "Thất bại!",
     "victoryDesc": "Bạn đã vượt qua bãi mìn một cách chuyên nghiệp trong khi đối thủ của bạn đã bỏ mạng.",
     "defeatDesc": "Bạn đã dẫm phải mìn hoặc bị đối thủ bỏ xa.",
-    "rematch": "Đấu lại"
+    "rematch": "Đấu lại",
+    "cellHidden": "Ô ẩn, hàng {row}, cột {col}",
+    "cellFlagged": "Ô đã cắm cờ, hàng {row}, cột {col}",
+    "cellRevealed": "Hàng {row}, cột {col}, {count} quả mìn liền kề",
+    "cellMineHit": "Hàng {row}, cột {col}, trúng mìn"
   }
 }
