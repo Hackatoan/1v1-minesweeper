@@ -263,6 +263,9 @@ export default function SoloPage() {
                       else if (n.size < maxMines) n.add(`${r},${c}`)
                       return n
                     })}
+                    aria-label={isMine
+                      ? t('solo.cellSetupMine', { row: r + 1, col: c + 1 })
+                      : t('solo.cellSetupEmpty', { row: r + 1, col: c + 1 })}
                     className={`mine-cell w-10 sm:w-12 text-lg ${isMine ? 'bg-rose-500 hover:bg-rose-600 text-white' : 'bg-brown-900/50 hover:bg-brown-200'}`}>
                     {isMine && '💣'}
                   </button>
@@ -336,6 +339,13 @@ export default function SoloPage() {
                 const isRevealed = !!move
                 const adj = isRevealed && !move.hitMine ? calcAdj(r, c, aiMines, boardSize) : 0
                 const isFlagged = flags.has(key)
+                const label = isRevealed
+                  ? move.hitMine
+                    ? t('solo.cellMineHit', { row: r + 1, col: c + 1 })
+                    : t('solo.cellRevealed', { row: r + 1, col: c + 1, count: adj })
+                  : isFlagged
+                    ? t('solo.cellFlagged', { row: r + 1, col: c + 1 })
+                    : t('solo.cellHidden', { row: r + 1, col: c + 1 })
                 return (
                   <button key={`atk-${key}`}
                     onClick={() => {
@@ -344,6 +354,7 @@ export default function SoloPage() {
                     }}
                     onContextMenu={e => { e.preventDefault(); if (!isRevealed) setFlags(prev => { const n = new Set(prev); if (n.has(key)) n.delete(key); else n.add(key); return n }) }}
                     disabled={isRevealed}
+                    aria-label={label}
                     className={`mine-cell w-8 h-8 sm:w-10 sm:h-10 text-sm font-black flex items-center justify-center
                       ${!isRevealed ? 'bg-brown-600 border border-brown-500/50 hover:bg-pink-300 cursor-pointer'
                         : move.hitMine ? 'bg-rose-500'
