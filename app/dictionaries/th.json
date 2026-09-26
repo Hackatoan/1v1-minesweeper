@@ -52,7 +52,13 @@
     "yourProgress": "ความคืบหน้าของคุณ",
     "yourDefenses": "การป้องกันของคุณ",
     "watchAiProgress": "ดูความคืบหน้าของ AI",
-    "aiProgress": "ความคืบหน้า AI"
+    "aiProgress": "ความคืบหน้า AI",
+    "cellHidden": "ช่องที่ซ่อนอยู่ แถว {row} คอลัมน์ {col}",
+    "cellFlagged": "ช่องที่ปักธง แถว {row} คอลัมน์ {col}",
+    "cellRevealed": "แถว {row} คอลัมน์ {col} มีระเบิดอยู่ติดกัน {count} ลูก",
+    "cellMineHit": "แถว {row} คอลัมน์ {col} โดนระเบิด",
+    "cellSetupMine": "วางระเบิดแล้ว แถว {row} คอลัมน์ {col}",
+    "cellSetupEmpty": "ว่างเปล่า แถว {row} คอลัมน์ {col}"
   },
   "game": {
     "notFound": "ไม่พบเกม",
@@ -94,6 +100,10 @@
     "defeat": "พ่ายแพ้!",
     "victoryDesc": "คุณเดินเรือผ่านสนามทุ่นระเบิดอย่างเชี่ยวชาญในขณะที่คู่ต่อสู้ของคุณพลาดท่า",
     "defeatDesc": "คุณโดนระเบิดหรือทำเวลาได้ช้ากว่าคู่ต่อสู้",
-    "rematch": "แก้ตัวใหม่"
+    "rematch": "แก้ตัวใหม่",
+    "cellHidden": "ช่องที่ซ่อนอยู่ แถว {row} คอลัมน์ {col}",
+    "cellFlagged": "ช่องที่ปักธง แถว {row} คอลัมน์ {col}",
+    "cellRevealed": "แถว {row} คอลัมน์ {col} มีระเบิดอยู่ติดกัน {count} ลูก",
+    "cellMineHit": "แถว {row} คอลัมน์ {col} โดนระเบิด"
   }
 }

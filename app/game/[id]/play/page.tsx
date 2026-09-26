@@ -1,23 +1,28 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { getPlayerId } from '../../../lib/session'
 import { getGame, getBoards, getMoves, insertMoves, updateGame, incrementGamesPlayed } from '../../../lib/api-client'
 import { useGamePresence } from '../../../lib/useGamePresence'
-import { calculateAdjacentMines } from '../../../lib/game-logic'
+import { buildAdjacencyGrid } from '../../../lib/game-logic'
 import { Board, MinePosition, Move, Game, MoveInput } from '../../../lib/types'
 import useLongPress from '../../../lib/useLongPress'
-import { useT } from '../../../lib/i18n-client'
+import { useT, TFunc } from '../../../lib/i18n-client'
 
 const NUMBER_COLORS = ['text-transparent', 'text-blue-500', 'text-orange-500', 'text-rose-500', 'text-purple-500', 'text-amber-500', 'text-cyan-500', 'text-zinc-800', 'text-zinc-500']
 
+// Grid cells carry no accessible name by default — a screen reader tabbing
+// through the board just hears "button" a hundred times with no indication
+// of position, flag state, or revealed content. Label every cell with its
+// (1-indexed) coordinates and current state.
 function MineCellButton({
-  r, c, isRevealed, hitMine, adjacentMines, isFlagged,
+  r, c, isRevealed, hitMine, adjacentMines, isFlagged, t,
   onDig, onFlag
 }: {
   r: number; c: number
   isRevealed: boolean; hitMine: boolean; adjacentMines: number; isFlagged: boolean
+  t: TFunc
   onDig: (r: number, c: number) => void
   onFlag: (r: number, c: number) => void
 }) {
@@ -27,8 +32,14 @@ function MineCellButton({
   )
 
   if (isRevealed) {
+    const label = hitMine
+      ? t('game.cellMineHit', { row: r + 1, col: c + 1 })
+      : t('game.cellRevealed', { row: r + 1, col: c + 1, count: adjacentMines })
     return (
-      <div className={`mine-cell w-10 h-10 sm:w-12 sm:h-12 text-xl font-black flex items-center justify-center
+      <div
+        role="img"
+        aria-label={label}
+        className={`mine-cell w-10 h-10 sm:w-12 sm:h-12 text-xl font-black flex items-center justify-center
         ${hitMine ? 'bg-rose-500 shadow-inner' : 'bg-brown-700 border border-brown-600/50 shadow-inner'}`}>
         {hitMine && '💥'}
         {!hitMine && adjacentMines > 0 && <span className={NUMBER_COLORS[adjacentMines] || 'text-zinc-800'}>{adjacentMines}</span>}
@@ -36,10 +47,15 @@ function MineCellButton({
     )
   }
 
+  const label = isFlagged
+    ? t('game.cellFlagged', { row: r + 1, col: c + 1 })
+    : t('game.cellHidden', { row: r + 1, col: c + 1 })
+
   return (
     <button
       {...longPress}
       onContextMenu={(e) => { e.preventDefault(); onFlag(r, c) }}
+      aria-label={label}
       className="mine-cell w-10 h-10 sm:w-12 sm:h-12 text-xl font-black flex items-center justify-center bg-brown-600 border border-brown-500/50 hover:bg-pink-300 cursor-pointer shadow-sm hover:shadow active:scale-95"
     >
       {isFlagged && '🚩'}
@@ -78,6 +94,16 @@ export default function PlayPhase() {
   // already fetched from the server. Avoids re-fetching (and re-rendering)
   // the whole move history on every 1.5s poll.
   const lastMoveTsRef = useRef<string | null>(null)
+
+  // Mine positions are fixed once a board is submitted, so the adjacent-mine
+  // counts for the whole opponent board only need computing when the board
+  // itself changes — not on every render (which happens every 1.5s poll tick
+  // and on every click/flag toggle, previously re-scanning mine_positions for
+  // every revealed cell via calculateAdjacentMines each time).
+  const opponentAdjGrid = useMemo(
+    () => (opponentBoard ? buildAdjacencyGrid(opponentBoard, boardSize) : null),
+    [opponentBoard, boardSize]
+  )
 
   const onlineUsers = useGamePresence(gameId, game)
   const isOpponentOnline = game
@@ -202,7 +228,7 @@ export default function PlayPhase() {
 
           while (queue.length > 0) {
               const current = queue.shift()!
-              const adjMines = calculateAdjacentMines(current.r, current.c, opponentBoard, boardSize)
+              const adjMines = opponentAdjGrid ? opponentAdjGrid[current.r][current.c] : 0
 
               movesToInsertMap.set(`${current.r},${current.c}`, {
                   cell: { r: current.r, c: current.c },
@@ -363,7 +389,7 @@ export default function PlayPhase() {
                     const move = myMovesMap.get(key)
                     const isRevealed = !!move
                     const hitMine = move?.hit_mine ?? false
-                    const adjacentMines = isRevealed && !hitMine && opponentBoard ? calculateAdjacentMines(r, c, opponentBoard, boardSize) : 0
+                    const adjacentMines = isRevealed && !hitMine && opponentAdjGrid ? opponentAdjGrid[r][c] : 0
                     const isFlagged = flagsSet.has(key)
 
                     return (
@@ -374,6 +400,7 @@ export default function PlayPhase() {
                         hitMine={hitMine}
                         adjacentMines={adjacentMines}
                         isFlagged={isFlagged}
+                        t={t}
                         onDig={handleCellAction}
                         onFlag={toggleFlag}
                       />

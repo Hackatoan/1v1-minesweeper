@@ -52,7 +52,13 @@
     "yourProgress": "Dein Fortschritt",
     "yourDefenses": "Deine Verteidigung",
     "watchAiProgress": "Beobachte den Fortschritt der AI",
-    "aiProgress": "AI-Fortschritt"
+    "aiProgress": "AI-Fortschritt",
+    "cellHidden": "Verdecktes Feld, Zeile {row}, Spalte {col}",
+    "cellFlagged": "Markiertes Feld, Zeile {row}, Spalte {col}",
+    "cellRevealed": "Zeile {row}, Spalte {col}, {count} angrenzende Minen",
+    "cellMineHit": "Zeile {row}, Spalte {col}, Mine getroffen",
+    "cellSetupMine": "Mine platziert, Zeile {row}, Spalte {col}",
+    "cellSetupEmpty": "Leer, Zeile {row}, Spalte {col}"
   },
   "game": {
     "notFound": "Spiel nicht gefunden",
@@ -94,6 +100,10 @@
     "defeat": "Niederlage!",
     "victoryDesc": "Du hast das Minenfeld gekonnt navigiert, während dein Gegner den Kürzeren gezogen hat.",
     "defeatDesc": "Du bist auf eine Mine getreten oder wurdest von deinem Gegner abgehängt.",
-    "rematch": "Revanche"
+    "rematch": "Revanche",
+    "cellHidden": "Verdecktes Feld, Zeile {row}, Spalte {col}",
+    "cellFlagged": "Markiertes Feld, Zeile {row}, Spalte {col}",
+    "cellRevealed": "Zeile {row}, Spalte {col}, {count} angrenzende Minen",
+    "cellMineHit": "Zeile {row}, Spalte {col}, Mine getroffen"
   }
 }

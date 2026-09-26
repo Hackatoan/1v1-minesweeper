@@ -52,7 +52,13 @@
     "yourProgress": "Seu Progresso",
     "yourDefenses": "Suas Defesas",
     "watchAiProgress": "Observe o progresso da AI",
-    "aiProgress": "Progresso da AI"
+    "aiProgress": "Progresso da AI",
+    "cellHidden": "Célula oculta, linha {row}, coluna {col}",
+    "cellFlagged": "Célula marcada, linha {row}, coluna {col}",
+    "cellRevealed": "Linha {row}, coluna {col}, {count} minas adjacentes",
+    "cellMineHit": "Linha {row}, coluna {col}, mina atingida",
+    "cellSetupMine": "Mina colocada, linha {row}, coluna {col}",
+    "cellSetupEmpty": "Vazio, linha {row}, coluna {col}"
   },
   "game": {
     "notFound": "Jogo não encontrado",
@@ -94,6 +100,10 @@
     "defeat": "Derrota!",
     "victoryDesc": "Você navegou habilmente pelo campo de minas enquanto seu oponente pereceu.",
     "defeatDesc": "Você pisou em uma mina ou foi superado pelo seu oponente.",
-    "rematch": "Revanche"
+    "rematch": "Revanche",
+    "cellHidden": "Célula oculta, linha {row}, coluna {col}",
+    "cellFlagged": "Célula marcada, linha {row}, coluna {col}",
+    "cellRevealed": "Linha {row}, coluna {col}, {count} minas adjacentes",
+    "cellMineHit": "Linha {row}, coluna {col}, mina atingida"
   }
 }
