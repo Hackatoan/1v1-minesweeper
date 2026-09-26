@@ -1,5 +1,5 @@
 import { copyToClipboard } from './app/lib/clipboard.ts';
-import { calculateAdjacentMines } from './app/lib/game-logic.ts';
+import { calculateAdjacentMines, isValidRevealBatch } from './app/lib/game-logic.ts';
 
 async function runTests() {
   console.log('Running tests...');
@@ -188,6 +188,67 @@ async function runTests() {
     const boardSize = 5;
     const count = calculateAdjacentMines(0, 0, board, boardSize);
     assert(count === 0, 'Mines outside bounds should not be counted');
+  }
+
+  // Test 11: isValidRevealBatch - a single safe cell is always valid, mine-adjacent or not
+  {
+    const mines = [{ r: 1, c: 1 }];
+    const valid = isValidRevealBatch([{ r: 0, c: 0 }], mines, 3, new Set());
+    assert(valid === true, 'A lone revealed cell should always be a valid batch');
+  }
+
+  // Test 12: isValidRevealBatch - full-board cascade on an empty (mine-free) board is valid
+  {
+    const boardSize = 3;
+    const allCells = [];
+    for (let r = 0; r < boardSize; r++) for (let c = 0; c < boardSize; c++) allCells.push({ r, c });
+    const valid = isValidRevealBatch(allCells, [], boardSize, new Set());
+    assert(valid === true, 'A full-board cascade from a single zero-mine cell should be valid');
+  }
+
+  // Test 13: isValidRevealBatch - a cascade missing a cell it should have included is rejected
+  {
+    const boardSize = 3;
+    const allCells = [];
+    for (let r = 0; r < boardSize; r++) for (let c = 0; c < boardSize; c++) allCells.push({ r, c });
+    const incomplete = allCells.slice(0, -1); // drop the last cell
+    const valid = isValidRevealBatch(incomplete, [], boardSize, new Set());
+    assert(valid === false, 'A cascade missing a cell the flood-fill would have reached should be rejected');
+  }
+
+  // Test 14: isValidRevealBatch - already-revealed cells act as a boundary, not part of a new cascade
+  {
+    const boardSize = 3;
+    const alreadyRevealed = new Set(['1,1']);
+    const expected = [];
+    for (let r = 0; r < boardSize; r++) {
+      for (let c = 0; c < boardSize; c++) {
+        if (r === 1 && c === 1) continue;
+        expected.push({ r, c });
+      }
+    }
+    const valid = isValidRevealBatch(expected, [], boardSize, alreadyRevealed);
+    assert(valid === true, 'A cascade should be able to flow around already-revealed cells');
+
+    const withStaleCell = [...expected, { r: 1, c: 1 }];
+    const invalid = isValidRevealBatch(withStaleCell, [], boardSize, alreadyRevealed);
+    assert(invalid === false, 'Resubmitting an already-revealed cell as part of a new cascade should be rejected');
+  }
+
+  // Test 15: isValidRevealBatch - two disjoint single-cell reveals stitched into one batch are rejected
+  {
+    // Center mine means every other cell in a 3x3 board has 1 adjacent mine
+    // (never 0), so no real click can ever cascade to more than one cell.
+    const mines = [{ r: 1, c: 1 }];
+    const stitched = [{ r: 0, c: 0 }, { r: 2, c: 2 }];
+    const valid = isValidRevealBatch(stitched, mines, 3, new Set());
+    assert(valid === false, 'Two unrelated single-cell reveals batched together should be rejected');
+  }
+
+  // Test 16: isValidRevealBatch - a duplicate cell within the same batch is rejected
+  {
+    const valid = isValidRevealBatch([{ r: 0, c: 0 }, { r: 0, c: 0 }], [], 3, new Set());
+    assert(valid === false, 'A batch with a duplicate cell should be rejected');
   }
 
   console.log(`\nTests complete: ${passed} passed, ${failed} failed`);
