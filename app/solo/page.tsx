@@ -319,12 +319,12 @@ export default function SoloPage() {
           <div className="text-center w-full flex flex-col items-center">
             <h2 className="text-2xl font-extrabold text-pink-100">{t('solo.attackBoard')}</h2>
             <p className="text-pink-300/50 mt-1 text-sm">{t('solo.attackDesc')}</p>
-            <div className="mt-4 flex gap-2 bg-brown-900/50 p-1 rounded-xl border border-brown-700/50">
-              <button onClick={() => setFlagMode(false)}
+            <div role="group" aria-label={`${t('solo.dig')} / ${t('solo.flag')}`} className="mt-4 flex gap-2 bg-brown-900/50 p-1 rounded-xl border border-brown-700/50">
+              <button onClick={() => setFlagMode(false)} aria-pressed={!flagMode}
                 className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${!flagMode ? 'bg-brown-600 text-white shadow-md' : 'text-pink-300/60 hover:bg-brown-700'}`}>
                 {t('solo.dig')}
               </button>
-              <button onClick={() => setFlagMode(true)}
+              <button onClick={() => setFlagMode(true)} aria-pressed={flagMode}
                 className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${flagMode ? 'bg-rose-500 text-white shadow-md' : 'text-pink-300/60 hover:bg-brown-700'}`}>
                 {t('solo.flag')}
               </button>
