@@ -371,9 +371,9 @@ export default function PlayPhase() {
                 <h2 className="text-3xl font-extrabold text-pink-100">{t('game.attackBoard')}</h2>
                 <p className="text-pink-300/60 mt-2">{t('game.attackDesc')}</p>
                 {/* Desktop toggle — hidden on mobile (sticky bar handles it) */}
-                <div className="hidden lg:flex mt-4 gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50">
-                    <button onClick={() => setFlagMode(false)} className={toggleButtonClasses(!flagMode, 'dig')}>{t('game.dig')}</button>
-                    <button onClick={() => setFlagMode(true)} className={toggleButtonClasses(flagMode, 'flag')}>{t('game.flag')}</button>
+                <div role="group" aria-label={`${t('game.dig')} / ${t('game.flag')}`} className="hidden lg:flex mt-4 gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50">
+                    <button onClick={() => setFlagMode(false)} aria-pressed={!flagMode} className={toggleButtonClasses(!flagMode, 'dig')}>{t('game.dig')}</button>
+                    <button onClick={() => setFlagMode(true)} aria-pressed={flagMode} className={toggleButtonClasses(flagMode, 'flag')}>{t('game.flag')}</button>
                 </div>
                 {/* Mobile hint */}
                 <p className="lg:hidden text-xs text-pink-300/40 mt-3">{t('game.tapHint')}</p>
@@ -475,15 +475,17 @@ export default function PlayPhase() {
       </div>
 
       {/* Sticky mobile toggle — always visible at bottom of screen */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-brown-900/95 border-t border-brown-700/60 backdrop-blur-sm flex items-center justify-center gap-3">
+      <div role="group" aria-label={`${t('game.dig')} / ${t('game.flag')}`} className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-brown-900/95 border-t border-brown-700/60 backdrop-blur-sm flex items-center justify-center gap-3">
         <button
           onClick={() => setFlagMode(false)}
+          aria-pressed={!flagMode}
           className={`flex-1 max-w-40 py-3 rounded-xl font-bold text-base transition-all ${toggleButtonClasses(!flagMode, 'dig')}`}
         >
           {t('game.dig')}
         </button>
         <button
           onClick={() => setFlagMode(true)}
+          aria-pressed={flagMode}
           className={`flex-1 max-w-40 py-3 rounded-xl font-bold text-base transition-all ${toggleButtonClasses(flagMode, 'flag')}`}
         >
           {t('game.flag')}
