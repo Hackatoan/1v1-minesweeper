@@ -1,5 +1,39 @@
 import type { Board, MinePosition } from './types'
 
+// Same density the setup UI uses to compute maxMines (app/game/[id]/setup/page.tsx)
+// and that the winner_id validation in PATCH /api/games/[id] assumes when it
+// derives totalNonMines. Kept as one constant so a board that doesn't match it
+// can be rejected consistently.
+export const MINE_DENSITY = 0.15
+
+// SECURITY: a submitted board's mine_positions is otherwise stored verbatim
+// (see POST /api/games/[id]/boards) and later used, unmodified, to decide
+// whether the *opponent's* clicks hit a mine. Without validating it here, a
+// modified client could submit a board covering every cell in mines (or any
+// other out-of-spec layout) to guarantee the opponent explodes on their very
+// first move, regardless of what they actually clicked. Reject anything that
+// isn't a well-formed, in-bounds, duplicate-free layout at the density every
+// legitimate client is constrained to.
+export function isValidMineLayout(mines: unknown, boardSize: number): mines is MinePosition[] {
+    if (!Array.isArray(mines)) return false
+
+    const expectedCount = Math.floor(boardSize * boardSize * MINE_DENSITY)
+    if (mines.length !== expectedCount) return false
+
+    const seen = new Set<string>()
+    for (const m of mines) {
+        if (!m || typeof m !== 'object') return false
+        const { r, c } = m as { r?: unknown; c?: unknown }
+        if (typeof r !== 'number' || typeof c !== 'number') return false
+        if (!Number.isInteger(r) || !Number.isInteger(c)) return false
+        if (r < 0 || r >= boardSize || c < 0 || c >= boardSize) return false
+        const key = `${r},${c}`
+        if (seen.has(key)) return false
+        seen.add(key)
+    }
+    return true
+}
+
 export const calculateAdjacentMines = (r: number, c: number, board: Board, boardSize: number) => {
     let count = 0
     for (let i = -1; i <= 1; i++) {
