@@ -32,9 +32,20 @@ export function isValidRevealBatch(
     if (cells.length === 0) return false
 
     const key = (r: number, c: number) => `${r},${c}`
-    const isMine = (r: number, c: number) => minePositions.some((m) => m.r === r && m.c === c)
+
+    // Previously each of these checked the raw mine_positions array with
+    // .some()/calculateAdjacentMines, which is O(mines) per cell. The BFS
+    // below calls them once per visited cell, so a real cascade on a board
+    // with many mines made this O(cells * mines) per submitted move. Building
+    // the mine lookup set and the adjacency grid once up front (both already
+    // used elsewhere in this file/app for the same reason) turns every
+    // per-cell check into O(1), so validating a move is O(cells + mines)
+    // instead of O(cells * mines).
+    const mineSet = new Set(minePositions.map((m) => key(m.r, m.c)))
+    const isMine = (r: number, c: number) => mineSet.has(key(r, c))
     const board: Board = { mine_positions: minePositions }
-    const adjMines = (r: number, c: number) => calculateAdjacentMines(r, c, board, boardSize)
+    const adjacencyGrid = buildAdjacencyGrid(board, boardSize)
+    const adjMines = (r: number, c: number) => adjacencyGrid[r][c]
 
     const cellSet = new Set(cells.map((c) => key(c.r, c.c)))
     if (cellSet.size !== cells.length) return false // duplicate cell within the same batch

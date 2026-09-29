@@ -31,7 +31,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{id: 
     [id, playerId]
   )
   const minePositions: { r: number; c: number }[] = oppBoardRows[0]?.mine_positions ?? []
-  const isMine = (r: number, c: number) => minePositions.some((m) => m.r === r && m.c === c)
+  // Precompute a lookup set once per request instead of scanning the whole
+  // mine_positions array (O(mines)) for every cell in the batch below.
+  const mineSet = new Set(minePositions.map((m) => `${m.r},${m.c}`))
+  const isMine = (r: number, c: number) => mineSet.has(`${r},${c}`)
 
   const cells = (moves as { cell?: { r: number; c: number } }[]).map((mv) => mv?.cell ?? { r: -1, c: -1 })
   const anyMineHit = cells.some((c) => isMine(c.r, c.c))
