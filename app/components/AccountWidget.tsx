@@ -20,18 +20,37 @@ export function AccountWidget() {
 
   useEffect(() => {
     const CLAIMED_KEY = 'hk_claim_offered'
-    const unsubscribe = onAuthChange(async (u) => {
-      setUser(u)
+    // Belt-and-suspenders: onAuthStateChanged normally fires almost
+    // instantly (even before any network round-trip, from cached local
+    // state), but nothing guarantees it ever fires -- a flaky connection to
+    // Firebase, or any other stall inside the SDK, would otherwise leave
+    // `ready` false and this whole widget permanently invisible with no
+    // visible error. Fail open after a few seconds: show the sign-in button
+    // treating the user as signed-out rather than hang forever.
+    const failOpen = setTimeout(() => setReady(true), 4000)
+    let unsubscribe: (() => void) | undefined
+    try {
+      unsubscribe = onAuthChange(async (u) => {
+        clearTimeout(failOpen)
+        setUser(u)
+        setReady(true)
+        if (!u) return
+        const nickname = getPlayerName()
+        const offeredFor = localStorage.getItem(CLAIMED_KEY)
+        if (!nickname || nickname === offeredFor) return
+        const result = await claimNickname(nickname)
+        localStorage.setItem(CLAIMED_KEY, nickname)
+        if (result.ok) setLinked(nickname)
+      })
+    } catch (e) {
+      console.error('[AccountWidget] failed to subscribe to auth state', e)
+      clearTimeout(failOpen)
       setReady(true)
-      if (!u) return
-      const nickname = getPlayerName()
-      const offeredFor = localStorage.getItem(CLAIMED_KEY)
-      if (!nickname || nickname === offeredFor) return
-      const result = await claimNickname(nickname)
-      localStorage.setItem(CLAIMED_KEY, nickname)
-      if (result.ok) setLinked(nickname)
-    })
-    return unsubscribe
+    }
+    return () => {
+      clearTimeout(failOpen)
+      unsubscribe?.()
+    }
   }, [])
 
   async function handleSignIn() {
