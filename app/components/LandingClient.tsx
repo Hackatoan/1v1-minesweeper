@@ -2,12 +2,37 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { getPlayerId, getPlayerName, setPlayerName } from '../lib/session'
 import { createGame, updateGame, listWaitingGames, getLeaderboard } from '../lib/api-client'
 import { LanguageSwitcher } from './LanguageSwitcher'
-import { AccountWidget } from './AccountWidget'
 import { LeaderboardEntry, Game } from '../lib/types'
+
+// AccountWidget pulls in the full Firebase SDK, so Turbopack splits it into
+// its own separate async-loaded JS chunk (verified: a standalone chunk file
+// distinct from the rest of this page's code, referenced by its own <script
+// async> tag in the initial HTML -- not inlined with everything else).
+// On the small single-box Oracle deployment that chunk's request can
+// transiently fail (502s / QUIC resets have been observed there under load),
+// and an RSC client-reference load that fails has no built-in retry: the
+// component silently never mounts, with no thrown error anywhere in app
+// code, while the rest of the page (already-loaded chunks) renders fine --
+// exactly the symptom this was added to fix. next/dynamic + retryImport give
+// the one fragile chunk its own bounded retry instead of a single attempt.
+function retryImport<T>(load: () => Promise<T>, retries = 3, delayMs = 600): Promise<T> {
+  return load().catch((err) => {
+    if (retries <= 0) throw err
+    return new Promise<void>((resolve) => setTimeout(resolve, delayMs)).then(() =>
+      retryImport(load, retries - 1, delayMs * 2)
+    )
+  })
+}
+
+const AccountWidget = dynamic(
+  () => retryImport(() => import('./AccountWidget').then((m) => m.AccountWidget)),
+  { ssr: false }
+)
 
 type LandingDict = Record<string, string>
 
