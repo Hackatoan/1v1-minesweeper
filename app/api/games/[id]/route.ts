@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { pool } from '../../../lib/db'
 import { cleanName, recordMatch } from '../../../lib/leaderboard'
+import { verifyFirebaseToken } from '../../../lib/verifyFirebaseToken'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{id: string}> }) {
   const { id } = await params
@@ -14,6 +15,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{id:
   const playerId = req.headers.get('X-Player-Id')
   const playerName = cleanName(req.headers.get('X-Player-Name'))
   const body = await req.json()
+
+  // Verified asynchronously up front — a slow/failed verification never
+  // blocks or breaks the underlying game update, it just means this
+  // request won't be linked to an account. Same fire-and-forget-safe
+  // pattern as tic-tac-toe-online's socket.io joinGame handler (PR #17),
+  // adapted to this repo's per-request HTTP flow: the resulting uid is
+  // persisted onto the games row (mirroring player1_name/player2_name)
+  // so it's still available whenever the match transitions to 'finished',
+  // even if that happens on a different request than the one carrying the
+  // token.
+  const idToken = req.headers.get('X-Id-Token')
+  const decoded = idToken ? await verifyFirebaseToken(idToken) : null
 
   const client = await pool.connect()
   try {
@@ -112,6 +125,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{id:
       setClauses.push(`player2_name = $${values.length}`)
     }
 
+    // Same capture for the verified Firebase uid, if this request carried
+    // one. Optional and additive: nickname-only play never sets these.
+    if (decoded && playerId && playerId === effP1) {
+      values.push(decoded.uid)
+      setClauses.push(`player1_uid = $${values.length}`)
+    } else if (decoded && playerId && playerId === effP2) {
+      values.push(decoded.uid)
+      setClauses.push(`player2_uid = $${values.length}`)
+    }
+
     // Always update last_ping on any game update.
     setClauses.push(`last_ping = now()`)
 
@@ -132,7 +155,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{id:
     // Record to the leaderboard only on the transition into 'finished'.
     if (before.status !== 'finished' && after.status === 'finished' && after.winner_id) {
       const winnerName = after.winner_id === after.player1_id ? after.player1_name : after.player2_name
-      recordMatch(after.player1_name, after.player2_name, winnerName ?? null)
+      recordMatch(after.player1_name, after.player2_name, winnerName ?? null, after.player1_uid ?? null, after.player2_uid ?? null)
     }
 
     return NextResponse.json(after)
