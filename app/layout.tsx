@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { GamesPlayed } from "./components/GamesPlayed";
 import Script from "next/script";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,6 +58,12 @@ export default function RootLayout({
             <a href="https://github.com/Hackatoan/1v1-minesweeper" target="_blank" rel="noopener noreferrer" className="text-pink-300/40 hover:text-pink-400 font-medium transition-colors hover:underline hidden sm:inline">
               Source
             </a>
+            <Link href="/privacy" className="text-pink-300/40 hover:text-pink-400 font-medium transition-colors hover:underline hidden sm:inline">
+              Privacy
+            </Link>
+            <Link href="/terms" className="text-pink-300/40 hover:text-pink-400 font-medium transition-colors hover:underline hidden sm:inline">
+              Terms
+            </Link>
           </div>
           <a href="https://buymeacoffee.com/hackatoa" target="_blank" rel="noopener noreferrer" className="bg-pink-200 hover:bg-pink-300 text-pink-900 px-4 py-1.5 rounded-full font-bold shadow-sm border border-pink-300 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
             <span>☕</span> Buy me a coffee
