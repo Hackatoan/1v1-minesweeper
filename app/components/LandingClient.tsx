@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { getPlayerId, getPlayerName, setPlayerName } from '../lib/session'
 import { createGame, updateGame, listWaitingGames, getLeaderboard } from '../lib/api-client'
 import { LanguageSwitcher } from './LanguageSwitcher'
+import { AccountWidget } from './AccountWidget'
 import { LeaderboardEntry, Game } from '../lib/types'
 
 type LandingDict = Record<string, string>
@@ -105,6 +106,7 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
             onChange={(e) => { setName(e.target.value); setPlayerName(e.target.value) }}
             className="w-full px-4 py-2 rounded-xl bg-brown-900/50 border border-brown-600/60 text-pink-100 placeholder:text-pink-300/40 text-center focus:outline-none focus:border-pink-400"
           />
+          <AccountWidget />
         </div>
         <div className="flex flex-col gap-2 items-center w-full max-w-xs mb-4">
           <label className="text-pink-200/80 font-medium">{dict.boardSize}: {boardSize}x{boardSize}</label>

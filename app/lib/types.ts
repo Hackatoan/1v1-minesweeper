@@ -43,6 +43,13 @@ export type Game = {
     last_ping?: string;
     player_pings?: Record<string, string>;
     created_at?: string;
+    player1_name?: string | null;
+    player2_name?: string | null;
+    // Firebase uid captured from a verified X-Id-Token header, if the
+    // acting player was signed in when they last touched this game. Null
+    // for anonymous nickname-only play.
+    player1_uid?: string | null;
+    player2_uid?: string | null;
 };
 
 export type LeaderboardEntry = {

@@ -1,9 +1,21 @@
 'use client'
 import { getPlayerId, getPlayerName } from './session'
+import { getCachedIdToken } from './firebase'
 import { Board, MoveInput, LeaderboardEntry } from './types'
 
 function headers() {
-  return { 'Content-Type': 'application/json', 'X-Player-Id': getPlayerId(), 'X-Player-Name': getPlayerName() }
+  const h: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'X-Player-Id': getPlayerId(),
+    'X-Player-Name': getPlayerName(),
+  }
+  // Optional: if the player is signed in, thread their Firebase ID token
+  // along so the server can verify it and link this result to their
+  // account instead of just the (unauthenticated) nickname. Anonymous play
+  // keeps working exactly as before when this is absent.
+  const idToken = getCachedIdToken()
+  if (idToken) h['X-Id-Token'] = idToken
+  return h
 }
 
 // Games
