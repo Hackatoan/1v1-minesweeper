@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@hackatoan/leaderboard": "https://github.com/Hackatoan/game-leaderboard/archive/refs/tags/v1.0.0.tar.gz",
     "firebase": "^12.19.0",
     "jose": "^6.2.12",
     "next": "^16.2.2",
