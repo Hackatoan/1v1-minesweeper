@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { sfx, initSfx } from '../../../lib/sfx'
 import { useRouter, useParams } from 'next/navigation'
 import { getPlayerId } from '../../../lib/session'
 import { getGame, updateGame, getBoards, submitBoard } from '../../../lib/api-client'
@@ -64,8 +65,11 @@ export default function SetupPhase() {
     return () => clearInterval(interval)
   }, [userId, gameId, router])
 
+  useEffect(() => { initSfx() }, [])
+
   const toggleMine = (r: number, c: number) => {
     if (isWaiting) return
+    sfx('click')
     const exists = mines.some(m => m.r === r && m.c === c)
     if (exists) {
       setMines(mines.filter(m => !(m.r === r && m.c === c)))
@@ -79,6 +83,7 @@ export default function SetupPhase() {
     setIsSubmitting(true)
     try {
       await submitBoard(gameId, mines)
+      sfx('pop')
       setIsWaiting(true)
     } catch (e) {
       console.error(e)

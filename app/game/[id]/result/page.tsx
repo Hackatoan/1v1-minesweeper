@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { getPlayerId } from '../../../lib/session'
 import { getGame, createGame, updateGame } from '../../../lib/api-client'
 import { useT } from '../../../lib/i18n-client'
 import { Game } from '../../../lib/types'
+import { sfx } from '../../../lib/sfx'
 
 export default function ResultPhase() {
   const { t } = useT()
@@ -16,6 +17,7 @@ export default function ResultPhase() {
   const [userId, setUserId] = useState<string | null>(null)
   const [game, setGame] = useState<Game | null>(null)
   const [loading, setLoading] = useState(true)
+  const playedResultSfx = useRef(false)
 
   useEffect(() => {
     async function init() {
@@ -26,6 +28,10 @@ export default function ResultPhase() {
       const gameData = await getGame(gameId)
       setGame(gameData)
       setLoading(false)
+      if (gameData?.status === 'finished' && !playedResultSfx.current) {
+        playedResultSfx.current = true
+        sfx(gameData.winner_id === uid ? 'win' : 'lose')
+      }
 
       if (gameData?.rematch_game_id) {
         router.push(`/game/${gameData.rematch_game_id}`)
