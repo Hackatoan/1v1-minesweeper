@@ -89,11 +89,11 @@ export default function GameLobby() {
     if (game?.status === 'setup') {
       router.push(`/game/${gameId}/setup`)
     } else if (game?.status === 'playing') {
-      router.push(`/game/${gameId}/play`)
+      router.push(`/game/${gameId}/${game.mode === 'rush' ? 'rush' : 'play'}`)
     } else if (game?.status === 'finished') {
       router.push(`/game/${gameId}/result`)
     }
-  }, [game?.status, gameId, router])
+  }, [game?.status, game?.mode, gameId, router])
 
   if (loading) return (
       <div className="flex flex-1 w-full items-center justify-center bg-brown-900/50">

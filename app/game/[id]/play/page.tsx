@@ -140,6 +140,7 @@ export default function PlayPhase() {
       setUserId(uid)
 
       const gameData = await getGame(gameId)
+      if (gameData?.mode === 'rush') return router.replace(`/game/${gameId}/rush`)
       if (!gameData || gameData.status !== 'playing') {
         if (gameData?.status === 'finished') router.push(`/game/${gameId}/result`)
       }

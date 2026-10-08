@@ -19,7 +19,11 @@
     "loading": "Loading…",
     "noGames": "No games played yet — be the first!",
     "failRandom": "Failed to join random game",
-    "failCreate": "Failed to create game"
+    "failCreate": "Failed to create game",
+    "mode": "Game mode",
+    "modeClassic": "Classic",
+    "modeRush": "Rush",
+    "rushDesc": "Race through small random boards. 3 lives — a mine costs one and skips the board. Out-clear your opponent before time runs out!"
   },
   "solo": {
     "subtitle": "vs AI",
@@ -105,5 +109,20 @@
     "cellFlagged": "Flagged cell, row {row}, column {col}",
     "cellRevealed": "Row {row}, column {col}, {count} adjacent mines",
     "cellMineHit": "Row {row}, column {col}, mine hit"
+  },
+  "rush": {
+    "yourBoard": "Board #{n}",
+    "lives": "Lives",
+    "cleared": "Cleared",
+    "timeLeft": "Time left",
+    "density": "Mine density",
+    "mines": "{count} mines",
+    "opponent": "Opponent",
+    "opponentBoard": "Their board",
+    "hitToast": "💥 Mine! Life lost — fresh board",
+    "clearToast": "✅ Board cleared!",
+    "howTo": "Clear small boards fast. A mine costs a life and skips the board. Lose all 3 lives and you're out — otherwise the most boards cleared when time runs out wins. Ahead of your opponent? Your boards get denser.",
+    "victoryDesc": "You out-cleared your opponent and kept your cool under pressure.",
+    "defeatDesc": "You ran out of lives or got out-cleared before time ran out."
   }
 }

@@ -19,7 +19,11 @@
     "loading": "Đang tải…",
     "noGames": "Chưa có trận đấu nào — hãy là người đầu tiên!",
     "failRandom": "Không thể tham gia trận ngẫu nhiên",
-    "failCreate": "Không thể tạo trận đấu"
+    "failCreate": "Không thể tạo trận đấu",
+    "mode": "Chế độ chơi",
+    "modeClassic": "Cổ điển",
+    "modeRush": "Rush",
+    "rushDesc": "Chạy đua qua các bảng nhỏ ngẫu nhiên. 3 mạng — chạm mìn mất một mạng và bỏ qua bảng đó. Dọn nhiều bảng hơn đối thủ trước khi hết giờ!"
   },
   "solo": {
     "subtitle": "đấu với AI",
@@ -105,5 +109,20 @@
     "cellFlagged": "Ô đã cắm cờ, hàng {row}, cột {col}",
     "cellRevealed": "Hàng {row}, cột {col}, {count} quả mìn liền kề",
     "cellMineHit": "Hàng {row}, cột {col}, trúng mìn"
+  },
+  "rush": {
+    "yourBoard": "Bảng số {n}",
+    "lives": "Mạng",
+    "cleared": "Đã dọn",
+    "timeLeft": "Thời gian còn lại",
+    "density": "Mật độ mìn",
+    "mines": "{count} mìn",
+    "opponent": "Đối thủ",
+    "opponentBoard": "Bảng của họ",
+    "hitToast": "💥 Trúng mìn! Mất một mạng — bảng mới",
+    "clearToast": "✅ Đã dọn xong bảng!",
+    "howTo": "Dọn nhanh các bảng nhỏ. Chạm mìn mất một mạng và bỏ qua bảng. Mất cả 3 mạng là bị loại — nếu không, ai dọn được nhiều bảng hơn khi hết giờ sẽ thắng. Đang dẫn trước? Các bảng của bạn sẽ dày mìn hơn.",
+    "victoryDesc": "Bạn dọn nhiều bảng hơn đối thủ và giữ bình tĩnh dưới áp lực.",
+    "defeatDesc": "Bạn hết mạng hoặc bị đối thủ dọn nhiều hơn trước khi hết giờ."
   }
 }

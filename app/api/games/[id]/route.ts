@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { pool } from '../../../lib/db'
+import { dbReady, pool } from '../../../lib/db'
 import { cleanName, recordMatch } from '../../../lib/leaderboard'
 import { verifyFirebaseToken } from '../../../lib/verifyFirebaseToken'
 
@@ -11,6 +11,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{id: 
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{id: string}> }) {
+  await dbReady
   const { id } = await params
   const playerId = req.headers.get('X-Player-Id')
   const playerName = cleanName(req.headers.get('X-Player-Name'))
@@ -46,6 +47,38 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{id:
     const effP1 = before.player1_id
     const effP2 = body.player2_id ?? before.player2_id
 
+    // SECURITY: the join flow only ever fills an empty seat. Without this, any
+    // client could PATCH player2_id over an occupied game and take the seat.
+    if (body.player2_id && before.player2_id && body.player2_id !== before.player2_id) {
+      await client.query('ROLLBACK')
+      return NextResponse.json({ error: 'Game is already full' }, { status: 409 })
+    }
+
+    // Rush mode has no setup phase and server-decided outcomes (see
+    // app/api/games/[id]/rush): joining starts the match immediately, and the
+    // only client-driven way to finish is conceding — naming the *opponent*
+    // the winner. The classic winner_id checks below don't apply (hitting a
+    // mine is routine in Rush), so this branch replaces them.
+    const isRush = before.mode === 'rush'
+    if (isRush) {
+      if (body.status === 'setup' && before.status === 'waiting' && effP2) {
+        body.status = 'playing'
+      } else {
+        delete body.status
+      }
+      if (body.winner_id != null) {
+        const conceded = playerId && (playerId === effP1 || playerId === effP2) && body.winner_id !== playerId
+          && (body.winner_id === effP1 || body.winner_id === effP2)
+        if (!conceded || before.status !== 'playing') {
+          await client.query('ROLLBACK')
+          return NextResponse.json({ error: 'Rush results are decided by the server' }, { status: 400 })
+        }
+        body.status = 'finished'
+      } else {
+        delete body.winner_id
+      }
+    }
+
     // Server-side validation of a self-reported winner_id (SECURITY: without
     // this, any client could PATCH an arbitrary winner_id with no relation
     // to what actually happened in the match). We don't have a full
@@ -67,7 +100,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{id:
     // transitions would break the real forfeit feature. Full outcome
     // validation would need a server-side authoritative board state; noted
     // as a follow-up rather than guessed at here.
-    if (Object.prototype.hasOwnProperty.call(body, 'winner_id') && body.winner_id != null) {
+    if (!isRush && Object.prototype.hasOwnProperty.call(body, 'winner_id') && body.winner_id != null) {
       const winnerId = body.winner_id
       if (winnerId !== effP1 && winnerId !== effP2) {
         await client.query('ROLLBACK')
@@ -134,6 +167,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{id:
       values.push(decoded.uid)
       setClauses.push(`player2_uid = $${values.length}`)
     }
+
+    if (isRush && body.status === 'playing') setClauses.push('started_at = now()')
 
     // Always update last_ping on any game update.
     setClauses.push(`last_ping = now()`)

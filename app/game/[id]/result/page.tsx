@@ -85,9 +85,9 @@ export default function ResultPhase() {
             {didIWin ? t('game.victory') : t('game.defeat')}
             </h2>
             <p className="text-xl text-pink-200/80 leading-relaxed font-medium px-4">
-            {didIWin
-                ? t('game.victoryDesc')
-                : t('game.defeatDesc')}
+            {game.mode === 'rush'
+                ? (didIWin ? t('rush.victoryDesc') : t('rush.defeatDesc'))
+                : (didIWin ? t('game.victoryDesc') : t('game.defeatDesc'))}
             </p>
         </div>
 
@@ -102,6 +102,7 @@ export default function ResultPhase() {
 
               const newGame = await createGame({
                 board_size: game.board_size ?? 10,
+                mode: game.mode,
                 is_public: false,
                 player2_id: game.player1_id === uid ? game.player2_id : game.player1_id,
                 status: 'setup'

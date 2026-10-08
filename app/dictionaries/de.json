@@ -19,7 +19,11 @@
     "loading": "Wird geladen...",
     "noGames": "Noch keine Spiele gespielt — sei der Erste!",
     "failRandom": "Fehler beim Beitreten des zufälligen Spiels",
-    "failCreate": "Fehler beim Erstellen des Spiels"
+    "failCreate": "Fehler beim Erstellen des Spiels",
+    "mode": "Spielmodus",
+    "modeClassic": "Klassisch",
+    "modeRush": "Rush",
+    "rushDesc": "Rase durch kleine Zufallsfelder. 3 Leben – eine Mine kostet eins und überspringt das Feld. Räume mehr Felder ab als dein Gegner, bevor die Zeit abläuft!"
   },
   "solo": {
     "subtitle": "gegen KI",
@@ -105,5 +109,20 @@
     "cellFlagged": "Markiertes Feld, Zeile {row}, Spalte {col}",
     "cellRevealed": "Zeile {row}, Spalte {col}, {count} angrenzende Minen",
     "cellMineHit": "Zeile {row}, Spalte {col}, Mine getroffen"
+  },
+  "rush": {
+    "yourBoard": "Feld Nr. {n}",
+    "lives": "Leben",
+    "cleared": "Geschafft",
+    "timeLeft": "Verbleibende Zeit",
+    "density": "Minendichte",
+    "mines": "{count} Minen",
+    "opponent": "Gegner",
+    "opponentBoard": "Sein Feld",
+    "hitToast": "💥 Mine! Leben verloren – neues Feld",
+    "clearToast": "✅ Feld geschafft!",
+    "howTo": "Räume kleine Felder schnell ab. Eine Mine kostet ein Leben und überspringt das Feld. Sind alle 3 Leben weg, bist du raus – sonst gewinnt, wer bei Zeitablauf mehr Felder geschafft hat. Vorne? Deine Felder werden dichter.",
+    "victoryDesc": "Du hast mehr Felder geschafft als dein Gegner und unter Druck die Ruhe bewahrt.",
+    "defeatDesc": "Dir sind die Leben ausgegangen oder dein Gegner war vor Ablauf der Zeit schneller."
   }
 }

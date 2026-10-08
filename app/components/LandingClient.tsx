@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation'
 import { getPlayerId, getPlayerName, setPlayerName } from '../lib/session'
 import { createGame, updateGame, listWaitingGames, getLeaderboard } from '../lib/api-client'
 import { LanguageSwitcher } from './LanguageSwitcher'
-import { LeaderboardEntry, Game } from '../lib/types'
+import { LeaderboardEntry, Game, GameMode } from '../lib/types'
+import { RUSH_BOARD_SIZE } from '../lib/rush'
 
 // AccountWidget pulls in the full Firebase SDK, so Turbopack splits it into
 // its own separate async-loaded JS chunk (verified: a standalone chunk file
@@ -41,6 +42,8 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
   const [isLoading, setIsLoading] = useState(false)
   const [isQueueing, setIsQueueing] = useState(false)
   const [boardSize, setBoardSize] = useState(10)
+  const [mode, setMode] = useState<GameMode>('classic')
+  const queueBoardSize = mode === 'rush' ? RUSH_BOARD_SIZE : 10
   const [queueSize, setQueueSize] = useState(0)
   const [name, setName] = useState('')
   const [leaders, setLeaders] = useState<LeaderboardEntry[]>([])
@@ -60,23 +63,22 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
     getLeaderboard().then(d => { setLeaders(d.players || []); setLbLoaded(true) }).catch(() => setLbLoaded(true))
   }, [])
 
-  const fetchQueueSize = async () => {
-    const games = await listWaitingGames(10, 15000)
-    setQueueSize(games.length || 0)
-  }
-
   useEffect(() => {
+    const fetchQueueSize = async () => {
+      const games = await listWaitingGames(queueBoardSize, 15000, mode)
+      setQueueSize(games.length || 0)
+    }
     fetchQueueSize()
     const interval = setInterval(fetchQueueSize, 5000)
     return () => clearInterval(interval)
-  }, [])
+  }, [mode, queueBoardSize])
 
   async function joinRandomGame() {
     setIsQueueing(true)
     try {
       const userId = getPlayerId()
       if (!userId) throw new Error('No player ID')
-      const games: Game[] = await listWaitingGames(10, 15000)
+      const games: Game[] = await listWaitingGames(queueBoardSize, 15000, mode)
       const available = games.filter((g) => g.player1_id !== userId)
       if (available.length > 0) {
         const gameId = available[0].id
@@ -88,7 +90,7 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
           // race condition — fall through to create
         }
       }
-      const data = await createGame({ board_size: 10, is_public: true })
+      const data = await createGame({ board_size: queueBoardSize, is_public: true, mode })
       router.push(`/game/${data.id}`)
     } catch (error) {
       console.error('Error joining random game:', error)
@@ -103,7 +105,7 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
     try {
       const userId = getPlayerId()
       if (!userId) throw new Error('No player ID')
-      const data = await createGame({ board_size: boardSize, is_public: false })
+      const data = await createGame({ board_size: mode === 'rush' ? RUSH_BOARD_SIZE : boardSize, is_public: false, mode })
       router.push(`/game/${data.id}`)
     } catch (error) {
       console.error('Error creating game:', error)
@@ -133,17 +135,37 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
           />
           <AccountWidget />
         </div>
-        <div className="flex flex-col gap-2 items-center w-full max-w-xs mb-4">
-          <label className="text-pink-200/80 font-medium">{dict.boardSize}: {boardSize}x{boardSize}</label>
-          <input
-            type="range"
-            min="5"
-            max="20"
-            value={boardSize}
-            onChange={(e) => setBoardSize(parseInt(e.target.value))}
-            className="w-full accent-pink-400"
-          />
+        <div role="group" aria-label={dict.mode} className="flex gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50">
+          {(['classic', 'rush'] as const).map((m) => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              aria-pressed={mode === m}
+              className={`px-5 py-2 rounded-lg font-bold text-sm transition-all ${
+                mode === m
+                  ? 'bg-pink-400 text-brown-900 shadow-md'
+                  : 'text-pink-300/60 hover:text-pink-200 hover:bg-brown-700'
+              }`}
+            >
+              {m === 'classic' ? dict.modeClassic : dict.modeRush}
+            </button>
+          ))}
         </div>
+        {mode === 'rush' ? (
+          <p className="text-center text-pink-200/80 max-w-sm -mt-4 mb-4">{dict.rushDesc}</p>
+        ) : (
+          <div className="flex flex-col gap-2 items-center w-full max-w-xs mb-4">
+            <label className="text-pink-200/80 font-medium">{dict.boardSize}: {boardSize}x{boardSize}</label>
+            <input
+              type="range"
+              min="5"
+              max="20"
+              value={boardSize}
+              onChange={(e) => setBoardSize(parseInt(e.target.value))}
+              className="w-full accent-pink-400"
+            />
+          </div>
+        )}
         <div className="flex flex-col sm:flex-row gap-4 w-full">
             <button
               onClick={handleCreateGame}

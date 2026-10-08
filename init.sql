@@ -53,3 +53,16 @@ CREATE INDEX idx_moves_game_id ON moves(game_id);
 -- Player nicknames for the shared cross-game leaderboards. Added 2026-08-15.
 ALTER TABLE games ADD COLUMN IF NOT EXISTS player1_name TEXT;
 ALTER TABLE games ADD COLUMN IF NOT EXISTS player2_name TEXT;
+
+-- Rush mode (2026-10-08): server-generated small boards, 3 lives.
+ALTER TABLE games ADD COLUMN IF NOT EXISTS mode TEXT NOT NULL DEFAULT 'classic';
+ALTER TABLE games ADD COLUMN IF NOT EXISTS started_at TIMESTAMPTZ;
+ALTER TABLE moves ADD COLUMN IF NOT EXISTS board_idx INT NOT NULL DEFAULT 0;
+CREATE TABLE IF NOT EXISTS rush_boards (
+  game_id TEXT NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+  player_id TEXT NOT NULL,
+  idx INT NOT NULL,
+  density REAL NOT NULL,
+  mine_positions JSONB NOT NULL,
+  PRIMARY KEY (game_id, player_id, idx)
+);
