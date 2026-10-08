@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react'
+import React from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { getPlayerId } from '../../../lib/session'
 import { getGame, getBoards, getMoves, insertMoves, updateGame, incrementGamesPlayed } from '../../../lib/api-client'
@@ -17,7 +18,7 @@ const NUMBER_COLORS = ['text-transparent', 'text-blue-500', 'text-orange-500', '
 // through the board just hears "button" a hundred times with no indication
 // of position, flag state, or revealed content. Label every cell with its
 // (1-indexed) coordinates and current state.
-function MineCellButton({
+const MineCellButton = React.memo(function MineCellButton({
   r, c, isRevealed, hitMine, adjacentMines, isFlagged, t,
   onDig, onFlag
 }: {
@@ -62,7 +63,7 @@ function MineCellButton({
       {isFlagged && '🚩'}
     </button>
   )
-}
+})
 
 // Merge newly-polled moves into an existing per-player moves list, skipping
 // any cell already present (e.g. applied optimistically by handleCellClick
@@ -189,7 +190,7 @@ export default function PlayPhase() {
     return () => clearInterval(interval)
   }, [userId, gameId, router])
 
-  const toggleFlag = (r: number, c: number) => {
+  const toggleFlag = useCallback((r: number, c: number) => {
       if (myMoves.some(m => m.cell.r === r && m.cell.c === c)) return
       sfx('flag')
       setFlags(prev => {
@@ -200,17 +201,9 @@ export default function PlayPhase() {
               return [...prev, {r, c}]
           }
       })
-  }
+  }, [myMoves])
 
-  const handleCellAction = (r: number, c: number) => {
-    if (flagMode) {
-      toggleFlag(r, c)
-    } else {
-      handleCellClick(r, c)
-    }
-  }
-
-  const handleCellClick = async (r: number, c: number) => {
+  const handleCellClick = useCallback(async (r: number, c: number) => {
       if (!userId || !opponentBoard) return
       if (myMoves.some(m => m.cell.r === r && m.cell.c === c)) return
       if (flags.some(f => f.r === r && f.c === c)) return
@@ -297,7 +290,15 @@ export default function PlayPhase() {
               await incrementGamesPlayed()
           }
       }
-  }
+  }, [userId, opponentBoard, myMoves, flags, gameId, opponentAdjGrid, boardSize, maxMines])
+
+  const handleCellAction = useCallback((r: number, c: number) => {
+    if (flagMode) {
+      toggleFlag(r, c)
+    } else {
+      handleCellClick(r, c)
+    }
+  }, [flagMode, toggleFlag, handleCellClick])
 
   if (loading) return (
       <div className="flex flex-1 w-full items-center justify-center bg-brown-900/50">
@@ -315,29 +316,33 @@ export default function PlayPhase() {
     }
   }
 
-  const myMovesMap = new Map<string, Move>()
-  myMoves.forEach(m => myMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
+  const { myMovesMap, flagsSet, myMinesSet, opponentMovesMap, mySafeMovesCount, opponentSafeMovesCount } = useMemo(() => {
+    const myMovesMap = new Map<string, Move>()
+    myMoves.forEach(m => myMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
 
-  const flagsSet = new Set<string>()
-  flags.forEach(f => flagsSet.add(`${f.r},${f.c}`))
+    const flagsSet = new Set<string>()
+    flags.forEach(f => flagsSet.add(`${f.r},${f.c}`))
 
-  const myMinesSet = new Set<string>()
-  if (myBoard?.mine_positions) {
-    myBoard.mine_positions.forEach((m) => myMinesSet.add(`${m.r},${m.c}`))
-  }
+    const myMinesSet = new Set<string>()
+    if (myBoard?.mine_positions) {
+      myBoard.mine_positions.forEach((m) => myMinesSet.add(`${m.r},${m.c}`))
+    }
 
-  const opponentMovesMap = new Map<string, Move>()
-  opponentMoves.forEach(m => opponentMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
+    const opponentMovesMap = new Map<string, Move>()
+    opponentMoves.forEach(m => opponentMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
 
-  let mySafeMovesCount = 0;
-  for (const move of myMovesMap.values()) {
-    if (!move.hit_mine) mySafeMovesCount++;
-  }
+    let mySafeMovesCount = 0;
+    for (const move of myMovesMap.values()) {
+      if (!move.hit_mine) mySafeMovesCount++;
+    }
 
-  let opponentSafeMovesCount = 0;
-  for (const move of opponentMovesMap.values()) {
-    if (!move.hit_mine) opponentSafeMovesCount++;
-  }
+    let opponentSafeMovesCount = 0;
+    for (const move of opponentMovesMap.values()) {
+      if (!move.hit_mine) opponentSafeMovesCount++;
+    }
+
+    return { myMovesMap, flagsSet, myMinesSet, opponentMovesMap, mySafeMovesCount, opponentSafeMovesCount }
+  }, [myMoves, flags, myBoard, opponentMoves])
 
   const toggleButtonClasses = (active: boolean, variant: 'dig' | 'flag') =>
     `px-4 py-2 rounded-lg font-bold text-sm transition-all ${
