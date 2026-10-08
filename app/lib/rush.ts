@@ -15,13 +15,11 @@ export const RUSH_BASE_DENSITY = 0.12
 export const RUSH_DENSITY_STEP = 0.04
 export const RUSH_MAX_DENSITY = 0.4
 
-// Rubber-band: the player who is ahead on cleared boards gets denser boards
-// (+STEP per board of lead); a tied or trailing player drops back to BASE.
-// To flip it to the "your clears make the opponent's next board harder"
-// variant, swap the arguments' roles: base the lead on (oppClears - myClears).
-export function rushDensity(myClears: number, oppClears: number): number {
-    const lead = Math.max(0, myClears - oppClears)
-    return Math.min(RUSH_MAX_DENSITY, RUSH_BASE_DENSITY + RUSH_DENSITY_STEP * lead)
+// Every board the opponent clears makes your next board denser (+STEP each,
+// capped). Your own clears don't help you, so falling behind snowballs —
+// pressure comes from the opponent's pace, not from how well you're doing.
+export function rushDensity(_myClears: number, oppClears: number): number {
+    return Math.min(RUSH_MAX_DENSITY, RUSH_BASE_DENSITY + RUSH_DENSITY_STEP * oppClears)
 }
 
 export function rushMineCount(density: number, size: number = RUSH_BOARD_SIZE): number {

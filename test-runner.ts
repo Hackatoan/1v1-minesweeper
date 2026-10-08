@@ -256,9 +256,9 @@ async function runTests() {
   // Rush mode
   {
     assert(rushDensity(0, 0) === 0.12, 'Rush: tied players get base density');
-    assert(rushDensity(1, 3) === 0.12, 'Rush: trailing player resets to base');
-    assert(Math.abs(rushDensity(3, 1) - 0.2) < 1e-9, 'Rush: leader gets +4% per board of lead');
-    assert(rushDensity(50, 0) === 0.4, 'Rush: density is capped');
+    assert(Math.abs(rushDensity(1, 3) - 0.24) < 1e-9, 'Rush: each opponent clear adds +4% to your next board');
+    assert(rushDensity(3, 0) === 0.12, 'Rush: your own clears do not raise your density');
+    assert(rushDensity(0, 50) === 0.4, 'Rush: density is capped');
     assert(rushMineCount(0.12) === 4 && rushMineCount(0) === 1, 'Rush: mine count rounds, minimum 1');
 
     let seed = 7;
