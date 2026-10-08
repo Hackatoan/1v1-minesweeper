@@ -9,6 +9,7 @@ import { buildAdjacencyGrid } from '../../../lib/game-logic'
 import { Board, MinePosition, Move, Game, MoveInput } from '../../../lib/types'
 import useLongPress from '../../../lib/useLongPress'
 import { useT, TFunc } from '../../../lib/i18n-client'
+import { sfx, initSfx } from '../../../lib/sfx'
 
 const NUMBER_COLORS = ['text-transparent', 'text-blue-500', 'text-orange-500', 'text-rose-500', 'text-purple-500', 'text-amber-500', 'text-cyan-500', 'text-zinc-800', 'text-zinc-500']
 
@@ -129,6 +130,8 @@ export default function PlayPhase() {
     }
   }, [isOpponentOnline, loading, t])
 
+  useEffect(() => { initSfx() }, [])
+
   useEffect(() => {
     async function init() {
       const uid = getPlayerId()
@@ -188,6 +191,7 @@ export default function PlayPhase() {
 
   const toggleFlag = (r: number, c: number) => {
       if (myMoves.some(m => m.cell.r === r && m.cell.c === c)) return
+      sfx('flag')
       setFlags(prev => {
           const isFlagged = prev.some(f => f.r === r && f.c === c)
           if (isFlagged) {
@@ -215,6 +219,7 @@ export default function PlayPhase() {
           opponentBoard.mine_positions.some((m) => m.r === row && m.c === col)
 
       const hitMine = isMine(r, c)
+      sfx(hitMine ? 'boom' : 'reveal')
 
       const movesToInsertMap = new Map<string, MoveInput>()
 
