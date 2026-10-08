@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useT } from '../lib/i18n-client'
+import { computeOpening } from '../lib/game-logic'
 
 type Phase = 'menu' | 'setup' | 'play' | 'result'
 type Diff = 'easy' | 'medium' | 'hard'
@@ -97,13 +98,20 @@ export default function SoloPage() {
       mines.add(`${Math.floor(Math.random() * boardSize)},${Math.floor(Math.random() * boardSize)}`)
     }
     setAiMines(mines)
-    setPlayerMoves(new Map())
-    setAiMoves(new Map())
+    // Safe start: each side begins with a patch of the other's board uncovered
+    // (see computeOpening) so nobody loses on a blind first click.
+    const toMoves = (cells: { r: number; c: number }[]) =>
+      new Map(cells.map(({ r, c }): [string, Move] => [`${r},${c}`, { r, c, hitMine: false }]))
+    const toPositions = (set: Set<string>) =>
+      [...set].map((k) => { const [r, c] = k.split(',').map(Number); return { r, c } })
+    const aiOpening = toMoves(computeOpening(toPositions(playerMines), boardSize))
+    setPlayerMoves(toMoves(computeOpening(toPositions(mines), boardSize)))
+    setAiMoves(aiOpening)
     setFlags(new Set())
     setFlagMode(false)
     setWinner(null)
     gameOverRef.current = false
-    aiMovesRef.current = new Map()
+    aiMovesRef.current = aiOpening
     setPhase('play')
   }
 

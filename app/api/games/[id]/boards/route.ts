@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { pool } from '../../../../lib/db'
-import { isValidMineLayout } from '../../../../lib/game-logic'
+import { isValidMineLayout, computeOpening } from '../../../../lib/game-logic'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{id: string}> }) {
   const { id } = await params
@@ -32,11 +32,39 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{id: 
   )
 
   // Check if both boards are submitted → start game
-  const { rows: countRows } = await pool.query(
-    'SELECT COUNT(*) FROM boards WHERE game_id = $1', [id]
+  const { rows: boardRows } = await pool.query(
+    'SELECT owner_id, mine_positions FROM boards WHERE game_id = $1', [id]
   )
-  if (parseInt(countRows[0].count) >= 2) {
-    await pool.query(`UPDATE games SET status = 'playing'::game_status, last_ping = now() WHERE id = $1`, [id])
+  if (boardRows.length >= 2) {
+    // Gated on the status flip so that if both players' submissions race
+    // here, only the one that actually starts the game seeds the openings.
+    const { rowCount } = await pool.query(
+      `UPDATE games SET status = 'playing'::game_status, last_ping = now()
+       WHERE id = $1 AND status != 'playing'::game_status AND status != 'finished'::game_status`,
+      [id]
+    )
+    if (rowCount) {
+      // Safe start: each player begins with a patch of the *opponent's* board
+      // already uncovered (see computeOpening), stored as ordinary moves so
+      // progress, win checks and move validation all treat them as played.
+      const values: unknown[] = []
+      const tuples: string[] = []
+      for (const owner of boardRows) {
+        const opener = boardRows.find((b) => b.owner_id !== owner.owner_id)?.owner_id
+        if (!opener) continue
+        for (const cell of computeOpening(owner.mine_positions, boardSize)) {
+          const base = values.length
+          values.push(id, opener, JSON.stringify(cell))
+          tuples.push(`($${base + 1}, $${base + 2}, $${base + 3}, false)`)
+        }
+      }
+      if (tuples.length) {
+        await pool.query(
+          `INSERT INTO moves (game_id, player_id, cell, hit_mine) VALUES ${tuples.join(', ')}`,
+          values
+        )
+      }
+    }
   }
 
   return NextResponse.json(rows[0] ?? {})

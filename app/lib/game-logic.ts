@@ -142,3 +142,76 @@ export const buildAdjacencyGrid = (board: Board, boardSize: number): number[][] 
     }
     return grid
 }
+
+// Fraction of a board's safe cells the free opening aims to uncover. Big
+// enough to hand the player a few numbers to reason from, small enough that
+// the match is still decided by play rather than by the freebie.
+const OPENING_TARGET_FRACTION = 0.2
+
+// "Safe start": every player begins a match with a patch of the opponent's
+// board already uncovered, so nobody loses on a blind first click. The layout
+// is chosen by the *opponent*, so the opening has to be derived from it
+// rather than picked up front. It is a pure function of (mines, boardSize),
+// which lets the server (which stores it as ordinary moves when the match
+// starts) and the solo client share one implementation.
+//
+// Strategy: flood-fill every zero-adjacent-mine region (the same cascade a
+// real click produces) and use the region whose size is closest to the
+// target. Ties go to the earliest in row-major order, keeping it
+// deterministic. Boards with no zero cell fall back to the lowest-numbered
+// safe cell, so there is always at least one number to start from.
+export function computeOpening(minePositions: MinePosition[], boardSize: number): MinePosition[] {
+    const board: Board = { mine_positions: minePositions }
+    const adj = buildAdjacencyGrid(board, boardSize)
+    const mineSet = new Set(minePositions.map((m) => `${m.r},${m.c}`))
+    const totalSafe = boardSize * boardSize - mineSet.size
+    // Never uncover so much that nothing is left to play for.
+    const target = Math.max(1, Math.min(Math.round(totalSafe * OPENING_TARGET_FRACTION), totalSafe - 1))
+
+    const visitedZero = new Set<string>()
+    let best: MinePosition[] | null = null
+
+    for (let r = 0; r < boardSize; r++) {
+        for (let c = 0; c < boardSize; c++) {
+            const startKey = `${r},${c}`
+            if (mineSet.has(startKey) || adj[r][c] !== 0 || visitedZero.has(startKey)) continue
+
+            const region = new Map<string, MinePosition>()
+            const queue: MinePosition[] = [{ r, c }]
+            region.set(startKey, { r, c })
+            while (queue.length > 0) {
+                const cur = queue.shift()!
+                if (adj[cur.r][cur.c] !== 0) continue
+                visitedZero.add(`${cur.r},${cur.c}`)
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) {
+                        if (i === 0 && j === 0) continue
+                        const nr = cur.r + i
+                        const nc = cur.c + j
+                        if (nr < 0 || nr >= boardSize || nc < 0 || nc >= boardSize) continue
+                        const k = `${nr},${nc}`
+                        if (region.has(k) || mineSet.has(k)) continue
+                        region.set(k, { r: nr, c: nc })
+                        queue.push({ r: nr, c: nc })
+                    }
+                }
+            }
+
+            if (region.size > totalSafe - 1) continue
+            if (!best || Math.abs(region.size - target) < Math.abs(best.length - target)) {
+                best = [...region.values()]
+            }
+        }
+    }
+    if (best) return best
+
+    let lowest: MinePosition | null = null
+    let lowestCount = Infinity
+    for (let r = 0; r < boardSize; r++) {
+        for (let c = 0; c < boardSize; c++) {
+            if (mineSet.has(`${r},${c}`)) continue
+            if (adj[r][c] < lowestCount) { lowestCount = adj[r][c]; lowest = { r, c } }
+        }
+    }
+    return lowest ? [lowest] : []
+}
