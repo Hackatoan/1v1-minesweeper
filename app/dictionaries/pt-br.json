@@ -19,7 +19,11 @@
     "loading": "Carregando...",
     "noGames": "Nenhuma partida jogada ainda — seja o primeiro!",
     "failRandom": "Falha ao entrar na partida aleatória",
-    "failCreate": "Falha ao criar o jogo"
+    "failCreate": "Falha ao criar o jogo",
+    "mode": "Modo de jogo",
+    "modeClassic": "Clássico",
+    "modeRush": "Rush",
+    "rushDesc": "Corra por pequenos tabuleiros aleatórios. 3 vidas: uma mina custa uma e pula o tabuleiro. Limpe mais que o oponente antes do tempo acabar!"
   },
   "solo": {
     "subtitle": "contra IA",
@@ -105,5 +109,20 @@
     "cellFlagged": "Célula marcada, linha {row}, coluna {col}",
     "cellRevealed": "Linha {row}, coluna {col}, {count} minas adjacentes",
     "cellMineHit": "Linha {row}, coluna {col}, mina atingida"
+  },
+  "rush": {
+    "yourBoard": "Tabuleiro nº {n}",
+    "lives": "Vidas",
+    "cleared": "Limpos",
+    "timeLeft": "Tempo restante",
+    "density": "Densidade de minas",
+    "mines": "{count} minas",
+    "opponent": "Oponente",
+    "opponentBoard": "Tabuleiro dele",
+    "hitToast": "💥 Mina! Vida perdida — tabuleiro novo",
+    "clearToast": "✅ Tabuleiro limpo!",
+    "howTo": "Limpe tabuleiros pequenos rápido. Uma mina custa uma vida e pula o tabuleiro. Perdeu as 3 vidas, está fora — senão vence quem limpou mais tabuleiros quando o tempo acabar. À frente do oponente? Seus tabuleiros ficam mais densos.",
+    "victoryDesc": "Você limpou mais que o oponente e manteve a calma sob pressão.",
+    "defeatDesc": "Você ficou sem vidas ou foi superado antes de o tempo acabar."
   }
 }

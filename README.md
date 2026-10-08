@@ -11,6 +11,7 @@ Head-to-head minesweeper. Both players work the same board in real time; fastest
 ## Features
 
 - Real-time 1v1 matches + solo mode
+- **Rush mode**: server-generated small boards, 3 lives (a mine costs one and skips the board), 3-minute clock; every board your opponent clears makes your next one denser, last alive / most clears wins
 - Shared game rooms (locale-independent for cross-language play)
 - 6-language localized landing and solo UI
 

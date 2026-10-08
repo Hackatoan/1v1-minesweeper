@@ -19,7 +19,11 @@
     "loading": "Cargando...",
     "noGames": "Aún no se han jugado partidas; ¡sé el primero!",
     "failRandom": "No se pudo unir a la partida aleatoria",
-    "failCreate": "No se pudo crear la partida"
+    "failCreate": "No se pudo crear la partida",
+    "mode": "Modo de juego",
+    "modeClassic": "Clásico",
+    "modeRush": "Rush",
+    "rushDesc": "Corre por pequeños tableros aleatorios. 3 vidas: una mina te quita una y salta el tablero. ¡Despeja más que tu rival antes de que acabe el tiempo!"
   },
   "solo": {
     "subtitle": "contra la IA",
@@ -105,5 +109,20 @@
     "cellFlagged": "Celda marcada, fila {row}, columna {col}",
     "cellRevealed": "Fila {row}, columna {col}, {count} minas adyacentes",
     "cellMineHit": "Fila {row}, columna {col}, mina detonada"
+  },
+  "rush": {
+    "yourBoard": "Tablero n.º {n}",
+    "lives": "Vidas",
+    "cleared": "Despejados",
+    "timeLeft": "Tiempo restante",
+    "density": "Densidad de minas",
+    "mines": "{count} minas",
+    "opponent": "Rival",
+    "opponentBoard": "Su tablero",
+    "hitToast": "💥 ¡Mina! Vida perdida: tablero nuevo",
+    "clearToast": "✅ ¡Tablero despejado!",
+    "howTo": "Despeja tableros pequeños rápido. Una mina cuesta una vida y salta el tablero. Si pierdes las 3 vidas, quedas fuera; si no, gana quien más tableros haya despejado al acabar el tiempo. ¿Vas por delante? Tus tableros serán más densos.",
+    "victoryDesc": "Despejaste más que tu rival y mantuviste la calma bajo presión.",
+    "defeatDesc": "Te quedaste sin vidas o tu rival despejó más antes de que acabara el tiempo."
   }
 }

@@ -19,6 +19,8 @@ export type Move = {
     cell: MinePosition;
     timestamp?: string;
     hit_mine?: boolean;
+    // Rush mode only: which of the player's boards the cell belongs to.
+    board_idx?: number;
 };
 
 // What the client sends to POST /api/games/[id]/moves — a subset of Move;
@@ -28,6 +30,8 @@ export type MoveInput = {
     cell: MinePosition;
     hit_mine?: boolean;
 };
+
+export type GameMode = 'classic' | 'rush';
 
 export type GameStatus = 'waiting' | 'setup' | 'playing' | 'finished';
 
@@ -39,6 +43,9 @@ export type Game = {
     winner_id?: string | null;
     rematch_game_id?: string | null;
     board_size: number;
+    mode?: GameMode;
+    // Set when a Rush match starts; the time cap counts from here.
+    started_at?: string | null;
     is_public: boolean;
     last_ping?: string;
     player_pings?: Record<string, string>;

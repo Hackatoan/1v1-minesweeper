@@ -1,7 +1,8 @@
 'use client'
 import { getPlayerId, getPlayerName } from './session'
 import { getCachedIdToken } from './firebase'
-import { Board, MoveInput, LeaderboardEntry } from './types'
+import { Board, MoveInput, LeaderboardEntry, GameMode, MinePosition } from './types'
+import type { RushView } from './rush-server'
 
 function headers() {
   const h: Record<string, string> = {
@@ -25,7 +26,7 @@ export async function getGame(id: string) {
   return res.json()
 }
 
-export async function createGame(data: { board_size: number, is_public: boolean, player2_id?: string | null, status?: string }) {
+export async function createGame(data: { board_size: number, is_public: boolean, player2_id?: string | null, status?: string, mode?: GameMode }) {
   const res = await fetch('/api/games', { method: 'POST', headers: headers(), body: JSON.stringify(data) })
   if (!res.ok) throw new Error('Failed to create game')
   return res.json()
@@ -37,8 +38,8 @@ export async function updateGame(id: string, data: Record<string, unknown>) {
   return res.json()
 }
 
-export async function listWaitingGames(boardSize: number, cutoffMs: number) {
-  const res = await fetch(`/api/games?status=waiting&is_public=true&board_size=${boardSize}&since=${cutoffMs}`, { headers: headers() })
+export async function listWaitingGames(boardSize: number, cutoffMs: number, mode: GameMode = 'classic') {
+  const res = await fetch(`/api/games?status=waiting&is_public=true&board_size=${boardSize}&since=${cutoffMs}&mode=${mode}`, { headers: headers() })
   if (!res.ok) return []
   return res.json()
 }
@@ -75,6 +76,22 @@ export async function getMoves(gameId: string, since?: string) {
 export async function insertMoves(gameId: string, moves: MoveInput[]) {
   const res = await fetch(`/api/games/${gameId}/moves`, { method: 'POST', headers: headers(), body: JSON.stringify({ moves }) })
   if (!res.ok) throw new Error('Failed to insert moves')
+  return res.json()
+}
+
+// Rush mode — the server owns the boards, so the client only ever sends the
+// clicked cell and gets back its own revealed cells plus both players' stats.
+export type RushState = RushView
+
+export async function getRushState(gameId: string): Promise<RushState | null> {
+  const res = await fetch(`/api/games/${gameId}/rush`, { headers: headers(), cache: 'no-store' })
+  if (!res.ok) return null
+  return res.json()
+}
+
+export async function digRush(gameId: string, cell: MinePosition): Promise<RushState | null> {
+  const res = await fetch(`/api/games/${gameId}/rush`, { method: 'POST', headers: headers(), body: JSON.stringify({ cell }) })
+  if (!res.ok) return null
   return res.json()
 }
 

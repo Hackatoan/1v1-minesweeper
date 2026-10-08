@@ -19,7 +19,11 @@
     "loading": "Chargement…",
     "noGames": "Aucune partie jouée pour l'instant — soyez le premier !",
     "failRandom": "Échec de la connexion à la partie aléatoire",
-    "failCreate": "Échec de la création de la partie"
+    "failCreate": "Échec de la création de la partie",
+    "mode": "Mode de jeu",
+    "modeClassic": "Classique",
+    "modeRush": "Rush",
+    "rushDesc": "Enchaînez de petites grilles aléatoires. 3 vies : une mine en coûte une et fait passer à la grille suivante. Dégagez plus de grilles que votre adversaire avant la fin du temps !"
   },
   "solo": {
     "subtitle": "contre IA",
@@ -105,5 +109,20 @@
     "cellFlagged": "Case marquée, ligne {row}, colonne {col}",
     "cellRevealed": "Ligne {row}, colonne {col}, {count} mines adjacentes",
     "cellMineHit": "Ligne {row}, colonne {col}, mine touchée"
+  },
+  "rush": {
+    "yourBoard": "Grille n° {n}",
+    "lives": "Vies",
+    "cleared": "Terminées",
+    "timeLeft": "Temps restant",
+    "density": "Densité de mines",
+    "mines": "{count} mines",
+    "opponent": "Adversaire",
+    "opponentBoard": "Sa grille",
+    "hitToast": "💥 Mine ! Vie perdue — nouvelle grille",
+    "clearToast": "✅ Grille terminée !",
+    "howTo": "Terminez vite de petites grilles. Une mine coûte une vie et fait sauter la grille. Perdez vos 3 vies et vous êtes éliminé ; sinon, celui qui a terminé le plus de grilles à la fin du temps gagne. En tête ? Vos grilles deviennent plus denses.",
+    "victoryDesc": "Vous avez dégagé plus de grilles que votre adversaire et gardé votre sang-froid.",
+    "defeatDesc": "Vous n'avez plus de vies ou votre adversaire vous a devancé avant la fin du temps."
   }
 }
