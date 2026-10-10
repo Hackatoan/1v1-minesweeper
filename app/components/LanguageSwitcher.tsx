@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 
-// Collapsed globe in the top-right that pops the language list. English is at "/",
+// Collapsed globe that pops the language list. Rendered into the layout's in-flow
+// #site-utils bar (next to the sound toggle) so it never floats over page content. English is at "/",
 // other locales at "/<locale>".
 const LOCALES: { code: string; label: string; name: string; href: string }[] = [
   { code: 'en', label: 'EN', name: 'English', href: '/' },
@@ -17,6 +19,8 @@ const LOCALES: { code: string; label: string; name: string; href: string }[] = [
 export function LanguageSwitcher({ current }: { current: string }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const [host, setHost] = useState<HTMLElement | null>(null)
+  useEffect(() => { setHost(document.getElementById('site-utils')) }, [])
   useEffect(() => {
     const h = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
@@ -24,8 +28,8 @@ export function LanguageSwitcher({ current }: { current: string }) {
     document.addEventListener('click', h)
     return () => document.removeEventListener('click', h)
   }, [])
-  return (
-    <div ref={ref} className="fixed top-3 right-3 z-50">
+  const node = (
+    <div ref={ref} className="relative z-50 order-2">
       <button
         type="button"
         aria-label="Language"
@@ -61,4 +65,5 @@ export function LanguageSwitcher({ current }: { current: string }) {
       )}
     </div>
   )
+  return host ? createPortal(node, host) : null
 }
