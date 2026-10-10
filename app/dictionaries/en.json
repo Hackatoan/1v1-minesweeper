@@ -62,7 +62,9 @@
     "cellRevealed": "Row {row}, column {col}, {count} adjacent mines",
     "cellMineHit": "Row {row}, column {col}, mine hit",
     "cellSetupMine": "Mine placed, row {row}, column {col}",
-    "cellSetupEmpty": "Empty, row {row}, column {col}"
+    "cellSetupEmpty": "Empty, row {row}, column {col}",
+    "rushScore": "You {me} · AI {ai} boards cleared",
+    "aiLabel": "AI"
   },
   "game": {
     "notFound": "Game not found",

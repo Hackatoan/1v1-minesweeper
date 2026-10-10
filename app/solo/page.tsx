@@ -4,8 +4,10 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useT } from '../lib/i18n-client'
 import { computeOpening } from '../lib/game-logic'
+import RushSolo from './RushSolo'
 
-type Phase = 'menu' | 'setup' | 'play' | 'result'
+type Phase = 'menu' | 'setup' | 'play' | 'result' | 'rush'
+type Mode = 'classic' | 'rush'
 type Diff = 'easy' | 'medium' | 'hard'
 interface Move { r: number; c: number; hitMine: boolean }
 
@@ -49,6 +51,8 @@ export default function SoloPage() {
   const diffDesc = (d: Diff) => t('solo.desc' + cap(d))
   const [phase, setPhase] = useState<Phase>('menu')
   const [diff, setDiff] = useState<Diff>('medium')
+  const [mode, setMode] = useState<Mode>('classic')
+  const [rushRun, setRushRun] = useState(0)
   const [boardSize, setBoardSize] = useState(8)
   const maxMines = Math.floor(boardSize * boardSize * 0.15)
   const totalSafe = boardSize * boardSize - maxMines
@@ -206,6 +210,18 @@ export default function SoloPage() {
           <p className="text-pink-200/60">{t('solo.subtitle')}</p>
         </div>
 
+        <div role="group" aria-label={t('landing.mode')} className="flex gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50 self-center">
+          {(['classic', 'rush'] as Mode[]).map(m => (
+            <button key={m} onClick={() => setMode(m)} aria-pressed={mode === m}
+              className={`px-5 py-2 rounded-lg font-bold text-sm transition-all ${mode === m
+                ? 'bg-pink-400 text-brown-900 shadow-md'
+                : 'text-pink-300/60 hover:bg-brown-700'}`}>
+              {m === 'classic' ? t('landing.modeClassic') : t('landing.modeRush')}
+            </button>
+          ))}
+        </div>
+        {mode === 'rush' && <p className="text-center text-pink-200/80 -mt-4">{t('landing.rushDesc')}</p>}
+
         <div className="flex flex-col gap-3">
           <label className="text-pink-200/80 font-semibold text-sm uppercase tracking-wide text-center">{t('solo.difficulty')}</label>
           <div className="flex gap-2">
@@ -221,15 +237,20 @@ export default function SoloPage() {
           <p className="text-center text-pink-300/40 text-sm">{diffDesc(diff)}</p>
         </div>
 
+        {mode === 'classic' && (
         <div className="flex flex-col gap-2 items-center">
           <label className="text-pink-200/80 font-medium text-sm">{t('solo.boardSize')}: {boardSize}×{boardSize}</label>
           <input type="range" min="5" max="15" value={boardSize}
             onChange={e => setBoardSize(parseInt(e.target.value))}
             className="w-full accent-pink-400" />
         </div>
+        )}
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <button onClick={() => { setPlayerMines(new Set()); setPhase('setup') }}
+          <button onClick={() => {
+              if (mode === 'rush') { setRushRun(n => n + 1); setPhase('rush') }
+              else { setPlayerMines(new Set()); setPhase('setup') }
+            }}
             className="flex-1 px-8 py-4 bg-pink-400 text-brown-900 border border-pink-500 text-lg rounded-xl font-black uppercase tracking-wider hover:bg-pink-500 shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-none active:translate-y-1 transition-all">
             {t('solo.playVsAi')}
           </button>
@@ -240,6 +261,10 @@ export default function SoloPage() {
         </div>
       </div>
     </main>
+  )
+
+  if (phase === 'rush') return (
+    <RushSolo key={rushRun} diff={diff} onMenu={() => setPhase('menu')} onAgain={() => setRushRun(n => n + 1)} />
   )
 
   if (phase === 'setup') return (

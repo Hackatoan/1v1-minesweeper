@@ -62,7 +62,9 @@
     "cellRevealed": "Ligne {row}, colonne {col}, {count} mines adjacentes",
     "cellMineHit": "Ligne {row}, colonne {col}, mine touchée",
     "cellSetupMine": "Mine placée, ligne {row}, colonne {col}",
-    "cellSetupEmpty": "Vide, ligne {row}, colonne {col}"
+    "cellSetupEmpty": "Vide, ligne {row}, colonne {col}",
+    "rushScore": "Vous {me} · IA {ai} grilles terminées",
+    "aiLabel": "IA"
   },
   "game": {
     "notFound": "Partie introuvable",

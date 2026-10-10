@@ -62,7 +62,9 @@
     "cellRevealed": "Linha {row}, coluna {col}, {count} minas adjacentes",
     "cellMineHit": "Linha {row}, coluna {col}, mina atingida",
     "cellSetupMine": "Mina colocada, linha {row}, coluna {col}",
-    "cellSetupEmpty": "Vazio, linha {row}, coluna {col}"
+    "cellSetupEmpty": "Vazio, linha {row}, coluna {col}",
+    "rushScore": "Você {me} · IA {ai} tabuleiros limpos",
+    "aiLabel": "IA"
   },
   "game": {
     "notFound": "Jogo não encontrado",

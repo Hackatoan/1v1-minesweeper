@@ -1,6 +1,7 @@
 import { copyToClipboard } from './app/lib/clipboard.ts';
 import { calculateAdjacentMines, isValidRevealBatch, buildAdjacencyGrid } from './app/lib/game-logic.ts';
-import { rushDensity, rushMineCount, generateRushMines, summarizeRush, cascadeFrom, rushWinner, relocateMine, RUSH_BOARD_SIZE, RUSH_LIVES } from './app/lib/rush.ts';
+import { rushDensity, rushMineCount, generateRushMines, summarizeRush, cascadeFrom, rushWinner, relocateMine, RUSH_BOARD_SIZE, RUSH_LIVES, RUSH_TIME_CAP_MS } from './app/lib/rush.ts';
+import { newRushGame, digRushGame, pickRushDig, settle, livesOf, deduce } from './app/lib/rush-solo.ts';
 
 async function runTests() {
   console.log('Running tests...');
@@ -296,6 +297,62 @@ async function runTests() {
     const b = { ...fresh, clears: 2, lives: 3 };
     assert(rushWinner(a, 'A', b, 'B') === 'A', 'Rush: time cap — more clears beats more lives');
     assert(rushWinner({ ...a, clears: 2 }, 'A', b, 'B') === 'B', 'Rush: time cap — equal clears falls back to lives');
+  }
+
+  // Rush vs AI (offline engine)
+  {
+    let seed = 7;
+    const rnd = (n: number) => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed % n; };
+    const allCells = Array.from({ length: 36 }, (_, i) => ({ r: Math.floor(i / 6), c: i % 6 }));
+
+    let g = newRushGame(0, rnd);
+    for (let i = 0; i < 3000 && !g.winner; i++) {
+      const at = pickRushDig(g.ai, 'hard', rnd);
+      if (!at) break;
+      g = digRushGame(g, 'ai', at, i * 100, rnd);
+    }
+    assert(g.ai.hits === 0 && g.ai.clears > 0, 'Rush solo: hard AI never hits a mine and clears boards');
+
+    let unsound = 0;
+    for (let t = 0; t < 200; t++) {
+      let m = newRushGame(0, rnd);
+      for (let i = 0; i < 40 && !m.winner; i++) {
+        const before = m.ai;
+        const at = pickRushDig(before, 'medium', rnd)!;
+        const { safe, mines } = deduce(before);
+        const mineSet = new Set(before.mines.map((x) => `${x.r},${x.c}`));
+        if (safe.size && !before.firstDig && mineSet.has(`${at.r},${at.c}`)) unsound++;
+        for (const k of mines) if (!mineSet.has(k)) unsound++;
+        m = digRushGame(m, 'ai', at, 0, rnd);
+      }
+    }
+    assert(unsound === 0, 'Rush solo: medium AI deductions are sound');
+
+    let relocated = true;
+    for (let t = 0; t < 100; t++) {
+      const f = newRushGame(0, rnd);
+      if (digRushGame(f, 'player', f.me.mines[0], 0, rnd).me.hits !== 0) relocated = false;
+    }
+    assert(relocated, 'Rush solo: first dig on a mine is relocated');
+
+    let d = newRushGame(0, rnd);
+    d = { ...d, ai: { ...d.ai, clears: 5 } };
+    const safeCells = allCells.filter((p) => !d.me.mines.some((x) => x.r === p.r && x.c === p.c));
+    let n = d;
+    for (const p of safeCells) { if (n.me.clears === 1) break; n = digRushGame(n, 'player', p, 5, rnd); }
+    assert(n.me.clears === 1 && n.me.idx === 1 && Math.abs(n.me.density - 0.32) < 1e-9, 'Rush solo: opponent clears make your next board denser');
+
+    let o = newRushGame(0, rnd);
+    o = { ...o, me: { ...o.me, hits: 2 } };
+    o = digRushGame(o, 'player', allCells.find((p) => !o.me.mines.some((x) => x.r === p.r && x.c === p.c))!, 1, rnd);
+    o = digRushGame(o, 'player', o.me.mines[0], 2, rnd);
+    assert(livesOf(o.me) === 0 && o.winner === 'ai', 'Rush solo: losing all lives loses the match');
+
+    const clock = { ...newRushGame(0, rnd) };
+    clock.me = { ...clock.me, clears: 2 };
+    assert(settle(clock, RUSH_TIME_CAP_MS - 1).winner === null, 'Rush solo: match runs until the cap');
+    assert(settle(clock, RUSH_TIME_CAP_MS).winner === 'player', 'Rush solo: at the cap, more clears wins');
+    assert(settle(newRushGame(0, rnd), RUSH_TIME_CAP_MS).winner === 'player', 'Rush solo: exact tie goes to the player');
   }
 
   console.log(`\nTests complete: ${passed} passed, ${failed} failed`);
