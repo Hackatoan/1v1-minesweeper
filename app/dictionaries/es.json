@@ -62,7 +62,9 @@
     "cellRevealed": "Fila {row}, columna {col}, {count} minas adyacentes",
     "cellMineHit": "Fila {row}, columna {col}, mina detonada",
     "cellSetupMine": "Mina colocada, fila {row}, columna {col}",
-    "cellSetupEmpty": "Vacío, fila {row}, columna {col}"
+    "cellSetupEmpty": "Vacío, fila {row}, columna {col}",
+    "rushScore": "Tú {me} · IA {ai} tableros completados",
+    "aiLabel": "IA"
   },
   "game": {
     "notFound": "Partida no encontrada",

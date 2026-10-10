@@ -62,7 +62,9 @@
     "cellRevealed": "แถว {row} คอลัมน์ {col} มีระเบิดอยู่ติดกัน {count} ลูก",
     "cellMineHit": "แถว {row} คอลัมน์ {col} โดนระเบิด",
     "cellSetupMine": "วางระเบิดแล้ว แถว {row} คอลัมน์ {col}",
-    "cellSetupEmpty": "ว่างเปล่า แถว {row} คอลัมน์ {col}"
+    "cellSetupEmpty": "ว่างเปล่า แถว {row} คอลัมน์ {col}",
+    "rushScore": "คุณ {me} · AI {ai} กระดานที่เคลียร์",
+    "aiLabel": "AI"
   },
   "game": {
     "notFound": "ไม่พบเกม",

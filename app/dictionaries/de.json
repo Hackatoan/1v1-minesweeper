@@ -62,7 +62,9 @@
     "cellRevealed": "Zeile {row}, Spalte {col}, {count} angrenzende Minen",
     "cellMineHit": "Zeile {row}, Spalte {col}, Mine getroffen",
     "cellSetupMine": "Mine platziert, Zeile {row}, Spalte {col}",
-    "cellSetupEmpty": "Leer, Zeile {row}, Spalte {col}"
+    "cellSetupEmpty": "Leer, Zeile {row}, Spalte {col}",
+    "rushScore": "Du {me} · KI {ai} Bretter geräumt",
+    "aiLabel": "KI"
   },
   "game": {
     "notFound": "Spiel nicht gefunden",
