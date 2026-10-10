@@ -19,7 +19,7 @@ export function GamesPlayed() {
   if (gamesPlayed === null) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-50 bg-brown-900 text-pink-300 px-4 py-2 rounded-xl font-bold shadow-lg border border-brown-700 text-sm flex flex-col items-end pointer-events-none">
+    <div className="order-3 bg-brown-900 text-pink-300 px-3 py-1 rounded-xl font-bold shadow-lg border border-brown-700 text-sm flex flex-col items-end pointer-events-none">
       <span className="text-[10px] uppercase tracking-wider text-brown-400">Total Games</span>
       <span className="text-xl tracking-tight">{gamesPlayed.toLocaleString()}</span>
     </div>

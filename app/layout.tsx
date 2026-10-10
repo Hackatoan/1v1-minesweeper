@@ -45,7 +45,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <GamesPlayed />
+        <div id="site-utils" className="flex items-center justify-end gap-2 px-3 py-2">
+          <GamesPlayed />
+        </div>
         {children}
         <footer className="fixed bottom-0 w-full bg-brown-800 border-brown-700/80 backdrop-blur-sm border-t border-brown-700/50 py-3 px-6 flex justify-between items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] text-sm">
           <div className="flex items-center gap-4">
