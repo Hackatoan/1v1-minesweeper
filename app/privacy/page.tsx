@@ -54,8 +54,8 @@ export default function PrivacyPage() {
           <li>Sign out at any time — new results stop being tied to your account (past results stay on the leaderboard under your account unless you ask us to delete them).</li>
           <li>
             Email{' '}
-            <a href="mailto:preston@hackatoa.com" className="text-pink-400 hover:text-pink-300 underline">
-              preston@hackatoa.com
+            <a href="mailto:server@hackatoa.com" className="text-pink-400 hover:text-pink-300 underline">
+              server@hackatoa.com
             </a>{' '}
             to have your account&apos;s data deleted.
           </li>
@@ -73,8 +73,8 @@ export default function PrivacyPage() {
 
         <p className="text-pink-200/80 leading-relaxed">
           Questions?{' '}
-          <a href="mailto:preston@hackatoa.com" className="text-pink-400 hover:text-pink-300 underline">
-            preston@hackatoa.com
+          <a href="mailto:server@hackatoa.com" className="text-pink-400 hover:text-pink-300 underline">
+            server@hackatoa.com
           </a>
         </p>
 

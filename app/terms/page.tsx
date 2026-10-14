@@ -35,8 +35,8 @@ export default function TermsPage() {
 
         <p className="text-pink-200/80 leading-relaxed mt-2">
           Questions?{' '}
-          <a href="mailto:preston@hackatoa.com" className="text-pink-400 hover:text-pink-300 underline">
-            preston@hackatoa.com
+          <a href="mailto:server@hackatoa.com" className="text-pink-400 hover:text-pink-300 underline">
+            server@hackatoa.com
           </a>
         </p>
 
