@@ -45,6 +45,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <Script src="https://hackatoa.com/cookie-notice.js" strategy="afterInteractive" data-mode="essential" data-policy="https://hackatoa.com/cookies/" data-privacy="https://hackatoa.com/privacy/" data-extra="Cloudflare provides cookie-free page-view counts." />
         <div id="site-utils" className="flex items-center justify-end gap-2 px-3 py-2">
           <GamesPlayed />
         </div>
