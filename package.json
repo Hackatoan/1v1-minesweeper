@@ -12,7 +12,7 @@
     "@hackatoan/leaderboard": "https://github.com/Hackatoan/game-leaderboard/archive/refs/tags/v1.0.0.tar.gz",
     "firebase": "^12.19.0",
     "jose": "^6.2.12",
-    "next": "^16.2.2",
+    "next": "^16.4.1",
     "pg": "^8.13.3",
     "react": "19.2.4",
     "react-dom": "19.2.4"
