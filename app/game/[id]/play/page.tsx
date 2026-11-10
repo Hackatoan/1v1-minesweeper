@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useRef, useCallback, memo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import React from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { getPlayerId } from '../../../lib/session'
@@ -301,22 +301,6 @@ export default function PlayPhase() {
     }
   }, [flagMode, toggleFlag, handleCellClick])
 
-  if (loading) return (
-      <div className="flex flex-1 w-full items-center justify-center bg-brown-900/50">
-          <div className="animate-spin h-8 w-8 border-4 border-pink-500 border-t-transparent rounded-full"></div>
-      </div>
-  )
-
-  const forfeitGame = async () => {
-    if (!userId || !game) return
-    if (confirm(t('game.confirmForfeit'))) {
-      const winnerId = game.player1_id === userId ? game.player2_id : game.player1_id
-      await updateGame(gameId, { status: 'finished', winner_id: winnerId })
-      await incrementGamesPlayed()
-      router.push('/')
-    }
-  }
-
   const { myMovesMap, flagsSet, myMinesSet, opponentMovesMap, mySafeMovesCount, opponentSafeMovesCount } = useMemo(() => {
     const myMovesMap = new Map<string, Move>()
     myMoves.forEach(m => myMovesMap.set(`${m.cell.r},${m.cell.c}`, m))
@@ -344,6 +328,22 @@ export default function PlayPhase() {
 
     return { myMovesMap, flagsSet, myMinesSet, opponentMovesMap, mySafeMovesCount, opponentSafeMovesCount }
   }, [myMoves, flags, myBoard, opponentMoves])
+
+  if (loading) return (
+      <div className="flex flex-1 w-full items-center justify-center bg-brown-900/50">
+          <div className="animate-spin h-8 w-8 border-4 border-pink-500 border-t-transparent rounded-full"></div>
+      </div>
+  )
+
+  const forfeitGame = async () => {
+    if (!userId || !game) return
+    if (confirm(t('game.confirmForfeit'))) {
+      const winnerId = game.player1_id === userId ? game.player2_id : game.player1_id
+      await updateGame(gameId, { status: 'finished', winner_id: winnerId })
+      await incrementGamesPlayed()
+      router.push('/')
+    }
+  }
 
   const toggleButtonClasses = (active: boolean, variant: 'dig' | 'flag') =>
     `px-4 py-2 rounded-lg font-bold text-sm transition-all ${

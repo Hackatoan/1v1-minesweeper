@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 
 // Collapsed globe that pops the language list. Rendered into the layout's in-flow
@@ -16,11 +16,13 @@ const LOCALES: { code: string; label: string; name: string; href: string }[] = [
   { code: 'th', label: 'TH', name: 'ไทย', href: '/th' },
 ]
 
+const noopSubscribe = () => () => {}
+
 export function LanguageSwitcher({ current }: { current: string }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const [host, setHost] = useState<HTMLElement | null>(null)
-  useEffect(() => { setHost(document.getElementById('site-utils')) }, [])
+  // null during SSR/hydration, the #site-utils element once on the client
+  const host = useSyncExternalStore(noopSubscribe, () => document.getElementById('site-utils'), () => null)
   useEffect(() => {
     const h = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)

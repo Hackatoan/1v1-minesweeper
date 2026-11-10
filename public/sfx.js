@@ -8,7 +8,7 @@
   var KEY = 'sfxMuted';
   var ctx = null, master = null, noiseBuf = null;
   var muted = false;
-  try { muted = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  try { muted = localStorage.getItem(KEY) === '1'; } catch {}
 
   function ensure() {
     if (ctx) return ctx;
@@ -19,7 +19,7 @@
       master = ctx.createGain();
       master.gain.value = 0.35;
       master.connect(ctx.destination);
-    } catch (e) { ctx = null; }
+    } catch { ctx = null; }
     return ctx;
   }
 
@@ -105,7 +105,7 @@
     var c = ensure();
     if (!c) return;
     if (c.state === 'suspended') { c.resume(); }
-    try { SOUNDS[name](); } catch (e) {}
+    try { SOUNDS[name](); } catch {}
   }
 
   var btn = null;
@@ -118,7 +118,7 @@
   }
   function setMuted(m) {
     muted = !!m;
-    try { localStorage.setItem(KEY, muted ? '1' : '0'); } catch (e) {}
+    try { localStorage.setItem(KEY, muted ? '1' : '0'); } catch {}
     paint();
     if (!muted) play('click');
   }
