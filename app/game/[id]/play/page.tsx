@@ -209,8 +209,10 @@ export default function PlayPhase() {
       if (myMoves.some(m => m.cell.r === r && m.cell.c === c)) return
       if (flags.some(f => f.r === r && f.c === c)) return
 
-      const isMine = (row: number, col: number) =>
-          opponentBoard.mine_positions.some((m) => m.r === row && m.c === col)
+      // Pre-convert to Sets for O(1) lookups in flood fill
+      const mineSet = new Set(opponentBoard.mine_positions.map((m) => `${m.r},${m.c}`))
+      const myMovesSet = new Set(myMoves.map(m => `${m.cell.r},${m.cell.c}`))
+      const isMine = (row: number, col: number) => mineSet.has(`${row},${col}`)
 
       const hitMine = isMine(r, c)
       sfx(hitMine ? 'boom' : 'reveal')
@@ -243,7 +245,7 @@ export default function PlayPhase() {
 
                           if (nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize) {
                               const key = `${nr},${nc}`
-                              if (!visited.has(key) && !myMoves.some(m => m.cell.r === nr && m.cell.c === nc) && !movesToInsertMap.has(key)) {
+                              if (!visited.has(key) && !myMovesSet.has(key) && !movesToInsertMap.has(key)) {
                                   visited.add(key)
                                   if (!isMine(nr, nc)) {
                                       queue.push({r: nr, c: nc})
