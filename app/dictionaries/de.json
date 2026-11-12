@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "1v1 Minesweeper — Kompetitives Multiplayer",
+    "title": "1v1 Minesweeper online — Multiplayer-Minesweeper gegen Freunde oder KI",
     "description": "Spiele kompetitives 1v1 Minesweeper online. Fordere einen Freund heraus, platziere deine Minen und rase darum, sein Spielfeld zuerst zu räumen. Kostenloses Browser-Multiplayer-Spiel."
   },
   "landing": {
@@ -126,5 +126,38 @@
     "howTo": "Räume kleine Felder schnell ab. Eine Mine kostet ein Leben und überspringt das Feld. Sind alle 3 Leben weg, bist du raus – sonst gewinnt, wer bei Zeitablauf mehr Felder geschafft hat. Vorne? Deine Felder werden dichter.",
     "victoryDesc": "Du hast mehr Felder geschafft als dein Gegner und unter Druck die Ruhe bewahrt.",
     "defeatDesc": "Dir sind die Leben ausgegangen oder dein Gegner war vor Ablauf der Zeit schneller."
+  },
+  "about": {
+    "heading": "So spielst du 1v1 Minesweeper",
+    "intro": "1v1 Minesweeper macht aus dem klassischen Einzelspieler-Rätsel ein direktes Duell. Statt eines zufälligen Minenfelds versteckt jeder Spieler Minen auf seinem eigenen Feld — dann räumt ihr um die Wette das Feld des Gegners. Kostenlos, läuft in jedem Browser auf PC oder Handy, ohne Konto und ohne Download.",
+    "how": [
+      "Erstelle ein privates Spiel und schick den Link an einen Freund, starte ein Zufallsmatch oder übe gegen die KI.",
+      "Klassischer Modus: Platziere deine Minen und räume dann das Feld deines Gegners. Zahlen zeigen, wie viele Minen an ein Feld grenzen — markiere die Minen und decke alles andere auf, ohne eine zu treffen.",
+      "Rush-Modus: Spiele dich mit 3 Leben durch kleine Zufallsfelder. Eine Mine kostet ein Leben und überspringt das Feld; räume mehr Felder als dein Gegner, bevor die Zeit abläuft.",
+      "Jedes beendete Match zählt als Sieg oder Niederlage für deinen Spitznamen in der globalen Bestenliste."
+    ],
+    "faqHeading": "Häufige Fragen",
+    "faq": [
+      {
+        "q": "Ist 1v1 Minesweeper kostenlos?",
+        "a": "Ja. Es ist komplett kostenlos und läuft im Browser — ohne Anmeldung und ohne Download."
+      },
+      {
+        "q": "Kann ich Minesweeper online mit einem Freund spielen?",
+        "a": "Ja. Erstelle ein privates Spiel und teile den Link; dein Freund ist sofort dabei und ihr spielt live gegeneinander."
+      },
+      {
+        "q": "Kann ich gegen den Computer spielen?",
+        "a": "Ja. Gegen die KI gibt es leichte, mittlere und schwere Gegner, damit du vor echten Spielern üben kannst."
+      },
+      {
+        "q": "Was ist der Unterschied zwischen Klassisch und Rush?",
+        "a": "Klassisch ist ein einzelnes Feld, dessen Minen dein Gegner gesetzt hat. Rush ist ein Rennen gegen die Zeit durch viele kleine Zufallsfelder mit 3 Leben."
+      },
+      {
+        "q": "Wie funktioniert die Bestenliste?",
+        "a": "Gib vor dem Spiel einen Spitznamen ein. Jedes beendete Mehrspieler-Match zählt als Sieg oder Niederlage für diesen Namen in der globalen Bestenliste."
+      }
+    ]
   }
 }

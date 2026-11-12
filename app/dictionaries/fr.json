@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "1v1 Minesweeper — Multijoueur compétitif",
+    "title": "Démineur 1v1 en ligne — Jouez au Démineur multijoueur contre un ami ou l'IA",
     "description": "Jouez à 1v1 Minesweeper en ligne de manière compétitive. Défiez un ami, placez vos mines et soyez le premier à vider sa grille. Jeu de navigateur multijoueur gratuit."
   },
   "landing": {
@@ -126,5 +126,38 @@
     "howTo": "Terminez vite de petites grilles. Une mine coûte une vie et fait sauter la grille. Perdez vos 3 vies et vous êtes éliminé ; sinon, celui qui a terminé le plus de grilles à la fin du temps gagne. En tête ? Vos grilles deviennent plus denses.",
     "victoryDesc": "Vous avez dégagé plus de grilles que votre adversaire et gardé votre sang-froid.",
     "defeatDesc": "Vous n'avez plus de vies ou votre adversaire vous a devancé avant la fin du temps."
+  },
+  "about": {
+    "heading": "Comment jouer au Démineur 1v1",
+    "intro": "1v1 Minesweeper transforme le Démineur classique en une course en face à face. Au lieu d'un champ de mines aléatoire, chaque joueur cache des mines sur son propre plateau, puis vous faites la course pour déminer le plateau de l'adversaire en premier. C'est gratuit, ça marche dans n'importe quel navigateur sur ordinateur ou mobile, sans compte ni téléchargement.",
+    "how": [
+      "Créez une partie privée et envoyez le lien à un ami, rejoignez une partie aléatoire ou entraînez-vous contre l'IA.",
+      "Mode Classique : placez vos mines, puis déminez le plateau adverse. Les chiffres indiquent combien de mines touchent chaque case — posez un drapeau sur les mines et révélez tout le reste sans en toucher une.",
+      "Mode Rush : enchaînez de petits plateaux aléatoires avec 3 vies. Une mine coûte une vie et passe le plateau ; déminez plus de plateaux que votre adversaire avant la fin du temps.",
+      "Chaque partie terminée ajoute une victoire ou une défaite à votre pseudo dans le classement mondial."
+    ],
+    "faqHeading": "FAQ",
+    "faq": [
+      {
+        "q": "Le Démineur 1v1 est-il gratuit ?",
+        "a": "Oui. Il est entièrement gratuit et fonctionne dans votre navigateur — sans inscription ni téléchargement."
+      },
+      {
+        "q": "Puis-je jouer au Démineur en ligne avec un ami ?",
+        "a": "Oui. Créez une partie privée et partagez le lien ; votre ami rejoint instantanément et vous jouez en direct, en face à face."
+      },
+      {
+        "q": "Puis-je jouer contre l'ordinateur ?",
+        "a": "Oui. Le mode contre l'IA propose des adversaires Facile, Moyen et Difficile pour vous entraîner avant d'affronter de vrais joueurs."
+      },
+      {
+        "q": "Quelle différence entre Classique et Rush ?",
+        "a": "Classique, c'est un seul plateau dont les mines ont été placées par votre adversaire. Rush est une course chronométrée sur de nombreux petits plateaux aléatoires avec 3 vies."
+      },
+      {
+        "q": "Comment fonctionne le classement ?",
+        "a": "Saisissez un pseudo avant de jouer. Chaque partie multijoueur terminée enregistre une victoire ou une défaite pour ce nom dans le classement mondial."
+      }
+    ]
   }
 }
