@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "1v1 Minesweeper — Multijugador Competitivo",
+    "title": "Buscaminas 1v1 online — Juega al Buscaminas multijugador contra un amigo o la IA",
     "description": "Juega a 1v1 Minesweeper online de forma competitiva. Desafía a un amigo, coloca tus minas y sé el primero en despejar su tablero. Juego multijugador gratuito para navegador."
   },
   "landing": {
@@ -126,5 +126,38 @@
     "howTo": "Despeja tableros pequeños rápido. Una mina cuesta una vida y salta el tablero. Si pierdes las 3 vidas, quedas fuera; si no, gana quien más tableros haya despejado al acabar el tiempo. ¿Vas por delante? Tus tableros serán más densos.",
     "victoryDesc": "Despejaste más que tu rival y mantuviste la calma bajo presión.",
     "defeatDesc": "Te quedaste sin vidas o tu rival despejó más antes de que acabara el tiempo."
+  },
+  "about": {
+    "heading": "Cómo jugar al Buscaminas 1v1",
+    "intro": "1v1 Minesweeper convierte el clásico Buscaminas de un jugador en una carrera cara a cara. En lugar de un campo de minas aleatorio, cada jugador esconde minas en su propio tablero y luego ambos compiten por despejar primero el tablero del rival. Es gratis, funciona en cualquier navegador de ordenador o móvil y no necesita cuenta ni descarga.",
+    "how": [
+      "Crea una partida privada y envía el enlace a un amigo, entra en una partida aleatoria o practica contra la IA.",
+      "Modo Clásico: coloca tus minas y despeja el tablero de tu rival. Los números indican cuántas minas tocan cada casilla: marca las minas y descubre todo lo demás sin pisar ninguna.",
+      "Modo Rush: recorre tableros pequeños y aleatorios con 3 vidas. Una mina te quita una vida y salta el tablero; despeja más tableros que tu rival antes de que se acabe el tiempo.",
+      "Cada partida terminada suma una victoria o derrota a tu apodo en la clasificación global."
+    ],
+    "faqHeading": "Preguntas frecuentes",
+    "faq": [
+      {
+        "q": "¿El Buscaminas 1v1 es gratis?",
+        "a": "Sí. Es totalmente gratis y funciona en tu navegador, sin registro ni descarga."
+      },
+      {
+        "q": "¿Puedo jugar al Buscaminas online con un amigo?",
+        "a": "Sí. Crea una partida privada y comparte el enlace; tu amigo se une al instante y jugáis en directo, cara a cara."
+      },
+      {
+        "q": "¿Puedo jugar contra la computadora?",
+        "a": "Sí. Jugar contra la IA tiene rivales Fácil, Medio y Difícil para que practiques antes de enfrentarte a jugadores reales."
+      },
+      {
+        "q": "¿Qué diferencia hay entre Clásico y Rush?",
+        "a": "Clásico es un solo tablero con minas colocadas por tu rival. Rush es una carrera contrarreloj por muchos tableros pequeños y aleatorios con 3 vidas."
+      },
+      {
+        "q": "¿Cómo funciona la clasificación?",
+        "a": "Escribe un apodo antes de jugar. Cada partida multijugador terminada registra una victoria o derrota para ese nombre en la clasificación global."
+      }
+    ]
   }
 }

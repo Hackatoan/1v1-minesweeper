@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "1v1 Minesweeper — Competitive Multiplayer",
+    "title": "1v1 Minesweeper Online — Play Multiplayer Minesweeper vs a Friend or AI",
     "description": "Play competitive 1v1 Minesweeper online. Challenge a friend, place your mines, and race to clear their board first. Free multiplayer browser game."
   },
   "landing": {
@@ -126,5 +126,38 @@
     "howTo": "Clear small boards fast. A mine costs a life and skips the board. Lose all 3 lives and you're out — otherwise the most boards cleared when time runs out wins. Ahead of your opponent? Your boards get denser.",
     "victoryDesc": "You out-cleared your opponent and kept your cool under pressure.",
     "defeatDesc": "You ran out of lives or got out-cleared before time ran out."
+  },
+  "about": {
+    "heading": "How to play 1v1 Minesweeper",
+    "intro": "1v1 Minesweeper turns the classic single-player puzzle into a head-to-head race. Instead of a random minefield, each player hides mines on their own board — then you both race to clear your opponent's board first. It's free, runs in any browser on desktop or phone, and needs no account or download.",
+    "how": [
+      "Create a private game and send the link to a friend, jump into a random match, or practise against the AI.",
+      "Classic mode: place your mines, then clear your opponent's board. Numbers show how many mines touch each square — flag the mines and reveal everything else without hitting one.",
+      "Rush mode: race through small random boards with 3 lives. A mine costs a life and skips the board; clear more boards than your opponent before time runs out.",
+      "Every finished match adds a win or loss to your nickname on the global leaderboard."
+    ],
+    "faqHeading": "FAQ",
+    "faq": [
+      {
+        "q": "Is 1v1 Minesweeper free?",
+        "a": "Yes. It's completely free and runs in your browser — no sign-up, no download."
+      },
+      {
+        "q": "Can I play Minesweeper online with a friend?",
+        "a": "Yes. Create a private game and share the link; your friend joins instantly and you play live, head to head."
+      },
+      {
+        "q": "Can I play against the computer?",
+        "a": "Yes. Play vs AI has Easy, Medium and Hard opponents, so you can practise before taking on real players."
+      },
+      {
+        "q": "What's the difference between Classic and Rush?",
+        "a": "Classic is one board whose mines your opponent placed. Rush is a timed race through many small random boards with 3 lives."
+      },
+      {
+        "q": "How does the leaderboard work?",
+        "a": "Enter a nickname before you play. Each finished multiplayer match records a win or loss for that name on the global leaderboard."
+      }
+    ]
   }
 }

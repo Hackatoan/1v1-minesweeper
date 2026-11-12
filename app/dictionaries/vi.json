@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "1v1 Minesweeper — Đấu Trận Đối Kháng Trực Tuyến",
+    "title": "Dò mìn 1v1 online — Chơi Dò mìn nhiều người với bạn bè hoặc AI",
     "description": "Chơi 1v1 Minesweeper đối kháng trực tuyến. Thách đấu bạn bè, đặt mìn và chạy đua phá đảo bảng của đối thủ trước. Trò chơi nhiều người chơi miễn phí trên trình duyệt."
   },
   "landing": {
@@ -126,5 +126,38 @@
     "howTo": "Dọn nhanh các bảng nhỏ. Chạm mìn mất một mạng và bỏ qua bảng. Mất cả 3 mạng là bị loại — nếu không, ai dọn được nhiều bảng hơn khi hết giờ sẽ thắng. Đang dẫn trước? Các bảng của bạn sẽ dày mìn hơn.",
     "victoryDesc": "Bạn dọn nhiều bảng hơn đối thủ và giữ bình tĩnh dưới áp lực.",
     "defeatDesc": "Bạn hết mạng hoặc bị đối thủ dọn nhiều hơn trước khi hết giờ."
+  },
+  "about": {
+    "heading": "Cách chơi Dò mìn 1v1",
+    "intro": "1v1 Minesweeper biến trò Dò mìn một người chơi kinh điển thành cuộc đua đối đầu. Thay vì bãi mìn ngẫu nhiên, mỗi người chơi giấu mìn trên bàn của mình — rồi cả hai đua nhau dọn sạch bàn của đối thủ trước. Miễn phí, chạy trên mọi trình duyệt trên máy tính hoặc điện thoại, không cần tài khoản hay tải về.",
+    "how": [
+      "Tạo phòng riêng và gửi link cho bạn bè, vào trận ngẫu nhiên hoặc luyện tập với AI.",
+      "Chế độ Cổ điển: đặt mìn của bạn, rồi dọn bàn của đối thủ. Các con số cho biết có bao nhiêu mìn quanh mỗi ô — cắm cờ vào mìn và mở mọi ô còn lại mà không đạp trúng mìn.",
+      "Chế độ Rush: vượt qua các bàn nhỏ ngẫu nhiên với 3 mạng. Trúng mìn mất một mạng và bỏ qua bàn đó; dọn nhiều bàn hơn đối thủ trước khi hết giờ.",
+      "Mỗi trận kết thúc sẽ cộng một trận thắng hoặc thua cho biệt danh của bạn trên bảng xếp hạng toàn cầu."
+    ],
+    "faqHeading": "Câu hỏi thường gặp",
+    "faq": [
+      {
+        "q": "Dò mìn 1v1 có miễn phí không?",
+        "a": "Có. Hoàn toàn miễn phí và chạy trong trình duyệt — không cần đăng ký, không cần tải về."
+      },
+      {
+        "q": "Tôi có thể chơi Dò mìn online với bạn bè không?",
+        "a": "Có. Tạo phòng riêng và chia sẻ link; bạn của bạn vào ngay và hai người chơi trực tiếp, đối đầu nhau."
+      },
+      {
+        "q": "Tôi có thể chơi với máy không?",
+        "a": "Có. Chế độ chơi với AI có đối thủ Dễ, Trung bình và Khó để bạn luyện tập trước khi đấu với người thật."
+      },
+      {
+        "q": "Cổ điển và Rush khác nhau thế nào?",
+        "a": "Cổ điển là một bàn duy nhất với mìn do đối thủ đặt. Rush là cuộc đua tính giờ qua nhiều bàn nhỏ ngẫu nhiên với 3 mạng."
+      },
+      {
+        "q": "Bảng xếp hạng hoạt động thế nào?",
+        "a": "Nhập biệt danh trước khi chơi. Mỗi trận nhiều người chơi kết thúc sẽ ghi một trận thắng hoặc thua cho tên đó trên bảng xếp hạng toàn cầu."
+      }
+    ]
   }
 }

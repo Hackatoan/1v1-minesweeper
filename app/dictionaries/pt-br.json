@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "1v1 Minesweeper — Multijogador Competitivo",
+    "title": "Campo Minado 1v1 online — Jogue Campo Minado multiplayer contra um amigo ou a IA",
     "description": "Jogue 1v1 Minesweeper competitivo online. Desafie um amigo, coloque suas minas e corra para limpar o tabuleiro dele primeiro. Jogo de navegador multijogador gratuito."
   },
   "landing": {
@@ -126,5 +126,38 @@
     "howTo": "Limpe tabuleiros pequenos rápido. Uma mina custa uma vida e pula o tabuleiro. Perdeu as 3 vidas, está fora — senão vence quem limpou mais tabuleiros quando o tempo acabar. À frente do oponente? Seus tabuleiros ficam mais densos.",
     "victoryDesc": "Você limpou mais que o oponente e manteve a calma sob pressão.",
     "defeatDesc": "Você ficou sem vidas ou foi superado antes de o tempo acabar."
+  },
+  "about": {
+    "heading": "Como jogar Campo Minado 1v1",
+    "intro": "O 1v1 Minesweeper transforma o clássico Campo Minado de um jogador em uma corrida cara a cara. Em vez de um campo minado aleatório, cada jogador esconde minas no próprio tabuleiro e depois vocês disputam quem limpa primeiro o tabuleiro do adversário. É grátis, roda em qualquer navegador no computador ou no celular e não precisa de conta nem download.",
+    "how": [
+      "Crie uma partida privada e mande o link para um amigo, entre em uma partida aleatória ou treine contra a IA.",
+      "Modo Clássico: posicione suas minas e depois limpe o tabuleiro do adversário. Os números mostram quantas minas tocam cada casa — marque as minas e revele todo o resto sem pisar em nenhuma.",
+      "Modo Rush: passe por tabuleiros pequenos e aleatórios com 3 vidas. Uma mina custa uma vida e pula o tabuleiro; limpe mais tabuleiros que o adversário antes do tempo acabar.",
+      "Cada partida concluída soma uma vitória ou derrota ao seu apelido no ranking global."
+    ],
+    "faqHeading": "Perguntas frequentes",
+    "faq": [
+      {
+        "q": "O Campo Minado 1v1 é grátis?",
+        "a": "Sim. É totalmente grátis e roda no navegador — sem cadastro e sem download."
+      },
+      {
+        "q": "Posso jogar Campo Minado online com um amigo?",
+        "a": "Sim. Crie uma partida privada e compartilhe o link; seu amigo entra na hora e vocês jogam ao vivo, cara a cara."
+      },
+      {
+        "q": "Posso jogar contra o computador?",
+        "a": "Sim. Jogar contra a IA tem adversários Fácil, Médio e Difícil para você treinar antes de enfrentar jogadores reais."
+      },
+      {
+        "q": "Qual a diferença entre Clássico e Rush?",
+        "a": "Clássico é um único tabuleiro com minas posicionadas pelo adversário. Rush é uma corrida contra o tempo por vários tabuleiros pequenos e aleatórios com 3 vidas."
+      },
+      {
+        "q": "Como funciona o ranking?",
+        "a": "Digite um apelido antes de jogar. Cada partida multiplayer concluída registra uma vitória ou derrota para esse nome no ranking global."
+      }
+    ]
   }
 }
