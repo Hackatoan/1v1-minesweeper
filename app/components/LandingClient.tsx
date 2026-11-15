@@ -9,6 +9,7 @@ import { createGame, updateGame, listWaitingGames, getLeaderboard } from '../lib
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { LeaderboardEntry, Game, GameMode } from '../lib/types'
 import { RUSH_BOARD_SIZE } from '../lib/rush'
+import { loadPrefs, savePrefs, LANDING_PREFS_KEY } from '../lib/prefs'
 
 // AccountWidget pulls in the full Firebase SDK, so Turbopack splits it into
 // its own separate async-loaded JS chunk (verified: a standalone chunk file
@@ -60,6 +61,10 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
 
   useEffect(() => {
     setName(getPlayerName())
+    // Restore the last-used mode + board size (client-only, so after hydration).
+    const saved = loadPrefs(LANDING_PREFS_KEY, 5, 20)
+    if (saved.mode) setMode(saved.mode)
+    if (saved.boardSize) setBoardSize(saved.boardSize)
     getLeaderboard().then(d => { setLeaders(d.players || []); setLbLoaded(true) }).catch(() => setLbLoaded(true))
   }, [])
 
@@ -72,6 +77,16 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
     const interval = setInterval(fetchQueueSize, 5000)
     return () => clearInterval(interval)
   }, [mode, queueBoardSize])
+
+  function pickMode(m: GameMode) {
+    setMode(m)
+    savePrefs(LANDING_PREFS_KEY, { mode: m, boardSize })
+  }
+
+  function pickBoardSize(n: number) {
+    setBoardSize(n)
+    savePrefs(LANDING_PREFS_KEY, { mode, boardSize: n })
+  }
 
   async function joinRandomGame() {
     setIsQueueing(true)
@@ -139,7 +154,7 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
           {(['classic', 'rush'] as const).map((m) => (
             <button
               key={m}
-              onClick={() => setMode(m)}
+              onClick={() => pickMode(m)}
               aria-pressed={mode === m}
               className={`px-5 py-2 rounded-lg font-bold text-sm transition-all ${
                 mode === m
@@ -161,7 +176,7 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
               min="5"
               max="20"
               value={boardSize}
-              onChange={(e) => setBoardSize(parseInt(e.target.value))}
+              onChange={(e) => pickBoardSize(parseInt(e.target.value))}
               className="w-full accent-pink-400"
             />
           </div>

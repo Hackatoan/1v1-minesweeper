@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useT } from '../lib/i18n-client'
 import { computeOpening, randomFillMines } from '../lib/game-logic'
 import RushSolo from './RushSolo'
+import { loadPrefs, savePrefs, SOLO_PREFS_KEY } from '../lib/prefs'
 
 type Phase = 'menu' | 'setup' | 'play' | 'result' | 'rush'
 type Mode = 'classic' | 'rush'
@@ -55,6 +56,19 @@ export default function SoloPage() {
   const [rushRun, setRushRun] = useState(0)
   const [boardSize, setBoardSize] = useState(8)
   const maxMines = Math.floor(boardSize * boardSize * 0.15)
+
+  // Restore the last-used mode / difficulty / board size (client-only, after hydration).
+  useEffect(() => {
+    const saved = loadPrefs(SOLO_PREFS_KEY, 5, 15)
+    /* eslint-disable react-hooks/set-state-in-effect */
+    if (saved.mode) setMode(saved.mode)
+    if (saved.diff) setDiff(saved.diff)
+    if (saved.boardSize) setBoardSize(saved.boardSize)
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [])
+  const pickMode = (m: Mode) => { setMode(m); savePrefs(SOLO_PREFS_KEY, { mode: m, diff, boardSize }) }
+  const pickDiff = (d: Diff) => { setDiff(d); savePrefs(SOLO_PREFS_KEY, { mode, diff: d, boardSize }) }
+  const pickBoardSize = (n: number) => { setBoardSize(n); savePrefs(SOLO_PREFS_KEY, { mode, diff, boardSize: n }) }
   const totalSafe = boardSize * boardSize - maxMines
 
   // Setup
@@ -212,7 +226,7 @@ export default function SoloPage() {
 
         <div role="group" aria-label={t('landing.mode')} className="flex gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50 self-center">
           {(['classic', 'rush'] as Mode[]).map(m => (
-            <button key={m} onClick={() => setMode(m)} aria-pressed={mode === m}
+            <button key={m} onClick={() => pickMode(m)} aria-pressed={mode === m}
               className={`px-5 py-2 rounded-lg font-bold text-sm transition-all ${mode === m
                 ? 'bg-pink-400 text-brown-900 shadow-md'
                 : 'text-pink-300/60 hover:bg-brown-700'}`}>
@@ -226,7 +240,7 @@ export default function SoloPage() {
           <label className="text-pink-200/80 font-semibold text-sm uppercase tracking-wide text-center">{t('solo.difficulty')}</label>
           <div className="flex gap-2">
             {(['easy', 'medium', 'hard'] as Diff[]).map(d => (
-              <button key={d} onClick={() => setDiff(d)}
+              <button key={d} onClick={() => pickDiff(d)}
                 className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${diff === d
                   ? 'bg-pink-400 text-brown-900 shadow-[0_4px_0_theme(colors.pink.600)]'
                   : 'bg-brown-700 text-pink-200/60 border border-brown-600/50 hover:bg-brown-600'}`}>
@@ -241,7 +255,7 @@ export default function SoloPage() {
         <div className="flex flex-col gap-2 items-center">
           <label className="text-pink-200/80 font-medium text-sm">{t('solo.boardSize')}: {boardSize}×{boardSize}</label>
           <input type="range" min="5" max="15" value={boardSize}
-            onChange={e => setBoardSize(parseInt(e.target.value))}
+            onChange={e => pickBoardSize(parseInt(e.target.value))}
             className="w-full accent-pink-400" />
         </div>
         )}

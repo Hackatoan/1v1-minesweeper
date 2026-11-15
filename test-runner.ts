@@ -1,6 +1,7 @@
 import { copyToClipboard } from './app/lib/clipboard.ts';
 import { calculateAdjacentMines, isValidRevealBatch, buildAdjacencyGrid, randomFillMines, isValidMineLayout } from './app/lib/game-logic.ts';
 import { rushDensity, rushMineCount, generateRushMines, summarizeRush, cascadeFrom, rushWinner, relocateMine, RUSH_BOARD_SIZE, RUSH_LIVES, RUSH_TIME_CAP_MS } from './app/lib/rush.ts';
+import { parsePrefs } from './app/lib/prefs.ts';
 import { newRushGame, digRushGame, pickRushDig, settle, livesOf, deduce } from './app/lib/rush-solo.ts';
 
 async function runTests() {
@@ -368,6 +369,18 @@ async function runTests() {
     let seq = 0;
     const reroll = randomFillMines(filled, size, count, () => (seq++ % 7) / 7);
     assert(reroll.length === count && new Set(reroll.map(m => `${m.r},${m.c}`)).size === count, 'randomFillMines rerolls a full layout without duplicates');
+  }
+
+  // parsePrefs: remembered settings are validated, junk falls back to defaults
+  {
+    const ok = parsePrefs(JSON.stringify({ mode: 'rush', diff: 'hard', boardSize: 12 }), 5, 15);
+    assert(ok.mode === 'rush' && ok.diff === 'hard' && ok.boardSize === 12, 'parsePrefs restores valid settings');
+    assert(Object.keys(parsePrefs(null, 5, 15)).length === 0, 'parsePrefs: nothing stored -> defaults');
+    assert(Object.keys(parsePrefs('{not json', 5, 15)).length === 0, 'parsePrefs: malformed JSON -> defaults');
+    const bad = parsePrefs(JSON.stringify({ mode: 'blitz', diff: 'insane', boardSize: 99 }), 5, 15);
+    assert(Object.keys(bad).length === 0, 'parsePrefs drops unknown mode/diff and out-of-range size');
+    assert(parsePrefs(JSON.stringify({ boardSize: 7.5 }), 5, 15).boardSize === undefined, 'parsePrefs rejects non-integer board size');
+    assert(parsePrefs(JSON.stringify({ boardSize: 20 }), 5, 20).boardSize === 20, 'parsePrefs honours per-screen size range');
   }
 
   console.log(`\nTests complete: ${passed} passed, ${failed} failed`);
