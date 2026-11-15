@@ -215,3 +215,25 @@ export function computeOpening(minePositions: MinePosition[], boardSize: number)
     }
     return lowest ? [lowest] : []
 }
+
+// Setup-screen "🎲 Random" helper: tops up a partial layout with randomly
+// placed mines until it holds `count`, keeping the cells the player already
+// chose. If the layout is already full it rerolls from scratch instead, so
+// pressing the button repeatedly keeps producing fresh boards.
+export function randomFillMines(existing: MinePosition[], boardSize: number, count: number, rand: () => number = Math.random): MinePosition[] {
+    const total = boardSize * boardSize
+    const target = Math.min(count, total)
+    const keep = existing.length >= target ? [] : existing
+    const taken = new Set(keep.map(m => m.r * boardSize + m.c))
+    const free: number[] = []
+    for (let i = 0; i < total; i++) if (!taken.has(i)) free.push(i)
+    const out = [...keep]
+    while (out.length < target && free.length) {
+        const j = Math.floor(rand() * free.length)
+        const idx = free[j]
+        free[j] = free[free.length - 1]
+        free.pop()
+        out.push({ r: Math.floor(idx / boardSize), c: idx % boardSize })
+    }
+    return out
+}
