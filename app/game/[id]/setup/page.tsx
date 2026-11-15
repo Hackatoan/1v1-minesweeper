@@ -8,6 +8,7 @@ import { getGame, updateGame, getBoards, submitBoard } from '../../../lib/api-cl
 import { useGamePresence } from '../../../lib/useGamePresence'
 import { useT } from '../../../lib/i18n-client'
 import { Board, Game } from '../../../lib/types'
+import { randomFillMines } from '../../../lib/game-logic'
 
 export default function SetupPhase() {
   const { t } = useT()
@@ -76,6 +77,12 @@ export default function SetupPhase() {
     } else if (mines.length < maxMines) {
       setMines([...mines, { r, c }])
     }
+  }
+
+  const randomizeMines = () => {
+    if (isWaiting) return
+    sfx('click')
+    setMines(randomFillMines(mines, boardSize, maxMines))
   }
 
   const handleSubmitBoard = async () => {
@@ -172,7 +179,14 @@ export default function SetupPhase() {
           </div>
         </div>
 
-        <div className="flex justify-center pt-4">
+        <div className="flex flex-wrap justify-center items-center gap-4 pt-4">
+           <button
+             onClick={randomizeMines}
+             disabled={isSubmitting}
+             className="px-6 py-3 bg-brown-700 text-pink-200 rounded-xl font-bold hover:bg-brown-600 border border-brown-600/50 disabled:opacity-50"
+           >
+             {t('game.randomMines')}
+           </button>
            <button
              onClick={handleSubmitBoard}
              disabled={mines.length !== maxMines || isSubmitting}

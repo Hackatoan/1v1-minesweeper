@@ -1,5 +1,5 @@
 import { copyToClipboard } from './app/lib/clipboard.ts';
-import { calculateAdjacentMines, isValidRevealBatch, buildAdjacencyGrid } from './app/lib/game-logic.ts';
+import { calculateAdjacentMines, isValidRevealBatch, buildAdjacencyGrid, randomFillMines, isValidMineLayout } from './app/lib/game-logic.ts';
 import { rushDensity, rushMineCount, generateRushMines, summarizeRush, cascadeFrom, rushWinner, relocateMine, RUSH_BOARD_SIZE, RUSH_LIVES, RUSH_TIME_CAP_MS } from './app/lib/rush.ts';
 import { newRushGame, digRushGame, pickRushDig, settle, livesOf, deduce } from './app/lib/rush-solo.ts';
 
@@ -353,6 +353,21 @@ async function runTests() {
     assert(settle(clock, RUSH_TIME_CAP_MS - 1).winner === null, 'Rush solo: match runs until the cap');
     assert(settle(clock, RUSH_TIME_CAP_MS).winner === 'player', 'Rush solo: at the cap, more clears wins');
     assert(settle(newRushGame(0, rnd), RUSH_TIME_CAP_MS).winner === 'player', 'Rush solo: exact tie goes to the player');
+  }
+
+  // randomFillMines: tops up a partial layout, rerolls a full one
+  {
+    const size = 10, count = Math.floor(size * size * 0.15);
+    const partial = [{ r: 0, c: 0 }, { r: 9, c: 9 }];
+    const filled = randomFillMines(partial, size, count);
+    assert(filled.length === count, 'randomFillMines fills to exact count');
+    assert(filled.some(m => m.r === 0 && m.c === 0) && filled.some(m => m.r === 9 && m.c === 9), 'randomFillMines keeps existing picks');
+    assert(isValidMineLayout(filled, size), 'randomFillMines output passes server layout validation');
+    const empty = randomFillMines([], 5, Math.floor(25 * 0.15));
+    assert(isValidMineLayout(empty, 5), 'randomFillMines from empty is a valid layout');
+    let seq = 0;
+    const reroll = randomFillMines(filled, size, count, () => (seq++ % 7) / 7);
+    assert(reroll.length === count && new Set(reroll.map(m => `${m.r},${m.c}`)).size === count, 'randomFillMines rerolls a full layout without duplicates');
   }
 
   console.log(`\nTests complete: ${passed} passed, ${failed} failed`);

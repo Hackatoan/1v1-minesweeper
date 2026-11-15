@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useT } from '../lib/i18n-client'
-import { computeOpening } from '../lib/game-logic'
+import { computeOpening, randomFillMines } from '../lib/game-logic'
 import RushSolo from './RushSolo'
 
 type Phase = 'menu' | 'setup' | 'play' | 'result' | 'rush'
@@ -308,10 +308,17 @@ export default function SoloPage() {
           </div>
         </div>
 
-        <div className="flex justify-center gap-4">
+        <div className="flex flex-wrap justify-center gap-4">
           <button onClick={() => setPhase('menu')}
             className="px-6 py-3 bg-brown-700 text-pink-200 rounded-xl font-bold hover:bg-brown-600 border border-brown-600/50">
             {t('solo.back')}
+          </button>
+          <button onClick={() => setPlayerMines(prev => {
+              const cur = [...prev].map(k => { const [r, c] = k.split(',').map(Number); return { r, c } })
+              return new Set(randomFillMines(cur, boardSize, maxMines).map(m => `${m.r},${m.c}`))
+            })}
+            className="px-6 py-3 bg-brown-700 text-pink-200 rounded-xl font-bold hover:bg-brown-600 border border-brown-600/50">
+            {t('solo.randomMines')}
           </button>
           <button onClick={startPlay} disabled={playerMines.size !== maxMines}
             className="px-10 py-4 bg-pink-400 text-brown-900 text-lg rounded-2xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pink-500 border border-pink-600 shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-none active:translate-y-1 transition-all uppercase tracking-wider">
