@@ -2,6 +2,7 @@ import { copyToClipboard } from './app/lib/clipboard.ts';
 import { calculateAdjacentMines, isValidRevealBatch, buildAdjacencyGrid, randomFillMines, isValidMineLayout } from './app/lib/game-logic.ts';
 import { rushDensity, rushMineCount, generateRushMines, summarizeRush, cascadeFrom, rushWinner, relocateMine, RUSH_BOARD_SIZE, RUSH_LIVES, RUSH_TIME_CAP_MS } from './app/lib/rush.ts';
 import { parsePrefs } from './app/lib/prefs.ts';
+import { buildResultShareText } from './app/lib/share.ts';
 import { newRushGame, digRushGame, pickRushDig, settle, livesOf, deduce } from './app/lib/rush-solo.ts';
 
 async function runTests() {
@@ -381,6 +382,14 @@ async function runTests() {
     assert(Object.keys(bad).length === 0, 'parsePrefs drops unknown mode/diff and out-of-range size');
     assert(parsePrefs(JSON.stringify({ boardSize: 7.5 }), 5, 15).boardSize === undefined, 'parsePrefs rejects non-integer board size');
     assert(parsePrefs(JSON.stringify({ boardSize: 20 }), 5, 20).boardSize === 20, 'parsePrefs honours per-screen size range');
+  }
+
+  // buildResultShareText: win/loss pick the right string and the link is the site root
+  {
+    const fakeT = (path: string, params?: Record<string, string | number>) => `${path}|${params?.url}`;
+    assert(buildResultShareText(fakeT, true, 'https://1v1sw.hackatoa.com') === 'game.shareWin|https://1v1sw.hackatoa.com', 'share text uses win string + origin');
+    assert(buildResultShareText(fakeT, false, 'http://localhost:3000/') === 'game.shareLoss|http://localhost:3000', 'share text uses loss string and trims trailing slash');
+    assert(buildResultShareText(fakeT, true, '') === 'game.shareWin|https://1v1sw.hackatoa.com', 'share text falls back to the public URL');
   }
 
   console.log(`\nTests complete: ${passed} passed, ${failed} failed`);
