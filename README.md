@@ -14,6 +14,7 @@ Head-to-head minesweeper. Both players work the same board in real time; fastest
 - **Rush mode**: server-generated small boards, 3 lives (a mine costs one and skips the board), 3-minute clock; every board your opponent clears makes your next one denser, last alive / most clears wins
 - 🎲 **Random** button on the mine-placement screen (fills remaining mines; press again to reroll)
 - Remembers your last mode, board size and AI difficulty between visits (stored locally)
+- 📋 **Share Result** button on the match result screen copies a localized "I won/lost — can you beat me?" brag with the site link
 - Shared game rooms (locale-independent for cross-language play)
 - 6-language localized landing and solo UI
 

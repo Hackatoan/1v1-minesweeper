@@ -7,6 +7,8 @@ import { getGame, createGame, updateGame } from '../../../lib/api-client'
 import { useT } from '../../../lib/i18n-client'
 import { Game } from '../../../lib/types'
 import { sfx } from '../../../lib/sfx'
+import { copyToClipboard } from '../../../lib/clipboard'
+import { buildResultShareText } from '../../../lib/share'
 
 export default function ResultPhase() {
   const { t } = useT()
@@ -18,6 +20,7 @@ export default function ResultPhase() {
   const [game, setGame] = useState<Game | null>(null)
   const [loading, setLoading] = useState(true)
   const playedResultSfx = useRef(false)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     async function init() {
@@ -114,6 +117,15 @@ export default function ResultPhase() {
             className="px-8 py-4 bg-pink-400 text-brown-900 rounded-2xl font-bold text-lg hover:bg-pink-500 transition-all shadow-[0_4px_0_theme(colors.pink.600)] active:shadow-[0_0px_0_theme(colors.pink.600)] active:translate-y-[4px] relative z-10 uppercase tracking-wider"
         >
           {t('game.rematch')}
+        </button>
+
+        <button
+            type="button"
+            onClick={() => copyToClipboard(buildResultShareText(t, didIWin, window.location.origin), setCopied)}
+            aria-live="polite"
+            className="-mt-6 px-6 py-3 bg-brown-900/50 text-pink-200 rounded-2xl font-bold border border-brown-700 hover:bg-brown-700 transition-colors relative z-10"
+        >
+          {copied ? t('game.copied') : t('game.shareResult')}
         </button>
       </div>
     </div>
