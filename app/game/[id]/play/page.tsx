@@ -10,6 +10,7 @@ import { buildAdjacencyGrid } from '../../../lib/game-logic'
 import { Board, MinePosition, Move, Game, MoveInput } from '../../../lib/types'
 import useLongPress from '../../../lib/useLongPress'
 import { useT, TFunc } from '../../../lib/i18n-client'
+import useFlagHotkey from '../../../lib/useFlagHotkey'
 import { sfx, initSfx } from '../../../lib/sfx'
 
 const NUMBER_COLORS = ['text-transparent', 'text-blue-500', 'text-orange-500', 'text-rose-500', 'text-purple-500', 'text-amber-500', 'text-cyan-500', 'text-zinc-800', 'text-zinc-500']
@@ -91,6 +92,7 @@ export default function PlayPhase() {
   const [opponentMoves, setOpponentMoves] = useState<Move[]>([])
   const [flags, setFlags] = useState<MinePosition[]>([])
   const [flagMode, setFlagMode] = useState(false)
+  useFlagHotkey(setFlagMode)
   const [loading, setLoading] = useState(true)
   // Cursor for delta-polling /moves: the timestamp of the newest move we've
   // already fetched from the server. Avoids re-fetching (and re-rendering)
@@ -386,7 +388,7 @@ export default function PlayPhase() {
                 {/* Desktop toggle — hidden on mobile (sticky bar handles it) */}
                 <div role="group" aria-label={`${t('game.dig')} / ${t('game.flag')}`} className="hidden lg:flex mt-4 gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50">
                     <button onClick={() => setFlagMode(false)} aria-pressed={!flagMode} className={toggleButtonClasses(!flagMode, 'dig')}>{t('game.dig')}</button>
-                    <button onClick={() => setFlagMode(true)} aria-pressed={flagMode} className={toggleButtonClasses(flagMode, 'flag')}>{t('game.flag')}</button>
+                    <button onClick={() => setFlagMode(true)} aria-pressed={flagMode} aria-keyshortcuts="F" className={toggleButtonClasses(flagMode, 'flag')}>{t('game.flag')}</button>
                 </div>
                 {/* Mobile hint */}
                 <p className="lg:hidden text-xs text-pink-300/40 mt-3">{t('game.tapHint')}</p>
@@ -499,6 +501,7 @@ export default function PlayPhase() {
         <button
           onClick={() => setFlagMode(true)}
           aria-pressed={flagMode}
+          aria-keyshortcuts="F"
           className={`flex-1 max-w-40 py-3 rounded-xl font-bold text-base transition-all ${toggleButtonClasses(flagMode, 'flag')}`}
         >
           {t('game.flag')}
