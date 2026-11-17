@@ -15,6 +15,7 @@ Head-to-head minesweeper. Both players work the same board in real time; fastest
 - 🎲 **Random** button on the mine-placement screen (fills remaining mines; press again to reroll)
 - Remembers your last mode, board size and AI difficulty between visits (stored locally)
 - 📋 **Share Result** button on the match result screen copies a localized "I won/lost — can you beat me?" brag with the site link
+- ⌨️ Press **F** during play to toggle between Dig and Flag mode
 - Shared game rooms (locale-independent for cross-language play)
 - 6-language localized landing and solo UI
 

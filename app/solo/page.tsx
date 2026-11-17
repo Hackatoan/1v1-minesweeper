@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useT } from '../lib/i18n-client'
 import { computeOpening, randomFillMines } from '../lib/game-logic'
+import useFlagHotkey from '../lib/useFlagHotkey'
 import RushSolo from './RushSolo'
 import { loadPrefs, savePrefs, SOLO_PREFS_KEY } from '../lib/prefs'
 
@@ -80,6 +81,7 @@ export default function SoloPage() {
   const [aiMoves, setAiMoves] = useState<Map<string, Move>>(new Map())
   const [flags, setFlags] = useState<Set<string>>(new Set())
   const [flagMode, setFlagMode] = useState(false)
+  useFlagHotkey(setFlagMode)
   const [winner, setWinner] = useState<'player' | 'ai' | null>(null)
 
   // Refs so AI interval always sees current state
@@ -378,7 +380,7 @@ export default function SoloPage() {
                 className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${!flagMode ? 'bg-brown-600 text-white shadow-md' : 'text-pink-300/60 hover:bg-brown-700'}`}>
                 {t('solo.dig')}
               </button>
-              <button onClick={() => setFlagMode(true)} aria-pressed={flagMode}
+              <button onClick={() => setFlagMode(true)} aria-pressed={flagMode} aria-keyshortcuts="F"
                 className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${flagMode ? 'bg-rose-500 text-white shadow-md' : 'text-pink-300/60 hover:bg-brown-700'}`}>
                 {t('solo.flag')}
               </button>

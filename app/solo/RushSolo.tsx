@@ -3,6 +3,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useT, type TFunc } from '../lib/i18n-client'
 import { sfx } from '../lib/sfx'
+import useFlagHotkey from '../lib/useFlagHotkey'
 import { RUSH_BOARD_SIZE, RUSH_LIVES, RUSH_TIME_CAP_MS } from '../lib/rush'
 import {
   RUSH_AI_DELAY, digRushGame, livesOf, newRushGame, pickRushDig, safeRevealed, safeTotal, settle,
@@ -60,6 +61,7 @@ export default function RushSolo({ diff, onMenu, onAgain }: { diff: RushDiff; on
   const [game, setGame] = useState<RushSoloGame | null>(null)
   const [flags, setFlags] = useState<Set<string>>(new Set())
   const [flagMode, setFlagMode] = useState(false)
+  useFlagHotkey(setFlagMode)
   const [toast, setToast] = useState<string | null>(null)
   const [now, setNow] = useState(0)
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -232,7 +234,7 @@ export default function RushSolo({ diff, onMenu, onAgain }: { diff: RushDiff; on
 
           <div role="group" aria-label={`${t('solo.dig')} / ${t('solo.flag')}`} className="flex gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50">
             <button onClick={() => setFlagMode(false)} aria-pressed={!flagMode} className={modeBtn(!flagMode, false)}>{t('solo.dig')}</button>
-            <button onClick={() => setFlagMode(true)} aria-pressed={flagMode} className={modeBtn(flagMode, true)}>{t('solo.flag')}</button>
+            <button onClick={() => setFlagMode(true)} aria-pressed={flagMode} aria-keyshortcuts="F" className={modeBtn(flagMode, true)}>{t('solo.flag')}</button>
           </div>
 
           <div className="mine-grid shadow-lg" style={{ gridTemplateColumns: `repeat(${RUSH_BOARD_SIZE}, minmax(0, 1fr))` }}>

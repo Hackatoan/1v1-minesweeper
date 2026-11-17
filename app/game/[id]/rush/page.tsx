@@ -7,6 +7,7 @@ import { getGame, getRushState, digRush, updateGame, incrementGamesPlayed, type 
 import { useGamePresence } from '../../../lib/useGamePresence'
 import { useT, TFunc } from '../../../lib/i18n-client'
 import useLongPress from '../../../lib/useLongPress'
+import useFlagHotkey from '../../../lib/useFlagHotkey'
 import { sfx, initSfx } from '../../../lib/sfx'
 import { Game } from '../../../lib/types'
 
@@ -70,6 +71,7 @@ export default function RushPlay() {
   const [state, setState] = useState<RushState | null>(null)
   const [flags, setFlags] = useState<Set<string>>(new Set())
   const [flagMode, setFlagMode] = useState(false)
+  useFlagHotkey(setFlagMode)
   const [toast, setToast] = useState<string | null>(null)
   const [now, setNow] = useState(() => Date.now())
 
@@ -287,7 +289,7 @@ export default function RushPlay() {
 
           <div role="group" aria-label={`${t('game.dig')} / ${t('game.flag')}`} className="hidden lg:flex gap-2 bg-brown-900/50 p-1 rounded-xl shadow-inner border border-brown-700/50">
             <button onClick={() => setFlagMode(false)} aria-pressed={!flagMode} className={modeBtn(!flagMode, false)}>{t('game.dig')}</button>
-            <button onClick={() => setFlagMode(true)} aria-pressed={flagMode} className={modeBtn(flagMode, true)}>{t('game.flag')}</button>
+            <button onClick={() => setFlagMode(true)} aria-pressed={flagMode} aria-keyshortcuts="F" className={modeBtn(flagMode, true)}>{t('game.flag')}</button>
           </div>
 
           <div className="mine-grid shadow-lg" style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
@@ -330,7 +332,7 @@ export default function RushPlay() {
 
       <div role="group" aria-label={`${t('game.dig')} / ${t('game.flag')}`} className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-brown-900/95 border-t border-brown-700/60 backdrop-blur-sm flex items-center justify-center gap-3">
         <button onClick={() => setFlagMode(false)} aria-pressed={!flagMode} className={`flex-1 max-w-40 py-3 rounded-xl text-base ${modeBtn(!flagMode, false)}`}>{t('game.dig')}</button>
-        <button onClick={() => setFlagMode(true)} aria-pressed={flagMode} className={`flex-1 max-w-40 py-3 rounded-xl text-base ${modeBtn(flagMode, true)}`}>{t('game.flag')}</button>
+        <button onClick={() => setFlagMode(true)} aria-pressed={flagMode} aria-keyshortcuts="F" className={`flex-1 max-w-40 py-3 rounded-xl text-base ${modeBtn(flagMode, true)}`}>{t('game.flag')}</button>
       </div>
     </div>
   )
