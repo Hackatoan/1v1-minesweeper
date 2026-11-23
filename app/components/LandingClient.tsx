@@ -139,8 +139,9 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
             <p className="text-xl text-pink-200/80 max-w-md mx-auto leading-relaxed">{dict.tagline}</p>
         </div>
         <div className="flex flex-col gap-2 items-center w-full max-w-xs">
-          <label className="text-pink-200/80 font-medium">{dict.nickname}</label>
+          <label htmlFor="nickname-input" className="text-pink-200/80 font-medium">{dict.nickname}</label>
           <input
+            id="nickname-input"
             type="text"
             value={name}
             maxLength={24}
@@ -170,13 +171,15 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
           <p className="text-center text-pink-200/80 max-w-sm -mt-4 mb-4">{dict.rushDesc}</p>
         ) : (
           <div className="flex flex-col gap-2 items-center w-full max-w-xs mb-4">
-            <label className="text-pink-200/80 font-medium">{dict.boardSize}: {boardSize}x{boardSize}</label>
+            <label htmlFor="board-size-slider" className="text-pink-200/80 font-medium">{dict.boardSize}: {boardSize}x{boardSize}</label>
             <input
+              id="board-size-slider"
               type="range"
               min="5"
               max="20"
               value={boardSize}
               onChange={(e) => pickBoardSize(parseInt(e.target.value))}
+              aria-label={`${dict.boardSize}: ${boardSize}x${boardSize}`}
               className="w-full accent-pink-400"
             />
           </div>
@@ -218,10 +221,10 @@ export function LandingClient({ dict, locale }: { dict: LandingDict; locale: str
             <table className="w-full text-sm text-pink-100">
               <thead>
                 <tr className="text-pink-300/60">
-                  <th className="text-left font-medium py-1 px-2">#</th>
-                  <th className="text-left font-medium py-1 px-2">{dict.colPlayer}</th>
-                  <th className="text-right font-medium py-1 px-2">W</th>
-                  <th className="text-right font-medium py-1 px-2">L</th>
+                  <th scope="col" className="text-left font-medium py-1 px-2">#</th>
+                  <th scope="col" className="text-left font-medium py-1 px-2">{dict.colPlayer}</th>
+                  <th scope="col" className="text-right font-medium py-1 px-2">W</th>
+                  <th scope="col" className="text-right font-medium py-1 px-2">L</th>
                 </tr>
               </thead>
               <tbody>
